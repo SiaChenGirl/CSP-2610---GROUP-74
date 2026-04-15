@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Welcome back 🌸</h1>
+
+  <!-- summary -->
+  <div style="display:flex; gap:20px;">
+    <div class="card">Total Entries: 20</div>
+    <div class="card">Most Mood: Happy</div>
+    <div class="card">Streak: 5 days</div>
+  </div>
+
+  <br>
+
+  <!-- chart -->
+  <div class="card">
+    <canvas id="moodChart"></canvas>
+  </div>
+
+</div>
+
+<script>
+const ctx = document.getElementById('moodChart');
+
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Happy', 'Sad', 'Angry', 'Neutral'],
+    datasets: [{
+      data: [10, 5, 3, 7]
+    }]
+  }
+});
+</script>
+
+</body>
+</html>
