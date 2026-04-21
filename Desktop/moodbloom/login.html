@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MoodBloom | Login</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); min-height: 100vh; display: flex; flex-direction: column; }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 30px 40px; }
+        .logo, .menu { width: 150px; }
+        .logo img { width: 100px; }
+        .title img { width: 220px; }
+        .content { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .box { width: 350px; background: white; padding: 40px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 12px; background: #b39ddb; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
+        .links { margin-top: 15px; font-size: 13px; }
+        a { color: #6a4fbf; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header-wrapper">
+        <div class="logo"><img src="logo.png"></div>
+        <div class="title"><img src="title.png"></div>
+        <div class="menu"></div>
+    </div>
+    <hr class="header-line">
+    <div class="content">
+        <div class="box">
+            <h2 style="color: #6a4fbf;">Login</h2>
+            <input type="text" placeholder="Username">
+            <input type="password" placeholder="Password">
+            <button class="btn-main" onclick="location.href='mainpage.html'">Log In</button>
+            <div class="links">
+                <a href="register.html">Register</a> | <a href="forgot.html">Forgot Password?</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

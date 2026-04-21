@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | My Day</title>
+    <style>
+        /* Modern Lavender Theme */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); 
+            min-height: 100vh; 
+            color: #4a3494;
+        }
+
+        /* Header Style */
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 20px 40px; opacity: 0.6; }
+        .logo img { width: 110px; }
+        .title-img img { width: 230px; }
+        
+        /* Burger Menu */
+        .menu { position: relative; width: 110px; text-align: right; }
+        .menu-btn { font-size: 30px; cursor: pointer; color: #6a4fbf; }
+        .dropdown { 
+            display: none; 
+            position: absolute; 
+            right: 0; 
+            top: 40px; 
+            background: white; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            width: 150px; 
+            z-index: 1000; 
+        }
+        .dropdown div { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: left; }
+        .dropdown div:hover { background: #f8f6ff; color: #6a4fbf; }
+
+        /* Main Layout */
+        .main-container { 
+            display: flex; 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            gap: 30px; 
+        }
+
+        .box { background: white; border-radius: 30px; padding: 25px; box-shadow: 0 10px 25px rgba(106, 79, 191, 0.05); }
+        h3 { color: #b39ddb; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 15px; }
+
+        /* Diary Section (Left) */
+        .diary-section { flex: 2; display: flex; flex-direction: column; min-height: 500px; }
+        .diary-section h2 { font-size: 28px; margin-bottom: 20px; color: #6a4fbf; }
+        textarea { 
+            flex: 1; 
+            border: none; 
+            outline: none; 
+            font-size: 18px; 
+            line-height: 1.6; 
+            resize: none; 
+            color: #555;
+            background: transparent;
+        }
+
+        /* Tools Section (Right) */
+        .tools-section { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+
+        /* Emotion Chooser */
+        .emotion-grid { display: flex; justify-content: space-around; font-size: 32px; }
+        .mood-item { cursor: pointer; opacity: 0.4; transition: 0.3s; text-align: center; }
+        .mood-item.active { opacity: 1; transform: scale(1.2); }
+        .mood-item span { display: block; font-size: 11px; margin-top: 5px; color: #4a3494; font-weight: bold; }
+
+        /* Intensity Slider */
+        input[type=range] { width: 100%; cursor: pointer; accent-color: #b39ddb; }
+
+        /* Photo Slots */
+        .photo-slots { display: flex; gap: 10px; }
+        .slot { 
+            flex: 1; 
+            aspect-ratio: 1/1.2; 
+            border: 2px dashed #e8e0ff; 
+            border-radius: 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 10px; 
+            color: #b39ddb; 
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .slot:hover { background: #fdfbfb; border-color: #b39ddb; }
+
+        /* Song Picker */
+        select { 
+            width: 100%; 
+            padding: 10px; 
+            border-radius: 10px; 
+            border: 1px solid #eee; 
+            background: #fafafa; 
+            color: #6a4fbf;
+            font-weight: 500;
+        }
+
+        /* Save Button */
+        .save-btn { 
+            display: block; 
+            margin: 30px auto; 
+            padding: 15px 60px; 
+            background: #b39ddb; 
+            color: white; 
+            border: none; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            font-size: 18px; 
+            cursor: pointer; 
+            box-shadow: 0 5px 15px rgba(179, 157, 219, 0.4);
+            transition: 0.3s;
+        }
+        .save-btn:hover { background: #9a81c7; transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+
+    <div class="header-wrapper">
+        <div class="logo"><img src="logo.png" alt="Logo"></div>
+        <div class="title-img"><img src="title.png" alt="MoodBloom"></div>
+        <div class="menu">
+            <span class="menu-btn" onclick="toggleMenu()">☰</span>
+            <div class="dropdown" id="menu-dropdown">
+                <div onclick="location.href='profile.html'">👤 Profile</div>
+                <div onclick="location.href='feedback.html'">💬 Feedback</div>
+                <div onclick="location.href='login.html'">🚪 Logout</div>
+            </div>
+        </div>
+    </div>
+    <hr class="header-line">
+
+    <div class="main-container">
+        <div class="box diary-section">
+            <h2>How was your day?</h2>
+            <textarea placeholder="Start writing your thoughts here..."></textarea>
+        </div>
+
+        <div class="tools-section">
+            <div class="box">
+                <h3>Choose Emotion</h3>
+                <div class="emotion-grid">
+                    <div class="mood-item" onclick="setMood(this, 'Sad')">😢<span>SAD</span></div>
+                    <div class="mood-item" onclick="setMood(this, 'Normal')">😐<span>NORMAL</span></div>
+                    <div class="mood-item" onclick="setMood(this, 'Great')">😊<span>GREAT</span></div>
+                </div>
+            </div>
+
+            <div class="box">
+                <h3>Mood Intensity</h3>
+                <input type="range" min="1" max="5" value="3">
+                <div style="display:flex; justify-content:space-between; font-size:12px; margin-top:5px; color:#aaa;">
+                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                </div>
+            </div>
+
+            <div class="box">
+                <h3>Add Photo</h3>
+                <div class="photo-slots">
+                    <div class="slot">📷<br>Add Photo</div>
+                    <div class="slot"></div>
+                    <div class="slot"></div>
+                </div>
+                <p style="font-size: 10px; color: #aaa; margin-top: 10px; text-align: center;">Select up to 3 photos</p>
+            </div>
+
+            <div class="box">
+                <h3>Mood Song 🎧</h3>
+                <select>
+                    <option value="" disabled selected>Add song...</option>
+                    <option>Chill Lofi Beats</option>
+                    <option>Morning Coffee Jazz</option>
+                    <option>Productive Piano</option>
+                    <option>Happy Vibes Pop</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <button class="save-btn" onclick="alert('Day saved successfully! 🌸');">Save</button>
+
+    <script>
+        function toggleMenu() {
+            const dd = document.getElementById('menu-dropdown');
+            dd.style.display = (dd.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function setMood(element, mood) {
+            document.querySelectorAll('.mood-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-btn')) {
+                document.getElementById('menu-dropdown').style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>

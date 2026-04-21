@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MoodBloom | Entry</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); min-height: 100vh; }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 30px 40px; }
+        .logo { width: 150px; } .logo img { width: 100px; }
+        .title img { width: 220px; }
+        .menu { width: 150px; text-align: right; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        textarea { width: 100%; height: 150px; border-radius: 15px; border: 1px solid #ddd; padding: 15px; box-sizing: border-box; margin: 20px 0; }
+        .save-btn { padding: 12px 40px; background: #b39ddb; border: none; border-radius: 20px; color: white; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header-wrapper">
+        <div class="logo"><img src="logo.png"></div>
+        <div class="title"><img src="title.png"></div>
+        <div class="menu"></div>
+    </div>
+    <hr class="header-line">
+    <div class="container">
+        <h2 style="color: #6a4fbf;">How was your day?</h2>
+        <p>Mood Intensity: <input type="range" min="1" max="5"></p>
+        <textarea placeholder="Write your diary entry..."></textarea>
+        <div style="text-align: center;"><button class="save-btn" onclick="location.href='mainpage.html'">Save Entry</button></div>
+    </div>
+</body>
+</html>
