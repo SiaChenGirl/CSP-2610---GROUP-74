@@ -49,28 +49,17 @@
         </div>
     </div>
 </div>
-
 <script>
-    const quotes = [
-        "Today feels gentle 🌙",
-        "You are growing slowly 🌱",
-        "Some days feel heavy 🌧️",
-        "Breathe in softly 🌿"
-    ];
+    const quotes = ["Today feels gentle 🌙", "You are growing slowly 🌱", "Some days feel heavy 🌧️", "Breathe in softly 🌿"];
     let i = 0;
-    function showQuote() {
-        document.getElementById("quote").innerText = quotes[i];
-        i = (i + 1) % quotes.length;
-    }
-    showQuote();
-    setInterval(showQuote, 10000);
+    function showQuote() { document.getElementById("quote").innerText = quotes[i]; i = (i + 1) % quotes.length; }
+    showQuote(); setInterval(showQuote, 10000);
 
     async function handleLogin() {
         const username = document.getElementById('login-username').value;
         const password = document.getElementById('login-password').value;
-
         try {
-            const response = await fetch('/', { // 这里对应 urls.py 的登录路径
+            const response = await fetch('/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -78,13 +67,11 @@
             const data = await response.json();
             if (data.message) {
                 alert("Login Successful!");
-                window.location.href = '/dashboard/'; // 登录后跳转
+                window.location.href = '/dashboard/';
             } else {
                 alert("Error: " + data.error);
             }
-        } catch (error) {
-            alert("Login Failed!");
-        }
+        } catch (error) { alert("Login Failed!"); }
     }
 </script>
 </body>

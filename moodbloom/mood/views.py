@@ -59,3 +59,10 @@ def user_logout(request):
 @login_required
 def dashboard(request):
     return render(request, 'dashboard.html') # 假设以后有这个页面
+def register(request):
+    if request.method == 'POST':
+        # ... 这里是处理注册数据的代码 ...
+        pass
+    
+    # 这一行最重要！它决定了你访问 /register/ 时看到哪个网页
+    return render(request, 'register.html')
