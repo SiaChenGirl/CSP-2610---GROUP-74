@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from .models import Profile
+from django.shortcuts import get_object_or_404
+from django.core.mail import send_mail
 import json
 
 @csrf_exempt
@@ -22,6 +24,17 @@ def register(request):
 
         user = User.objects.create_user(username=username, password=password, email=email)
         Profile.objects.create(user=user, gender=gender)
+
+        verify_link = f"http://127.0.0.1:8000/verify-email/{username}/"
+
+        print("sending email now")
+        send_mail(
+            'Verify your MoodBloom account',
+            f'Click this link to verify your email:\n{verify_link}',
+            'admin@moodbloom.com',
+            [email],
+            fail_silently=False,
+        )
 
         return JsonResponse({'message': 'User created successfully'})
 
@@ -91,5 +104,17 @@ def change_password(request):
     return JsonResponse({
         'error': 'Invalid request'
     })
+
+def verify_email(request, username):
+    user = get_object_or_404(User, username=username)
+    profile = get_object_or_404(Profile, user=user)
+
+    profile.email_verified = True
+    profile.save()
+
+    return JsonResponse({
+        'message': 'Email verified successfully'
+    })
+
         
     

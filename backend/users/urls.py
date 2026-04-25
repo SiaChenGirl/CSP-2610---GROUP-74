@@ -31,4 +31,6 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name='password_reset_complete'
     ),
+
+    path('verify-email/<str:username>/', views.verify_email),
 ]
