@@ -14,4 +14,12 @@ class  MoodEntry(models.Model):
     mood = models.CharField(max_length=20)
     diary_text = models.TextField(blank=True, null=True)
     intensity = models.IntegerField(null=True, blank=True)
+    song_title = models.CharField(max_length=255, null=True, blank=True)
+    artist = models.CharField(max_length=255, null=True, blank=True)
+    music_link = models.URLField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class MoodPhoto(models.Model):
+    mood_entry = models.ForeignKey(MoodEntry, on_delete=models.CASCADE, related_name='photos')
+    image = models.ImageField(upload_to='mood_photos/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)

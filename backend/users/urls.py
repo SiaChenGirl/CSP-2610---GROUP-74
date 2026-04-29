@@ -37,4 +37,6 @@ urlpatterns = [
     path('add-mood/', views.add_mood),
 
     path('today-mood/', views.today_mood),
+
+    path('upload-photo/<int:entry_id>/', views.upload_photo),
 ]

@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from .models import Profile, MoodEntry
+from .models import Profile, MoodEntry, MoodPhoto
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.utils.timezone import now
@@ -126,12 +126,18 @@ def add_mood(request):
         mood = data.get('mood')
         diary = data.get('diary_text')
         intensity = data.get('intensity')
+        song_title = data.get('song_title')
+        artist = data.get('artist')
+        music_link = data.get('music_link')
 
         MoodEntry.objects.create(
             user=request.user,
             mood=mood,
             diary_text=diary,
-            intensity=intensity
+            intensity=intensity,
+            song_title=song_title,
+            artist=artist,
+            music_link=music_link
         )
 
         return JsonResponse({
@@ -159,5 +165,25 @@ def today_mood(request):
     return JsonResponse({
         "message": "No mood today. Please add a mood."
     })
+
+@csrf_exempt
+@login_required
+def upload_photo(request, entry_id):
+    if request.method == 'POST':
+        entry = get_object_or_404(MoodEntry, id=entry_id, user=request.user)
+
+        for file in request.FILES.getlist('photos'):
+            MoodPhoto.objects.create(
+                mood_entry=entry,
+                image=file
+            )
+
+            return JsonResponse({
+                'message': 'Photos uploaded successfully!'
+            })
+        
+        return JsonResponse({
+            'error': 'Invalid request.'
+        })
         
     
