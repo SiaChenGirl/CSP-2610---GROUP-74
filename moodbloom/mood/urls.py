@@ -6,3 +6,4 @@ urlpatterns = [
     path('register/', views.register, name='register'), # 注册页
     path('dashboard/', views.dashboard, name='dashboard'), # 仪表盘
 ]
+path('verify/<uidb64>/<token>/', views.verify_email, name='verify_email'),
