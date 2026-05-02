@@ -1,0 +1,67 @@
+<!-- Add Chart.js in Head -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* Reuse Header/Utility CSS from above */
+    .dashboard-container { display: flex; padding: 40px; gap: 30px; }
+    
+    .percentage-card { background: white; border-radius: 30px; padding: 25px; width: 280px; text-align: center; }
+    .mood-flow-card { background: white; border-radius: 30px; padding: 25px; flex-grow: 1; }
+    
+    /* The Back Pill Button */
+    .back-pill { 
+        position: fixed; bottom: 30px; right: 40px; 
+        background: white; color: var(--deep-purple); 
+        padding: 12px 40px; border-radius: 50px; 
+        font-weight: bold; text-decoration: none;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: 0.3s;
+    }
+    .back-pill:hover { background: var(--deep-purple); color: white; }
+</style>
+
+<div class="dashboard-container">
+    <!-- Left Box: Percentage -->
+    <div class="percentage-card">
+        <p style="font-size: 13px; font-weight: bold;">Total percentage of mood record</p>
+        <canvas id="moodBarChart"></canvas>
+    </div>
+
+    <!-- Middle Box: Flow -->
+    <div class="mood-flow-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="font-family:'Dancing Script'; color:var(--deep-purple);">Mood flow</h2>
+            <span style="font-weight:bold; color:var(--soft-purple);">April 2026 ▾</span>
+        </div>
+        <canvas id="flowLineChart" height="120"></canvas>
+    </div>
+
+    <!-- The 4 Circles (Same as mainpage) -->
+    <div class="utility-bar">...</div>
+</div>
+
+<a href="mainpage.html" class="back-pill">Back</a>
+
+<script>
+    // Bar Chart Logic
+    new Chart(document.getElementById('moodBarChart'), {
+        type: 'bar',
+        data: {
+            labels: ['😊','😐','☹️','😡'],
+            datasets: [{ data: [31, 17, 50, 10], backgroundColor: ['#ffd700','#c0c0c0','#9370db','#ff6347'] }]
+        },
+        options: { plugins: { legend: { display: false } } }
+    });
+
+    // Line Chart (Intensity 1-5)
+    new Chart(document.getElementById('flowLineChart'), {
+        type: 'line',
+        data: {
+            labels: ['1/4','2/4','3/4','4/4','5/4','6/4','7/4'],
+            datasets: [{ 
+                label: 'Intensity', data: [2, 4, 1, 5, 3, 4, 2], 
+                borderColor: '#6a4fbf', tension: 0.3, fill: true, backgroundColor: 'rgba(106, 79, 191, 0.05)' 
+            }]
+        },
+        options: { scales: { y: { min: 1, max: 5 } }, plugins: { legend: { display: false } } }
+    });
+</script>
