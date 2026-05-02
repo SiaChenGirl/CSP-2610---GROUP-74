@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MoodBloom | Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <style>
+        /* 1. GRADIENT BACKGROUND & FONTS */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(180deg, #CBB7FF 0%, #E8E0FF 100%);
+            min-height: 100vh; 
+            color: #4a3494;
+        }
+
+        /* 2. HEADER & LOGO (Large proportions) */
+        .header-wrapper { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            padding: 30px 60px 10px 60px; 
+        }
+        .logo img { width: 180px; }
+        
+        .title-area { text-align: center; margin-top: 10px; }
+        .title-area img { width: 230px; margin-bottom: 5px; }
+        .slogan { 
+            color: white; 
+            font-style: italic; 
+            font-size: 16px; 
+        }
+        
+        .menu-btn { font-size: 35px; cursor: pointer; color: white; position: relative; }
+
+        /* THE WHITE LINE */
+        .divider-line { 
+            height: 2px; 
+            background-color: white; 
+            margin: 0 60px 40px 60px; 
+            opacity: 0.8; 
+        }
+
+        /* 3. SEARCH CONTENT LAYOUT */
+        .search-main { 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            gap: 40px; 
+            padding: 0 60px; 
+        }
+
+        /* Left Filter Pills */
+        .filter-section { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            padding-top: 15px;
+        }
+        .filter-pill { 
+            background: white; 
+            border: 2px solid transparent; 
+            padding: 12px 35px; 
+            border-radius: 30px; 
+            font-weight: bold; 
+            color: #6a4fbf; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .filter-pill:hover { transform: scale(1.05); }
+        .filter-pill.active { 
+            border-color: #6a4fbf; 
+            background: #f0ebff; 
+        }
+
+        /* Middle Results Box */
+        .results-container { 
+            background: white; 
+            border-radius: 40px; 
+            padding: 35px; 
+            width: 700px; 
+            min-height: 480px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* THE FIXED SEARCH BAR */
+        .search-bar-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .search-input {
+            width: 100%; 
+            box-sizing: border-box; /* This keeps it inside the box */
+            padding: 15px 55px 15px 25px; 
+            border-radius: 35px; 
+            border: 1px solid #e8e0ff; 
+            outline: none; 
+            font-size: 16px;
+            color: #4a3494;
+            background-color: #f9f8ff;
+        }
+        .search-icon-img {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            opacity: 0.4;
+        }
+
+        /* 4. UTILITIES (4 Circles) */
+        .circle-nav { display: flex; flex-direction: column; gap: 20px; }
+        .nav-item { 
+            width: 65px; 
+            height: 65px; 
+            background: white; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+        .nav-item img { width: 28px; opacity: 0.6; }
+        .nav-item:hover { transform: scale(1.1); }
+        .nav-item.active { background: #b39ddb; }
+        .nav-item.active img { filter: brightness(0) invert(1); opacity: 1; }
+
+        /* BACK PILL */
+        .back-pill { 
+            position: fixed; 
+            bottom: 35px; 
+            right: 50px; 
+            background: white; 
+            padding: 12px 45px; 
+            border-radius: 50px; 
+            text-decoration: none; 
+            color: #6a4fbf; 
+            font-weight: bold; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+        .back-pill:hover { background: #6a4fbf; color: white; }
+
+        /* Placeholder Content */
+        .empty-state {
+            text-align: center;
+            color: #b39ddb;
+            margin-top: 100px;
+            font-style: italic;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-content { 
+            display: none; position: absolute; right: 0; top: 50px; 
+            background: white; min-width: 160px; border-radius: 15px; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 100; 
+        }
+        .dropdown-content a { color: #6a4fbf; padding: 12px 16px; text-decoration: none; display: block; font-weight: bold; }
+        .show { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="header-wrapper">
+    <div class="logo"><img src="logo.png"></div>
+    <div class="title-area">
+        <img src="title.png"><br>
+        <span class="slogan">Mood your day, Bloom your mind.</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">☰
+        <div id="navDrop" class="dropdown-content">
+            <a href="profile.html">Profile</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="login.html" style="color:red;">Logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="divider-line"></div>
+
+<div class="search-main">
+    <!-- Filter Pills Section -->
+    <div class="filter-section">
+        <div class="filter-pill active" onclick="selectFilter(this)">Photo</div>
+        <div class="filter-pill" onclick="selectFilter(this)">Date</div>
+        <div class="filter-pill" onclick="selectFilter(this)">Mood</div>
+    </div>
+
+    <!-- Middle Search Box -->
+    <div class="results-container">
+        <div class="search-bar-wrapper">
+            <input type="text" class="search-input" placeholder="Search your memories...">
+            <img src="icons/search.png" class="search-icon-img">
+        </div>
+        
+        <div id="resultsArea">
+            <div class="empty-state">Results will appear here based on your filters...</div>
+        </div>
+    </div>
+
+    <!-- 4 Circle Navigation -->
+    <div class="circle-nav">
+        <div class="nav-item active"><img src="icons/search.png"></div>
+        <div class="nav-item" onclick="location.href='diaryhistory.html'"><img src="icons/book.png"></div>
+        <div class="nav-item" onclick="location.href='dashboard.html'"><img src="icons/stats.png"></div>
+        <div class="nav-item" onclick="location.href='gallery.html'"><img src="icons/camera.png"></div>
+    </div>
+</div>
+
+<a href="mainpage.html" class="back-pill">Back</a>
+
+<script>
+    function selectFilter(element) {
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        element.classList.add('active');
+    }
+
+    function toggleMenu() {
+        document.getElementById("navDrop").classList.toggle("show");
+    }
+
+    // Close menu if clicked outside
+    window.onclick = function(event) {
+        if (!event.target.matches('.menu-btn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) openDropdown.classList.remove('show');
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
