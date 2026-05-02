@@ -2,208 +2,199 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoodBloom | My Day</title>
+    <title>MoodBloom | Main Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <style>
-        /* Modern Lavender Theme */
+        /* 1. GRADIENT BACKGROUND (渐变浅紫色) */
         body { 
             margin: 0; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); 
-            min-height: 100vh; 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(180deg, #CBB7FF 0%, #E8E0FF 100%);
+            min-height: 100vh;
             color: #4a3494;
         }
-
-        /* Header Style */
-        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
-        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 20px 40px; opacity: 0.6; }
-        .logo img { width: 110px; }
-        .title-img img { width: 230px; }
         
-        /* Burger Menu */
-        .menu { position: relative; width: 110px; text-align: right; }
-        .menu-btn { font-size: 30px; cursor: pointer; color: #6a4fbf; }
-        .dropdown { 
-            display: none; 
-            position: absolute; 
-            right: 0; 
-            top: 40px; 
-            background: white; 
-            border-radius: 12px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
-            width: 150px; 
-            z-index: 1000; 
-        }
-        .dropdown div { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 14px; text-align: left; }
-        .dropdown div:hover { background: #f8f6ff; color: #6a4fbf; }
-
-        /* Main Layout */
-        .main-container { 
+        /* 2. HEADER & LOGO */
+        .header-wrapper { 
             display: flex; 
-            max-width: 1100px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            gap: 30px; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            padding: 30px 60px 10px 60px; 
+        }
+        .logo img { width: 180px; }
+        
+        .title-area { text-align: center; margin-top: 10px; }
+        .title-area img { width: 230px; margin-bottom: 5px; }
+        .slogan { 
+            color: white; 
+            font-style: italic; 
+            font-size: 16px; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .menu-btn { font-size: 35px; cursor: pointer; color: white; position: relative; }
+
+        /* THE LINE (Restored) */
+        .divider-line {
+            height: 2px;
+            background-color: white;
+            margin: 0 60px 40px 60px;
+            opacity: 0.8;
         }
 
-        .box { background: white; border-radius: 30px; padding: 25px; box-shadow: 0 10px 25px rgba(106, 79, 191, 0.05); }
-        h3 { color: #b39ddb; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 15px; }
+        /* 3. CALENDAR BOX */
+        .main-content { 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            gap: 40px; 
+            padding-bottom: 50px;
+        }
 
-        /* Diary Section (Left) */
-        .diary-section { flex: 2; display: flex; flex-direction: column; min-height: 500px; }
-        .diary-section h2 { font-size: 28px; margin-bottom: 20px; color: #6a4fbf; }
-        textarea { 
-            flex: 1; 
+        .calendar-container { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 40px; 
+            width: 750px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .cal-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+        }
+        .cal-header select { 
             border: none; 
-            outline: none; 
-            font-size: 18px; 
-            line-height: 1.6; 
-            resize: none; 
-            color: #555;
+            font-family: 'Dancing Script'; 
+            font-size: 32px; 
+            color: #6a4fbf; 
+            font-weight: bold; 
+            cursor: pointer; 
+            outline: none;
             background: transparent;
         }
+        
+        .grid-layout { display: grid; grid-template-columns: repeat(7, 1fr); gap: 20px; text-align: center; }
+        .day-label { font-weight: bold; color: #b39ddb; font-size: 14px; }
+        
+        .date-circle { 
+            width: 55px; 
+            height: 55px; 
+            line-height: 55px; 
+            border-radius: 50%; 
+            background: #f8f6ff; 
+            cursor: pointer; 
+            transition: 0.3s;
+            font-size: 18px;
+        }
+        .date-circle:hover { background: #6a4fbf; color: white; transform: scale(1.1); }
 
-        /* Tools Section (Right) */
-        .tools-section { flex: 1; display: flex; flex-direction: column; gap: 20px; }
-
-        /* Emotion Chooser */
-        .emotion-grid { display: flex; justify-content: space-around; font-size: 32px; }
-        .mood-item { cursor: pointer; opacity: 0.4; transition: 0.3s; text-align: center; }
-        .mood-item.active { opacity: 1; transform: scale(1.2); }
-        .mood-item span { display: block; font-size: 11px; margin-top: 5px; color: #4a3494; font-weight: bold; }
-
-        /* Intensity Slider */
-        input[type=range] { width: 100%; cursor: pointer; accent-color: #b39ddb; }
-
-        /* Photo Slots */
-        .photo-slots { display: flex; gap: 10px; }
-        .slot { 
-            flex: 1; 
-            aspect-ratio: 1/1.2; 
-            border: 2px dashed #e8e0ff; 
-            border-radius: 15px; 
+        /* 4. THE 4 CIRCLES */
+        .circle-actions { display: flex; flex-direction: column; gap: 25px; }
+        .action-btn { 
+            width: 70px; 
+            height: 70px; 
+            background: white; 
+            border-radius: 50%; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            font-size: 10px; 
-            color: #b39ddb; 
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .slot:hover { background: #fdfbfb; border-color: #b39ddb; }
-
-        /* Song Picker */
-        select { 
-            width: 100%; 
-            padding: 10px; 
-            border-radius: 10px; 
-            border: 1px solid #eee; 
-            background: #fafafa; 
-            color: #6a4fbf;
-            font-weight: 500;
-        }
-
-        /* Save Button */
-        .save-btn { 
-            display: block; 
-            margin: 30px auto; 
-            padding: 15px 60px; 
-            background: #b39ddb; 
-            color: white; 
-            border: none; 
-            border-radius: 50px; 
-            font-weight: bold; 
-            font-size: 18px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
             cursor: pointer; 
-            box-shadow: 0 5px 15px rgba(179, 157, 219, 0.4);
             transition: 0.3s;
         }
-        .save-btn:hover { background: #9a81c7; transform: translateY(-3px); }
+        .action-btn:hover { transform: scale(1.1); background: #f0ebff; }
+        .action-btn img { width: 32px; opacity: 0.7; }
+
+        /* Dropdown */
+        .dropdown-content { 
+            display: none; position: absolute; right: 0; top: 50px; 
+            background: white; min-width: 160px; border-radius: 15px; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 100; 
+        }
+        .dropdown-content a { color: #6a4fbf; padding: 12px 16px; text-decoration: none; display: block; font-weight: bold; font-size: 14px; }
+        .show { display: block; }
     </style>
 </head>
 <body>
 
-    <div class="header-wrapper">
-        <div class="logo"><img src="logo.png" alt="Logo"></div>
-        <div class="title-img"><img src="title.png" alt="MoodBloom"></div>
-        <div class="menu">
-            <span class="menu-btn" onclick="toggleMenu()">☰</span>
-            <div class="dropdown" id="menu-dropdown">
-                <div onclick="location.href='profile.html'">👤 Profile</div>
-                <div onclick="location.href='feedback.html'">💬 Feedback</div>
-                <div onclick="location.href='login.html'">🚪 Logout</div>
-            </div>
+<div class="header-wrapper">
+    <div class="logo"><img src="logo.png"></div>
+    <div class="title-area">
+        <img src="title.png"><br>
+        <span class="slogan">Mood your day, Bloom your mind.</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">☰
+        <div id="navDrop" class="dropdown-content">
+            <a href="profile.html">Profile</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="login.html" style="color:red;">Logout</a>
         </div>
     </div>
-    <hr class="header-line">
+</div>
 
-    <div class="main-container">
-        <div class="box diary-section">
-            <h2>How was your day?</h2>
-            <textarea placeholder="Start writing your thoughts here..."></textarea>
+<!-- RESTORED LINE -->
+<div class="divider-line"></div>
+
+<div class="main-content">
+    <div class="calendar-container">
+        <div class="cal-header">
+            <select id="mSelect" onchange="buildCal()"></select>
+            <select id="ySelect" onchange="buildCal()"></select>
         </div>
-
-        <div class="tools-section">
-            <div class="box">
-                <h3>Choose Emotion</h3>
-                <div class="emotion-grid">
-                    <div class="mood-item" onclick="setMood(this, 'Sad')">😢<span>SAD</span></div>
-                    <div class="mood-item" onclick="setMood(this, 'Normal')">😐<span>NORMAL</span></div>
-                    <div class="mood-item" onclick="setMood(this, 'Great')">😊<span>GREAT</span></div>
-                </div>
-            </div>
-
-            <div class="box">
-                <h3>Mood Intensity</h3>
-                <input type="range" min="1" max="5" value="3">
-                <div style="display:flex; justify-content:space-between; font-size:12px; margin-top:5px; color:#aaa;">
-                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                </div>
-            </div>
-
-            <div class="box">
-                <h3>Add Photo</h3>
-                <div class="photo-slots">
-                    <div class="slot">📷<br>Add Photo</div>
-                    <div class="slot"></div>
-                    <div class="slot"></div>
-                </div>
-                <p style="font-size: 10px; color: #aaa; margin-top: 10px; text-align: center;">Select up to 3 photos</p>
-            </div>
-
-            <div class="box">
-                <h3>Mood Song 🎧</h3>
-                <select>
-                    <option value="" disabled selected>Add song...</option>
-                    <option>Chill Lofi Beats</option>
-                    <option>Morning Coffee Jazz</option>
-                    <option>Productive Piano</option>
-                    <option>Happy Vibes Pop</option>
-                </select>
-            </div>
-        </div>
+        <div class="grid-layout" id="calDisplay"></div>
     </div>
 
-    <button class="save-btn" onclick="alert('Day saved successfully! 🌸');">Save</button>
+    <!-- THE 4 CIRCLES -->
+    <div class="circle-actions">
+        <div class="action-btn" title="Search" onclick="location.href='search.html'"><img src="icons/search.png"></div>
+        <div class="action-btn" title="History" onclick="location.href='article.html'"><img src="icons/book.png"></div>
+        <div class="action-btn" title="Dashboard" onclick="location.href='dashboard.html'"><img src="icons/stats.png"></div>
+        <div class="action-btn" title="Gallery" onclick="location.href='gallery.html'"><img src="icons/camera.png"></div>
+    </div>
+</div>
 
-    <script>
-        function toggleMenu() {
-            const dd = document.getElementById('menu-dropdown');
-            dd.style.display = (dd.style.display === 'block') ? 'none' : 'block';
+<script>
+    const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    
+    function startup() {
+        const ms = document.getElementById('mSelect');
+        const ys = document.getElementById('ySelect');
+        mNames.forEach((n, i) => ms.innerHTML += `<option value="${i}">${n}</option>`);
+        for(let y=2024; y<=2027; y++) ys.innerHTML += `<option value="${y}">${y}</option>`;
+        
+        ms.value = 3; // April
+        ys.value = 2026;
+        buildCal();
+    }
+
+    function buildCal() {
+        const display = document.getElementById('calDisplay');
+        display.innerHTML = '';
+        const m = parseInt(document.getElementById('mSelect').value);
+        const y = parseInt(document.getElementById('ySelect').value);
+        
+        ["S","M","T","W","T","F","S"].forEach(d => display.innerHTML += `<div class="day-label">${d}</div>`);
+        
+        const first = new Date(y, m, 1).getDay();
+        const total = new Date(y, m + 1, 0).getDate();
+
+        for(let i=0; i<first; i++) display.innerHTML += `<div></div>`;
+        for(let d=1; d<=total; d++) {
+            display.innerHTML += `<div class="date-circle" onclick="location.href='moodentry.html'">${d}</div>`;
         }
+    }
 
-        function setMood(element, mood) {
-            document.querySelectorAll('.mood-item').forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
+    function toggleMenu() { document.getElementById("navDrop").classList.toggle("show"); }
+    window.onclick = function(e) { 
+        if (!e.target.matches('.menu-btn')) {
+            const d = document.getElementById("navDrop");
+            if (d && d.classList.contains('show')) d.classList.remove('show');
         }
-
-        // Close dropdown when clicking outside
-        window.onclick = function(event) {
-            if (!event.target.matches('.menu-btn')) {
-                document.getElementById('menu-dropdown').style.display = 'none';
-            }
-        }
-    </script>
-
+    }
+    startup();
+</script>
 </body>
 </html>
