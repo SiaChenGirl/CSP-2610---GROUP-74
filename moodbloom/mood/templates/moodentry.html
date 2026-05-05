@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | Mood Entry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); 
+            min-height: 100vh; 
+            color: #4a3494;
+        }
+
+        /* --- HEADER & LOGO --- */
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 20px 40px; opacity: 0.6; }
+        .logo { width: 200px; }
+        .logo img { width: 180px; }
+        .title-img img { width: 230px; }
+        .back-nav { width: 200px; text-align: right; }
+        .back-btn { text-decoration: none; color: #6a4fbf; font-weight: bold; border: 1px solid #6a4fbf; padding: 10px 20px; border-radius: 25px; transition: 0.3s; }
+        .back-btn:hover { background: #6a4fbf; color: white; }
+
+        /* --- LAYOUT --- */
+        .main-container { display: flex; max-width: 1100px; margin: 0 auto; padding: 20px; gap: 30px; }
+        .box { background: white; border-radius: 30px; padding: 25px; box-shadow: 0 10px 25px rgba(106, 79, 191, 0.05); margin-bottom: 20px; }
+        h3 { color: #b39ddb; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 15px; }
+
+        /* Diary Column */
+        .diary-section { flex: 2; display: flex; flex-direction: column; min-height: 600px; }
+        .diary-section h2 { font-family: 'Dancing Script', cursive; font-size: 42px; margin-bottom: 10px; color: #6a4fbf; margin-top: 0; }
+        #moodMessage { font-size: 15px; font-style: italic; color: #9a81c7; margin-bottom: 15px; min-height: 22px; transition: 0.5s; }
+        textarea { flex: 1; border: none; outline: none; font-size: 18px; line-height: 1.6; resize: none; color: #555; background: transparent; }
+
+        /* Tools Column */
+        .tools-section { flex: 1; display: flex; flex-direction: column; }
+
+        /* --- PNG EMOTIONS & DRAWER --- */
+        .emotion-hubs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .hub-item, .sub-item { cursor: pointer; opacity: 0.4; transition: 0.3s; text-align: center; }
+        .hub-item img, .sub-item img { width: 55px; height: auto; display: block; margin: 0 auto; }
+        .hub-item.active, .sub-item.selected { opacity: 1; transform: scale(1.1); }
+        
+        .emotion-drawer { display: none; background: #f8f6ff; padding: 15px; border-radius: 20px; margin-bottom: 20px; }
+        .emotion-drawer.open { display: block; }
+        .sub-emojis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .sub-item span { display: block; font-size: 10px; color: #4a3494; margin-top: 4px; font-weight: bold; text-transform: uppercase; }
+
+        /* --- INTENSITY SLIDER --- */
+        input[type=range] { width: 100%; cursor: pointer; accent-color: #b39ddb; margin: 10px 0; }
+        .intensity-labels { display: flex; justify-content: space-between; font-size: 11px; color: #9a81c7; font-weight: bold; }
+
+        /* --- MUSIC SEARCH --- */
+        .search-container { position: relative; }
+        .song-search { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; background: #fafafa; outline: none; box-sizing: border-box; }
+        .song-results { position: absolute; top: 45px; left: 0; width: 100%; background: white; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-height: 150px; overflow-y: auto; display: none; z-index: 10; }
+        .song-results div { padding: 10px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #f9f9f9; }
+        .song-results div:hover { background: #f8f6ff; color: #6a4fbf; }
+
+        .photo-slots { display: flex; gap: 10px; }
+        .slot { flex: 1; aspect-ratio: 1/1.2; border: 2px dashed #e8e0ff; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #b39ddb; cursor: pointer; }
+
+        .save-btn { display: block; margin: 20px auto 50px; padding: 15px 80px; background: #b39ddb; color: white; border: none; border-radius: 50px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.3s; }
+        .save-btn:hover { background: #9a81c7; transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+    <!-- 使用了 Django url 标签和 static 标签 -->
+    <div class="header-wrapper">
+        <div class="logo"><img src="{% static 'logo.png' %}"></div>
+        <div class="title-img"><img src="{% static 'title.png' %}"></div>
+        <div class="back-nav"><a href="{% url 'mainpage' %}" class="back-btn">Back</a></div>
+    </div>
+    <hr class="header-line">
+
+    <!-- 建议之后包裹在 <form> 标签里，这里先保留你的结构 -->
+    <div class="main-container">
+        <div class="box diary-section">
+            <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">{% now "F j, Y" %}</div>
+            <h2>My Daily Bloom</h2>
+            
+            <div id="moodMessage">Select an emotion to start your bloom...</div>
+            
+            <textarea id="diaryEntry" placeholder="Write your thoughts here..."></textarea>
+        </div>
+
+        <div class="tools-section">
+            <div class="box">
+                <h3>Today's Emotion Hub</h3>
+                <div class="emotion-hubs">
+                    <!-- 修正图标路径 -->
+                    <div class="hub-item" onclick="openDrawer('sad', this)"><img src="{% static 'emojis/sad.png' %}"></div>
+                    <div class="hub-item" onclick="openDrawer('neutral', this)"><img src="{% static 'emojis/neutral.png' %}"></div>
+                    <div class="hub-item" onclick="openDrawer('happy', this)"><img src="{% static 'emojis/happy.png' %}"></div>
+                    <div class="hub-item" onclick="openDrawer('angry', this)"><img src="{% static 'emojis/angry.png' %}"></div>
+                </div>
+
+                <div class="emotion-drawer" id="moodDrawer">
+                    <h3 id="drawerTitle" style="font-size:10px; color:#aaa;">SELECT DETAIL:</h3>
+                    <div class="sub-emojis" id="drawerContent"></div>
+                </div>
+
+                <h3>Intensity</h3>
+                <input type="range" id="intensityRange" min="1" max="5" value="3">
+                <div class="intensity-labels">
+                    <span id="label-low">Least Intense</span>
+                    <span id="label-high">Most Intense</span>
+                </div>
+            </div>
+
+            <div class="box">
+                <h3>Memories</h3>
+                <div class="photo-slots">
+                    <div class="slot">📷<br>Photo</div><div class="slot"></div><div class="slot"></div>
+                </div>
+            </div>
+
+            <div class="box">
+                <h3>Search Mood Song 🎧</h3>
+                <div class="search-container">
+                    <input type="text" class="song-search" id="songInput" placeholder="Artist or Song..." onkeyup="filterSongs()">
+                    <div class="song-results" id="results">
+                        <div onclick="selectSong('Espresso - Sabrina Carpenter')">Espresso - Sabrina Carpenter</div>
+                        <div onclick="selectSong('Cruel Summer - Taylor Swift')">Cruel Summer - Taylor Swift</div>
+                        <div onclick="selectSong('Yellow - Coldplay')">Yellow - Coldplay</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="save-btn" onclick="saveEntry()">Save Entry</button>
+
+    <script>
+        // JS 中的图片路径需要特别处理。在 Django 中，最简单的做法是在 JS 里拼接基础路径。
+        const staticUrl = "{% static 'emojis/' %}";
+
+        const pngMap = {
+            'happy': [
+                {f:'happy.png', n:'Happy'}, {f:'kiss.png', n:'Kiss'}, {f:'yeah.png', n:'Yeah'}, {f:'good.png', n:'Good'},
+                {f:'warm.png', n:'Warm'}, {f:'admire.png', n:'Admire'}, {f:'lovely.png', n:'Lovely'}, {f:'determined.png', n:'Determined'}
+            ],
+            'neutral': [
+                {f:'neutral.png', n:'Neutral'}, {f:'shy.png', n:'Shy'}, {f:'curious.png', n:'Curious'}, {f:'sleepy.png', n:'Sleepy'},
+                {f:'trick.png', n:'Trick'}, {f:'cringe.png', n:'Cringe'}, {f:'guilty.png', n:'Guilty'}
+            ],
+            'sad': [
+                {f:'sad.png', n:'Sad'}, {f:'sick.png', n:'Sick'}, {f:'tired.png', n:'Tired'}, {f:'afraid.png', n:'Afraid'}
+            ],
+            'angry': [
+                {f:'angry.png', n:'Angry'}, {f:'shock.png', n:'Shock'}
+            ]
+        };
+
+        const moodMessages = {
+            'happy': "It's wonderful to see you blooming today! ✨",
+            'neutral': "A calm and steady day. How are you feeling inside? 🌿",
+            'sad': "It's okay to have rainy days. I'm here to listen. 🌧️",
+            'angry': "Take a deep breath. Let's get those feelings out. ⚡"
+        };
+
+        function openDrawer(category, element) {
+            document.querySelectorAll('.hub-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            
+            const drawer = document.getElementById('moodDrawer');
+            const content = document.getElementById('drawerContent');
+            drawer.classList.add('open');
+            
+            content.innerHTML = ''; 
+            pngMap[category].forEach(item => {
+                let div = document.createElement('div');
+                div.className = 'sub-item';
+                div.onclick = () => selectSubMood(div, category);
+                // 这里使用了 JS 拼接的 staticUrl
+                div.innerHTML = `<img src="${staticUrl}${item.f}"><span>${item.n}</span>`;
+                content.appendChild(div);
+            });
+        }
+
+        function selectSubMood(element, category) {
+            document.querySelectorAll('.sub-item').forEach(item => item.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            const messageBox = document.getElementById('moodMessage');
+            const emotionName = element.querySelector('span').innerText;
+            messageBox.style.opacity = 0;
+            setTimeout(() => {
+                messageBox.innerText = `You feel ${emotionName.toLowerCase()}? ${moodMessages[category]}`;
+                messageBox.style.opacity = 1;
+            }, 200);
+
+            updateIntensityLabels(category);
+        }
+
+        function updateIntensityLabels(category) {
+            const low = document.getElementById('label-low');
+            const high = document.getElementById('label-high');
+            if(category === 'happy') { low.innerText = "A Little Happy"; high.innerText = "Super Happy!"; }
+            else if(category === 'sad') { low.innerText = "A Little Sad"; high.innerText = "Very Sad"; }
+            else if(category === 'angry') { low.innerText = "Annoyed"; high.innerText = "Very Angry!"; }
+            else { low.innerText = "Least Intense"; high.innerText = "Most Intense"; }
+        }
+
+        function filterSongs() {
+            let input = document.getElementById('songInput').value.toLowerCase();
+            let results = document.getElementById('results');
+            let items = results.getElementsByTagName('div');
+            results.style.display = input.length > 0 ? 'block' : 'none';
+            for (let i = 0; i < items.length; i++) {
+                let txt = items[i].textContent.toLowerCase();
+                items[i].style.display = txt.includes(input) ? "" : "none";
+            }
+        }
+
+        function selectSong(name) {
+            document.getElementById('songInput').value = name;
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function saveEntry() {
+            // 在这一步，你之后需要使用 fetch 或 AJAX 把数据发给 Django 后端
+            alert('Your mood has been bloomed! 🌸');
+            location.href = "{% url 'mainpage' %}";
+        }
+    </script>
+</body>
+</html>
