@@ -69,7 +69,6 @@
     </style>
 </head>
 <body>
-    <!-- 使用了 Django url 标签和 static 标签 -->
     <div class="header-wrapper">
         <div class="logo"><img src="{% static 'logo.png' %}"></div>
         <div class="title-img"><img src="{% static 'title.png' %}"></div>
@@ -77,22 +76,20 @@
     </div>
     <hr class="header-line">
 
-    <!-- 建议之后包裹在 <form> 标签里，这里先保留你的结构 -->
     <div class="main-container">
+        <!-- Diary Section -->
         <div class="box diary-section">
             <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">{% now "F j, Y" %}</div>
             <h2>My Daily Bloom</h2>
-            
             <div id="moodMessage">Select an emotion to start your bloom...</div>
-            
             <textarea id="diaryEntry" placeholder="Write your thoughts here..."></textarea>
         </div>
 
+        <!-- Tools Section -->
         <div class="tools-section">
             <div class="box">
                 <h3>Today's Emotion Hub</h3>
                 <div class="emotion-hubs">
-                    <!-- 修正图标路径 -->
                     <div class="hub-item" onclick="openDrawer('sad', this)"><img src="{% static 'emojis/sad.png' %}"></div>
                     <div class="hub-item" onclick="openDrawer('neutral', this)"><img src="{% static 'emojis/neutral.png' %}"></div>
                     <div class="hub-item" onclick="openDrawer('happy', this)"><img src="{% static 'emojis/happy.png' %}"></div>
@@ -136,8 +133,11 @@
     <button class="save-btn" onclick="saveEntry()">Save Entry</button>
 
     <script>
-        // JS 中的图片路径需要特别处理。在 Django 中，最简单的做法是在 JS 里拼接基础路径。
         const staticUrl = "{% static 'emojis/' %}";
+        
+        // 用于记录选中的值
+        let selectedCategory = "";
+        let selectedMoodName = "";
 
         const pngMap = {
             'happy': [
@@ -164,6 +164,7 @@
         };
 
         function openDrawer(category, element) {
+            selectedCategory = category; // 记录大类
             document.querySelectorAll('.hub-item').forEach(item => item.classList.remove('active'));
             element.classList.add('active');
             
@@ -176,21 +177,20 @@
                 let div = document.createElement('div');
                 div.className = 'sub-item';
                 div.onclick = () => selectSubMood(div, category);
-                // 这里使用了 JS 拼接的 staticUrl
                 div.innerHTML = `<img src="${staticUrl}${item.f}"><span>${item.n}</span>`;
                 content.appendChild(div);
             });
         }
 
         function selectSubMood(element, category) {
+            selectedMoodName = element.querySelector('span').innerText; // 记录具体心情名
             document.querySelectorAll('.sub-item').forEach(item => item.classList.remove('selected'));
             element.classList.add('selected');
             
             const messageBox = document.getElementById('moodMessage');
-            const emotionName = element.querySelector('span').innerText;
             messageBox.style.opacity = 0;
             setTimeout(() => {
-                messageBox.innerText = `You feel ${emotionName.toLowerCase()}? ${moodMessages[category]}`;
+                messageBox.innerText = `You feel ${selectedMoodName.toLowerCase()}? ${moodMessages[category]}`;
                 messageBox.style.opacity = 1;
             }, 200);
 
@@ -223,9 +223,41 @@
         }
 
         function saveEntry() {
-            // 在这一步，你之后需要使用 fetch 或 AJAX 把数据发给 Django 后端
-            alert('Your mood has been bloomed! 🌸');
-            location.href = "{% url 'mainpage' %}";
+            // 检查是否选择了心情
+            if (!selectedCategory || !selectedMoodName) {
+                alert("Please select your mood first! 🌸");
+                return;
+            }
+
+            const data = {
+                category: selectedCategory,
+                mood_name: selectedMoodName,
+                intensity: document.getElementById('intensityRange').value,
+                content: document.getElementById('diaryEntry').value,
+                song: document.getElementById('songInput').value
+            };
+
+            fetch("{% url 'moodentry' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === "success") {
+                    alert("Your mood has been bloomed! 🌸");
+                    window.location.href = "{% url 'dashboard' %}";
+                } else {
+                    alert("Error: " + result.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Failed to save entry. Please try again.");
+            });
         }
     </script>
 </body>

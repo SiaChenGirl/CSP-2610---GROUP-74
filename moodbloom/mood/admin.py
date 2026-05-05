@@ -1,11 +1,4 @@
 from django.contrib import admin
-<<<<<<< HEAD
-from .models import Mood, Profile, Article
-
-admin.site.register(Mood)
-admin.site.register(Profile)
-admin.site.register(Article) # 注册新表
-=======
 from .models import Mood, Profile, Article, Feedback
 
 # 1. Profile 配置：查看用户基本资料
@@ -24,7 +17,7 @@ class MoodAdmin(admin.ModelAdmin):
 
 # 3. Feedback 配置：查看用户建议
 class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ('user', 'rating', 'email', 'content', 'created_at')
+    list_display = ('user', 'rating', 'email', 'created_at')
     list_filter = ('rating', 'created_at')
 
 # 4. Article 配置：心理健康文章管理
@@ -37,4 +30,3 @@ admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Feedback, FeedbackAdmin)
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(Mood, MoodAdmin)
->>>>>>> b471e3d (combine frontend html and backend)
