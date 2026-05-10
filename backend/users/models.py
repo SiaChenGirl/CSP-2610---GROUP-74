@@ -23,3 +23,18 @@ class MoodPhoto(models.Model):
     mood_entry = models.ForeignKey(MoodEntry, on_delete=models.CASCADE, related_name='photos')
     image = models.ImageField(upload_to='mood_photos/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+class Article(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.article.title}"

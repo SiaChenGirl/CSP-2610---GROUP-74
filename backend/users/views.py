@@ -4,10 +4,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from .models import Profile, MoodEntry, MoodPhoto
+from .models import Profile, MoodEntry, MoodPhoto, Favorite, Article
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.utils.timezone import now
+from django.db.models import Q, Count
+from django.db.models.functions import TruncDate, TruncWeek, TruncMonth
+from datetime import timedelta, date
 import json
 
 @csrf_exempt
@@ -185,5 +188,222 @@ def upload_photo(request, entry_id):
         return JsonResponse({
             'error': 'Invalid request.'
         })
+    
+def search_entries(request):
+    query = request.GET.get('q')
+    mood = request.GET.get('mood')
+    date = request.GET.get('date')
+    sort = request.GET.get('sort')
+
+    results = MoodEntry.objects.all()
+
+    if query:
+        results = results.filter(
+            diary_text__icontains=query
+        )
+
+    if mood:
+        results = results.filter(
+            mood=mood
+        )
+
+    if date:
+        results = results.filter(
+            created_at__date=date
+        )
+
+    if sort == "latest":
+        results = results.order_by('-created_at')
+    elif sort == "oldest":
+        results = results.order_by('created_at')
+
+    data = []
+    for entry in results:
+        data.append({
+            "id": entry.id,
+            "mood": entry.mood,
+            "diary": entry.diary_text,
+            "date": entry.created_at
+        })
+
+    if not data:
+        return JsonResponse({
+        "message": "No results found",
+        "results": []
+    })
+
+    return JsonResponse({
+    "message": "Success",
+    "results": data
+    })
+
+@login_required
+def get_articles(request):
+    user = request.user
+    articles = Article.objects.all()
+
+    data = []
+    for a in articles:
+        is_favorited = Favorite.objects.filter(user=user, article=a).exists()
+
+        data.append({
+            "id": a.id,
+            "title": a.title,
+            "content": a.content,
+            "favorited": is_favorited
+        })
+
+    return JsonResponse(data, safe=False)
+
+@login_required
+def add_favorite(request, article_id):
+    user = request.user
+
+    article = Article.objects.get(id=article_id)
+
+    Favorite.objects.get_or_create(user=user, article=article)
+
+    return JsonResponse({"message": "Added to favorites"})
+
+@login_required
+def get_favorites(request):
+    user = request.user
+
+    favorites = Favorite.objects.filter(user=user)
+
+    data = []
+    for f in favorites:
+        data.append({
+            "id": f.article.id,
+            "title": f.article.title,
+            "content": f.article.content
+        })
+
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+def remove_favorite(request, article_id):
+    user = request.user
+
+    try:
+        fav = Favorite.objects.get(user=user, article_id=article_id)
+        fav.delete()
+        return JsonResponse({"message": "Removed from favorites"})
+    except Favorite.DoesNotExist:
+        return JsonResponse({"message": "Not in favorites"})
+    
+
+def search_articles(request):
+    query = request.GET.get('q')
+
+    articles = Article.objects.all()
+
+    if query:
+        articles = articles.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query)
+        )
+
+    data = []
+    for a in articles:
+        data.append({
+            "id": a.id,
+            "title": a.title,
+            "content": a.content
+        })
+
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+def dashboard_status(request):
+    moods = MoodEntry.objects.filter(user=request.user)
+    # Total mood count
+    mood_counts = moods.values('mood').annotate(
+        total=Count('id')
+    )
+    # Total entries
+    total_entries = moods.count()
+
+    # Percentage distribution
+    monthly_distribution = moods.annotate(
+        month=TruncMonth('created_at')
+    ).values(
+        'month',
+        'mood'
+    ).annotate(
+        total=Count('id')
+    ).order_by('month')
+
+    frequent_mood = moods.values('mood').annotate(
+        total=Count('id')
+    ).order_by('-total').first()
+
+    percentage_data = []
+    for item in mood_counts:
+        percentage = (item['total'] / total_entries) * 100 if total_entries > 0 else 0
+        percentage_data.append({
+            'mood': item['mood'],
+            'percentage': round(percentage, 2)
+        })
+
+    # Mood trend over time
+    trend_data = moods.values(
+        'created_at__date',
+        'mood'
+    ).annotate(
+        total=Count('id')
+    ).order_by('created_at__date')
+
+    # Streak System
+    dates = moods.order_by('-created_at').values_list(
+        'created_at__date',
+        flat=True
+    ).distinct()
+
+    current_streak = 0
+    if dates:
+        today = dates.today()
+
+        for entry_date in dates:
+            if entry_date == today:
+                current_streak += 1
+                today = today - timedelta(days=1)
+            else:
+                break
+    longest_streak = 0
+    temp_streak = 0
+
+    if dates:
+        previous_date = None
+
+        for date in reversed(dates):
+            if previous_date is None:
+                temp_streak = 1
+            elif date == previous_date + timedelta(days=1):
+                temp_streak += 1
+            else:
+                temp_streak = 1
+
+            longest_streak = max(longest_streak, temp_streak)
+
+            previous_date = date
+
+
+
+    return JsonResponse({
+        'total_moods': list(mood_counts),
+        'percentage_distribution': percentage_data,
+        'monthly_distribution': list(monthly_distribution),
+        'trend_over_time': list(trend_data),
+        'most_frequent_mood': frequent_mood,
+        'current_streak': current_streak,
+        'longest_streak': longest_streak
+    })
+
+    
+    
+
         
     
