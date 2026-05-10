@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | Main Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <style>
+        /* 1. 基础布局与背景 */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(180deg, #CBB7FF 0%, #E8E0FF 100%);
+            min-height: 100vh;
+            color: #4a3494;
+        }
+        
+        /* 2. 顶部导航栏 (Header) */
+        .header-wrapper { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            padding: 30px 60px 10px 60px; 
+        }
+        .logo img { width: 180px; }
+        
+        .title-area { text-align: center; margin-top: 10px; }
+        .title-area img { width: 230px; margin-bottom: 5px; }
+        .slogan { 
+            color: white; 
+            font-style: italic; 
+            font-size: 16px; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        /* 菜单按钮与下拉框 */
+        .menu-btn { font-size: 35px; cursor: pointer; color: white; position: relative; }
+        .dropdown-content { 
+            display: none; position: absolute; right: 0; top: 50px; 
+            background: white; min-width: 160px; border-radius: 15px; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 100; 
+        }
+        .dropdown-content a { color: #6a4fbf; padding: 12px 16px; text-decoration: none; display: block; font-weight: bold; font-size: 14px; }
+        .dropdown-content a:hover { background: #f0ebff; border-radius: 15px; }
+        .show { display: block; }
+
+        /* 装饰分割线 */
+        .divider-line {
+            height: 2px;
+            background-color: white;
+            margin: 0 60px 40px 60px;
+            opacity: 0.8;
+        }
+
+        /* 3. 主体内容布局 (日历 + 侧边按钮) */
+        .main-content { 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            gap: 40px; 
+            padding-bottom: 50px;
+        }
+
+        /* 日历样式 */
+        .calendar-container { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 40px; 
+            width: 750px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .cal-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+        }
+        .cal-header select { 
+            border: none; 
+            font-family: 'Dancing Script', cursive; 
+            font-size: 32px; 
+            color: #6a4fbf; 
+            font-weight: bold; 
+            cursor: pointer; 
+            outline: none;
+            background: transparent;
+        }
+        
+        .grid-layout { display: grid; grid-template-columns: repeat(7, 1fr); gap: 20px; text-align: center; }
+        .day-label { font-weight: bold; color: #b39ddb; font-size: 14px; }
+        
+        .date-circle { 
+            width: 55px; 
+            height: 55px; 
+            line-height: 55px; 
+            border-radius: 50%; 
+            background: #f8f6ff; 
+            cursor: pointer; 
+            transition: 0.3s;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .date-circle:hover { background: #6a4fbf; color: white; transform: scale(1.1); }
+
+        /* 4. 侧边圆圈操作按钮 (Action Buttons) */
+        .circle-actions { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 25px; 
+        }
+        .action-btn { 
+            width: 70px; 
+            height: 70px; 
+            background: white; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+            cursor: pointer; 
+            transition: 0.3s;
+            border: none;
+            outline: none;
+        }
+        .action-btn:hover { transform: scale(1.1); background: #f0ebff; }
+        .action-btn img { 
+            width: 32px; 
+            height: 32px; 
+            object-fit: contain;
+            opacity: 0.7; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-wrapper">
+    <!-- Logo 区域 -->
+    <div class="logo">
+        <img src="{% static 'logo.png' %}" alt="MoodBloom Logo">
+    </div>
+    
+    <!-- 中间标题区域 -->
+    <div class="title-area">
+        <img src="{% static 'title.png' %}" alt="MoodBloom Title"><br>
+        <span class="slogan">Mood your day, Bloom your mind.</span>
+    </div>
+    
+    <!-- 右侧菜单区域 -->
+    <div class="menu-btn" onclick="toggleMenu()">☰
+        <div id="navDrop" class="dropdown-content">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'feedback' %}">Feedback</a>
+            <a href="{% url 'login' %}" style="color:#ff4d4d;">Logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="divider-line"></div>
+
+<div class="main-content">
+    <!-- 左侧日历 -->
+    <div class="calendar-container">
+        <div class="cal-header">
+            <select id="mSelect" onchange="buildCal()"></select>
+            <select id="ySelect" onchange="buildCal()"></select>
+        </div>
+        <div class="grid-layout" id="calDisplay">
+            <!-- 由 JavaScript 动态生成 -->
+        </div>
+    </div>
+
+    <!-- 右侧四个圆圈按钮 -->
+    <div class="circle-actions">
+        <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'">
+            <img src="{% static 'icons/search.png' %}" alt="Search">
+        </div>
+        <div class="action-btn" title="Article/History" onclick="location.href='{% url 'article' %}'">
+            <img src="{% static 'icons/book.png' %}" alt="History">
+        </div>
+        <div class="action-btn" title="Dashboard" onclick="location.href='{% url 'dashboard' %}'">
+            <img src="{% static 'icons/stats.png' %}" alt="Stats">
+        </div>
+        <div class="action-btn" title="Gallery" onclick="location.href='{% url 'gallery' %}'">
+            <img src="{% static 'icons/camera.png' %}" alt="Gallery">
+        </div>
+    </div>
+</div>
+
+<script>
+    const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    
+    // 初始化选择框
+    function startup() {
+        const ms = document.getElementById('mSelect');
+        const ys = document.getElementById('ySelect');
+        
+        // 填充月份
+        mNames.forEach((n, i) => {
+            ms.innerHTML += `<option value="${i}">${n}</option>`;
+        });
+        
+        // 填充年份
+        const currentYear = new Date().getFullYear();
+        for(let y = currentYear - 1; y <= currentYear + 1; y++) {
+            ys.innerHTML += `<option value="${y}">${y}</option>`;
+        }
+        
+        // 设置默认值为当前年月
+        const today = new Date();
+        ms.value = today.getMonth();
+        ys.value = today.getFullYear();
+        
+        buildCal();
+    }
+
+    // 构建日历
+    function buildCal() {
+        const display = document.getElementById('calDisplay');
+        display.innerHTML = '';
+        
+        const m = parseInt(document.getElementById('mSelect').value);
+        const y = parseInt(document.getElementById('ySelect').value);
+        
+        // 星期表头
+        ["S","M","T","W","T","F","S"].forEach(d => {
+            display.innerHTML += `<div class="day-label">${d}</div>`;
+        });
+        
+        const firstDay = new Date(y, m, 1).getDay();
+        const totalDays = new Date(y, m + 1, 0).getDate();
+
+        // 填充第一天之前的空白
+        for(let i = 0; i < firstDay; i++) {
+            display.innerHTML += `<div></div>`;
+        }
+        
+        // 填充日期
+        for(let d = 1; d <= totalDays; d++) {
+            // 点击日期跳转到 mood_entry 页面
+            display.innerHTML += `<div class="date-circle" onclick="location.href='{% url 'moodentry' %}'">${d}</div>`;
+        }
+    }
+
+    // 下拉菜单切换
+    function toggleMenu() { 
+        document.getElementById("navDrop").classList.toggle("show"); 
+    }
+
+    // 点击页面其他地方关闭菜单
+    window.onclick = function(e) { 
+        if (!e.target.matches('.menu-btn')) {
+            const d = document.getElementById("navDrop");
+            if (d && d.classList.contains('show')) d.classList.remove('show');
+        }
+    }
+
+    // 执行启动程序
+    startup();
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MoodBloom | Feedback</title>
+    <style>
+        body { margin: 0; font-family: Arial; background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); min-height: 100vh; }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 30px 40px; }
+        .logo img { width: 110px; } .title-img img { width: 230px; }
+        .container { max-width: 500px; margin: 50px auto; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+        .star { font-size: 35px; color: #ddd; cursor: pointer; transition: 0.2s; }
+        .star.active { color: #ffcc00; }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 12px; border: 1px solid #eee; box-sizing: border-box; background: #fafafa; }
+        .btn { width: 100%; padding: 14px; background: #b39ddb; border: none; border-radius: 12px; color: white; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header-wrapper">
+        <div class="logo"><img src="logo.png"></div>
+        <div class="title-img"><img src="title.png"></div>
+        <div class="menu"><button onclick="location.href='mainpage.html'" style="background:none; border:none; color:#6a4fbf; cursor:pointer;">Back</button></div>
+    </div>
+    <hr class="header-line">
+    <div class="container">
+        <h2 style="color:#6a4fbf;">Feedback</h2>
+        <div id="stars">
+            <span class="star" onclick="rate(1)">★</span><span class="star" onclick="rate(2)">★</span><span class="star" onclick="rate(3)">★</span><span class="star" onclick="rate(4)">★</span><span class="star" onclick="rate(5)">★</span>
+        </div>
+        <input type="email" placeholder="Your Email">
+        <textarea placeholder="How can we improve?" rows="4"></textarea>
+        <button class="btn" onclick="alert('Thanks!'); location.href='mainpage.html'">Submit</button>
+    </div>
+    <script>
+        function rate(n) {
+            const s = document.querySelectorAll('.star');
+            s.forEach((star, i) => star.classList.toggle('active', i < n));
+        }
+    </script>
+</body>
+</html>
