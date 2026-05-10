@@ -8,6 +8,7 @@ from .models import Profile, MoodEntry, MoodPhoto
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.utils.timezone import now
+from django.db.models import Q
 import json
 
 @csrf_exempt
@@ -185,5 +186,53 @@ def upload_photo(request, entry_id):
         return JsonResponse({
             'error': 'Invalid request.'
         })
+    
+def search_entries(request):
+    query = request.GET.get('q')
+    mood = request.GET.get('mood')
+    date = request.GET.get('date')
+    sort = request.GET.get('sort')
+
+    results = MoodEntry.objects.all()
+
+    if query:
+        results = results.filter(
+            diary_text__icontains=query
+        )
+
+    if mood:
+        results = results.filter(
+            mood=mood
+        )
+
+    if date:
+        results = results.filter(
+            created_at__date=date
+        )
+
+    if sort == "latest":
+        results = results.order_by('-created_at')
+    elif sort == "oldest":
+        results = results.order_by('created_at')
+
+    data = []
+    for entry in results:
+        data.append({
+            "id": entry.id,
+            "mood": entry.mood,
+            "diary": entry.diary_text,
+            "date": entry.created_at
+        })
+
+    if not data:
+        return JsonResponse({
+        "message": "No results found",
+        "results": []
+    })
+
+    return JsonResponse({
+    "message": "Success",
+    "results": data
+    })
         
     

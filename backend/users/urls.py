@@ -39,4 +39,14 @@ urlpatterns = [
     path('today-mood/', views.today_mood),
 
     path('upload-photo/<int:entry_id>/', views.upload_photo),
+
+    path('search/', views.search_entries),
+
+    path('api/articles/', views.get_articles),
+
+    path('api/favorite/<int:article_id>/', views.add_favorite),
+
+    path('api/favorites/', views.get_favorites),
+
+    path('api/unfavorite/<int:article_id>/', views.remove_favorite),
 ]
