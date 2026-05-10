@@ -49,4 +49,8 @@ urlpatterns = [
     path('api/favorites/', views.get_favorites),
 
     path('api/unfavorite/<int:article_id>/', views.remove_favorite),
+
+    path('api/search-articles/', views.search_articles),
+
+    path('api/dashboard-status/', views.dashboard_status),
 ]
