@@ -3,95 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <title>MoodBloom | Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); min-height: 130vh; }
-        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
-        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 30px 40px; }
-        .logo img { width: 110px; } .title-img img { width: 230px; }
-        .container { max-width: 600px; margin: 30px auto; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        
-        .field { margin-bottom: 20px; }
-        label { display: block; color: #6a4fbf; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; box-sizing: border-box; background: #fafafa; transition: 0.3s; }
-        input:focus { border-color: #b39ddb; outline: none; background: white; }
-        
-        .btn { width: 100%; padding: 14px; background: #b39ddb; border: none; border-radius: 12px; color: white; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        .btn:hover { background: #9a81c7; }
-        .btn-del { background: none; border: 1px solid #ffb3b3; color: #ff6666; margin-top: 15px; }
+        .profile-main {
+            display: flex;
+            justify-content: center;
+            padding: 0 60px;
+            margin-top: 10px;
+        }
+
+        .profile-box {
+            background: white;
+            border-radius: 40px;
+            padding: 40px;
+            width: 500px; /* Slimmer box for a better look */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        /* FIXED AVATAR SIZING */
+        .avatar-container {
+            position: relative;
+            width: 100px; /* Reduced from 130px to 100px */
+            height: 100px;
+            margin: 0 auto 15px auto;
+        }
+
+        .avatar-display {
+            width: 100%;
+            height: 100%;
+            background: #f0ebff;
+            border-radius: 50%;
+            border: 2px solid #b39ddb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .avatar-display:hover {
+            border-color: #6a4fbf;
+            background: #e8e0ff;
+        }
+
+        .avatar-display img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Form Layout */
+        .info-grid {
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        .info-label {
+            display: block;
+            font-weight: bold;
+            color: #6a4fbf;
+            margin: 12px 0 4px 5px;
+            font-size: 13px;
+        }
+
+        .profile-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid #e8e0ff;
+            background: #fdfbff;
+            color: #4a3494;
+            font-size: 15px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .save-btn {
+            background: #6a4fbf;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
     </style>
 </head>
 <body>
-    <div class="header-wrapper">
-        <div class="logo"><img src="logo.png"></div>
-        <div class="title-img"><img src="title.png"></div>
-        <div class="menu"><button onclick="location.href='mainpage.html'" style="background:none; border:none; color:#6a4fbf; cursor:pointer; font-weight:bold;">Back</button></div>
+
+<div class="header-wrapper">
+    <div class="logo"><img src="logo.png"></div>
+    <div class="title-area">
+        <img src="title.png"><br>
+        <span style="color: white; font-style: italic; font-family: 'Dancing Script'; font-size: 18px;">
+            Mood your day, Bloom your mind.
+        </span>
     </div>
-    <hr class="header-line">
+    <div style="font-size:35px; color:rgb(0, 0, 0); cursor:pointer;">☰</div>
+</div>
 
-    <div class="container">
-        <div style="width:120px; height:120px; background:#f0f0f0; border-radius:50%; margin: 0 auto 20px; border: 2px solid #e8e0ff; display: flex; align-items:center; justify-content:center; font-size:40px;">👤</div>
-        
-        <div class="field">
-            <label>Username</label>
-            <input type="text" id="p-user" placeholder="Enter username">
-        </div>
-        <div class="field">
-            <label>Birthday</label>
-            <input type="text" id="p-birth" placeholder="DD / MM / YYYY">
-        </div>
-        <div class="field">
-            <label>Gender</label>
-            <input type="text" id="p-gender" placeholder="e.g. Female">
-        </div>
-        <div class="field">
-            <label>Email</label>
-            <input type="email" id="p-email" placeholder="example@mail.com">
-        </div>
-        <div class="field">
-            <label>Password</label>
-            <input type="password" id="p-pass" value="********">
+<div class="divider-line"></div>
+
+<div class="profile-main">
+    <div class="profile-box">
+        <!-- Avatar Change -->
+        <label for="avatarInput">
+            <div class="avatar-container">
+                <div class="avatar-display" id="avatarBox">
+                    <img id="profilePic" src="icons/user-placeholder.png" alt="Profile">
+                </div>
+            </div>
+            <input type="file" id="avatarInput" hidden onchange="previewAvatar(this)" accept="image/*">
+            <span style="font-size: 11px; color: #b39ddb; cursor: pointer;">Edit Photo</span>
+        </label>
+
+        <div class="info-grid">
+            <label class="info-label">Your Name</label>
+            <input type="text" class="profile-input" placeholder="Enter your name" value="User Name">
+
+            <label class="info-label">Email Address</label>
+            <input type="email" class="profile-input" placeholder="example@mail.com">
+
+            <label class="info-label">Birthday</label>
+            <input type="date" class="profile-input">
+
+            <label class="info-label">Gender</label>
+            <select class="profile-input">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="private">Prefer not to say</option>
+            </select>
+
+            <label class="info-label">Bio / Status</label>
+            <textarea class="profile-input" style="height: 60px; resize: none;" placeholder="How are you feeling today?"></textarea>
         </div>
 
-        <button class="btn" onclick="saveProfile()">Save Changes</button>
-        <button class="btn btn-del" onclick="deleteAccount()">Delete Account</button>
+        <button class="save-btn">Save Changes</button>
     </div>
+</div>
 
-    <script>
-        // 1. Load data from LocalStorage when the page opens
-        window.onload = function() {
-            if(localStorage.getItem('userProfile')) {
-                const data = JSON.parse(localStorage.getItem('userProfile'));
-                document.getElementById('p-user').value = data.username;
-                document.getElementById('p-birth').value = data.birthday;
-                document.getElementById('p-gender').value = data.gender;
-                document.getElementById('p-email').value = data.email;
-            } else {
-                // Default values if first time
-                document.getElementById('p-user').value = "Hibb";
-                document.getElementById('p-birth').value = "22 / 04 / 2006";
-                document.getElementById('p-gender').value = "Female";
-                document.getElementById('p-email').value = "hibb@moodbloom.com";
+<a href="mainpage.html" class="back-pill">Back</a>
+
+<footer>
+    © 2026 MoodBloom | Mood your day, Bloom your mind.
+</footer>
+
+<script>
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profilePic').src = e.target.result;
             }
-        };
-
-        // 2. Save data to LocalStorage
-        function saveProfile() {
-            const profileData = {
-                username: document.getElementById('p-user').value,
-                birthday: document.getElementById('p-birth').value,
-                gender: document.getElementById('p-gender').value,
-                email: document.getElementById('p-email').value
-            };
-            localStorage.setItem('userProfile', JSON.stringify(profileData));
-            alert("Profile updated successfully! 💜");
+            reader.readAsDataURL(input.files[0]);
         }
+    }
+</script>
 
-        function deleteAccount() {
-            if(confirm("Are you sure? This will clear all your data.")) {
-                localStorage.clear();
-                location.href = 'register.html';
-            }
-        }
-    </script>
 </body>
 </html>

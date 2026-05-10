@@ -2,199 +2,177 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MoodBloom | Main Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | Calendar</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* 1. GRADIENT BACKGROUND (渐变浅紫色) */
         body { 
             margin: 0; 
             font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(180deg, #CBB7FF 0%, #E8E0FF 100%);
-            min-height: 100vh;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
+            background-attachment: fixed; 
+            min-height: 100vh; 
             color: #4a3494;
+            overflow-x: hidden;
         }
-        
-        /* 2. HEADER & LOGO */
-        .header-wrapper { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-start; 
-            padding: 30px 60px 10px 60px; 
-        }
+
+        /* --- NAVIGATION MENU STYLING --- */
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
         .logo img { width: 180px; }
+        .title-area img { width: 253px; }
         
-        .title-area { text-align: center; margin-top: 10px; }
-        .title-area img { width: 230px; margin-bottom: 5px; }
-        .slogan { 
-            color: white; 
-            font-style: italic; 
-            font-size: 16px; 
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-        
-        .menu-btn { font-size: 35px; cursor: pointer; color: white; position: relative; }
-
-        /* THE LINE (Restored) */
-        .divider-line {
-            height: 2px;
-            background-color: white;
-            margin: 0 60px 40px 60px;
-            opacity: 0.8;
-        }
-
-        /* 3. CALENDAR BOX */
-        .main-content { 
-            display: flex; 
-            justify-content: center; 
-            align-items: flex-start; 
-            gap: 40px; 
-            padding-bottom: 50px;
-        }
-
-        .calendar-container { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 40px; 
-            width: 750px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        
-        .cal-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 30px; 
-        }
-        .cal-header select { 
-            border: none; 
-            font-family: 'Dancing Script'; 
-            font-size: 32px; 
+        .menu-icon { 
+            font-size: 35px; 
+            cursor: pointer; 
             color: #6a4fbf; 
+            width: 180px; 
+            text-align: right; 
+            user-select: none;
+        }
+
+        .side-nav {
+            position: fixed; 
+            top: 0; 
+            right: -300px; 
+            width: 280px; 
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98); 
+            backdrop-filter: blur(10px);
+            box-shadow: -10px 0 30px rgba(106, 79, 191, 0.2); 
+            z-index: 1000;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding: 50px 30px; 
+            box-sizing: border-box;
+        }
+        
+        .side-nav.active { right: 0; }
+
+        .side-nav a {
+            display: block; 
+            padding: 18px 0; 
+            color: #4a3494; 
+            text-decoration: none; 
             font-weight: bold; 
-            cursor: pointer; 
-            outline: none;
-            background: transparent;
-        }
-        
-        .grid-layout { display: grid; grid-template-columns: repeat(7, 1fr); gap: 20px; text-align: center; }
-        .day-label { font-weight: bold; color: #b39ddb; font-size: 14px; }
-        
-        .date-circle { 
-            width: 55px; 
-            height: 55px; 
-            line-height: 55px; 
-            border-radius: 50%; 
-            background: #f8f6ff; 
-            cursor: pointer; 
-            transition: 0.3s;
             font-size: 18px;
-        }
-        .date-circle:hover { background: #6a4fbf; color: white; transform: scale(1.1); }
-
-        /* 4. THE 4 CIRCLES */
-        .circle-actions { display: flex; flex-direction: column; gap: 25px; }
-        .action-btn { 
-            width: 70px; 
-            height: 70px; 
-            background: white; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
-            cursor: pointer; 
+            border-bottom: 1px solid #f0f0f0; 
             transition: 0.3s;
         }
-        .action-btn:hover { transform: scale(1.1); background: #f0ebff; }
-        .action-btn img { width: 32px; opacity: 0.7; }
+        
+        .side-nav a:hover { color: #6a4fbf; padding-left: 15px; }
 
-        /* Dropdown */
-        .dropdown-content { 
-            display: none; position: absolute; right: 0; top: 50px; 
-            background: white; min-width: 160px; border-radius: 15px; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 100; 
+        .close-nav { 
+            font-size: 40px; 
+            cursor: pointer; 
+            position: absolute; 
+            top: 15px; 
+            right: 25px; 
+            color: #b39ddb; 
         }
-        .dropdown-content a { color: #6a4fbf; padding: 12px 16px; text-decoration: none; display: block; font-weight: bold; font-size: 14px; }
-        .show { display: block; }
+
+        /* --- CALENDAR LAYOUT --- */
+        .main-container { display: flex; justify-content: center; gap: 40px; padding: 20px 60px; align-items: stretch; }
+        .calendar-box { background: white; border-radius: 40px; padding: 30px; width: 700px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .day-cell { padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-weight: bold; border: 1px solid #f8f6ff; }
+        .day-cell:hover { background: #f0ebff; border-color: #d1c4e9; }
+        
+        .highlight-today { background: #b39ddb !important; color: white; border-color: #b39ddb; }
+
+        .circle-nav { display: flex; flex-direction: column; justify-content: space-between; padding: 10px 0; }
+        .nav-btn { width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s; }
+        .nav-btn:hover { transform: scale(1.1); background: #fcfaff; }
+        .nav-btn img { width: 28px; }
+
+        /* Modal Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 2000; backdrop-filter: blur(3px); }
+        .modal-box { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 30px; z-index: 2001; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .modal-btn { margin: 10px; padding: 15px 30px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .modal-btn:hover { opacity: 0.8; }
+        
+        footer { text-align: center; padding: 30px; color: #6a4fbf; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="header-wrapper">
-    <div class="logo"><img src="logo.png"></div>
-    <div class="title-area">
-        <img src="title.png"><br>
-        <span class="slogan">Mood your day, Bloom your mind.</span>
-    </div>
-    <div class="menu-btn" onclick="toggleMenu()">☰
-        <div id="navDrop" class="dropdown-content">
+    <div class="side-nav" id="sideNav">
+        <span class="close-nav" onclick="toggleNav()">&times;</span>
+        <div style="margin-top: 40px;">
             <a href="profile.html">Profile</a>
             <a href="feedback.html">Feedback</a>
-            <a href="login.html" style="color:red;">Logout</a>
+            <a href="login.html" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
         </div>
     </div>
-</div>
 
-<!-- RESTORED LINE -->
-<div class="divider-line"></div>
-
-<div class="main-content">
-    <div class="calendar-container">
-        <div class="cal-header">
-            <select id="mSelect" onchange="buildCal()"></select>
-            <select id="ySelect" onchange="buildCal()"></select>
+    <div class="header-wrapper">
+        <div class="logo"><img src="logo.png"></div>
+        <div class="title-area">
+            <img src="title.png"><br>
+            <span style="color:#6a4fbf; font-style:italic;">Mood your day, Bloom your mind.</span>
         </div>
-        <div class="grid-layout" id="calDisplay"></div>
+        <div class="menu-icon" onclick="toggleNav()">☰</div>
     </div>
-
-    <!-- THE 4 CIRCLES -->
-    <div class="circle-actions">
-        <div class="action-btn" title="Search" onclick="location.href='search.html'"><img src="icons/search.png"></div>
-        <div class="action-btn" title="History" onclick="location.href='article.html'"><img src="icons/book.png"></div>
-        <div class="action-btn" title="Dashboard" onclick="location.href='dashboard.html'"><img src="icons/stats.png"></div>
-        <div class="action-btn" title="Gallery" onclick="location.href='gallery.html'"><img src="icons/camera.png"></div>
-    </div>
-</div>
-
-<script>
-    const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     
-    function startup() {
-        const ms = document.getElementById('mSelect');
-        const ys = document.getElementById('ySelect');
-        mNames.forEach((n, i) => ms.innerHTML += `<option value="${i}">${n}</option>`);
-        for(let y=2024; y<=2027; y++) ys.innerHTML += `<option value="${y}">${y}</option>`;
-        
-        ms.value = 3; // April
-        ys.value = 2026;
-        buildCal();
-    }
+    <div class="divider-line" style="height:1px; background:rgba(106, 79, 191, 0.2); margin:0 50px 20px 50px;"></div>
 
-    function buildCal() {
-        const display = document.getElementById('calDisplay');
-        display.innerHTML = '';
-        const m = parseInt(document.getElementById('mSelect').value);
-        const y = parseInt(document.getElementById('ySelect').value);
-        
-        ["S","M","T","W","T","F","S"].forEach(d => display.innerHTML += `<div class="day-label">${d}</div>`);
-        
-        const first = new Date(y, m, 1).getDay();
-        const total = new Date(y, m + 1, 0).getDate();
+    <div class="main-container">
+        <div class="calendar-box">
+            <h2 style="text-align: center; color: #6a4fbf;">May 2026</h2>
+            <div class="calendar-grid" id="grid">
+                </div>
+        </div>
 
-        for(let i=0; i<first; i++) display.innerHTML += `<div></div>`;
-        for(let d=1; d<=total; d++) {
-            display.innerHTML += `<div class="date-circle" onclick="location.href='moodentry.html'">${d}</div>`;
+        <div class="circle-nav">
+            <div class="nav-btn" title="Search" onclick="location.href='search.html'"><img src="icons/search.png"></div>
+            <div class="nav-btn" title="Diary History" onclick="location.href='article.html'"><img src="icons/book.png"></div>
+            <div class="nav-btn" title="Statistics" onclick="location.href='dashboard.html'"><img src="icons/stats.png"></div>
+            <div class="nav-btn" title="Gallery" onclick="location.href='gallery.html'"><img src="icons/camera.png"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
+    <div class="modal-box" id="modal">
+        <h3 id="dateTitle" style="color: #6a4fbf;"></h3>
+        <button class="modal-btn" style="background:#E8E0FF; color:#4a3494;" onclick="goHistory()">View Previous</button>
+        <button class="modal-btn" style="background:#b39ddb; color:white;" onclick="goEntry()">Create New</button>
+    </div>
+
+    <footer>© 2026 MoodBloom | Mood your day, Bloom your mind.</footer>
+
+    <script>
+        // Toggle Side Nav
+        function toggleNav() {
+            var nav = document.getElementById('sideNav');
+            nav.classList.toggle('active');
         }
-    }
 
-    function toggleMenu() { document.getElementById("navDrop").classList.toggle("show"); }
-    window.onclick = function(e) { 
-        if (!e.target.matches('.menu-btn')) {
-            const d = document.getElementById("navDrop");
-            if (d && d.classList.contains('show')) d.classList.remove('show');
+        // Generate Calendar Grid
+        const grid = document.getElementById('grid');
+        let selDate = "";
+        const today = 10; // Highlighting May 10th
+        
+        for(let i=1; i<=31; i++) {
+            const day = document.createElement('div');
+            day.className = 'day-cell';
+            day.innerText = i;
+            
+            if(i === today) day.classList.add('highlight-today');
+            
+            day.onclick = () => {
+                selDate = `May ${i}, 2026`;
+                document.getElementById('dateTitle').innerText = selDate;
+                document.getElementById('modal').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            };
+            grid.appendChild(day);
         }
-    }
-    startup();
-</script>
+
+        function closeModal() { 
+            document.getElementById('modal').style.display='none'; 
+            document.getElementById('overlay').style.display='none'; 
+        }
+        
+        function goHistory() { location.href = `diaryhistory.html?date=${selDate}`; }
+        function goEntry() { location.href = `moodentry.html?date=${selDate}`; }
+    </script>
 </body>
 </html>
