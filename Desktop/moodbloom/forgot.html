@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | Forgot Password</title>
+    <style>
+        /* Consistent Theme */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            color: #4a3494;
+        }
+
+        /* Header Style */
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 30px 40px; opacity: 0.6; }
+        .logo img { width: 110px; }
+        .title-img img { width: 230px; }
+        .menu-placeholder { width: 110px; } /* Keeps the title centered */
+
+        /* Content Box */
+        .content { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding-bottom: 50px;
+        }
+
+        .forgot-box { 
+            width: 380px; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 30px; 
+            box-shadow: 0 10px 30px rgba(106, 79, 191, 0.05); 
+            text-align: center; 
+        }
+
+        h2 { color: #6a4fbf; margin-bottom: 15px; }
+        p { color: #777; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            margin: 10px 0; 
+            border-radius: 12px; 
+            border: 1px solid #eee; 
+            background: #fafafa;
+            box-sizing: border-box; 
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: #b39ddb; background: white; }
+
+        .btn-reset { 
+            width: 100%; 
+            padding: 14px; 
+            background: #b39ddb; 
+            border: none; 
+            border-radius: 12px; 
+            color: white; 
+            font-weight: bold; 
+            font-size: 16px;
+            cursor: pointer; 
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        .btn-reset:hover { background: #9a81c7; transform: translateY(-2px); }
+
+        .links { margin-top: 25px; font-size: 14px; }
+        .links a { color: #6a4fbf; text-decoration: none; font-weight: bold; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="header-wrapper">
+        <div class="logo"><img src="logo.png" alt="Logo"></div>
+        <div class="title-img"><img src="title.png" alt="MoodBloom"></div>
+        <div class="menu-placeholder"></div> 
+    </div>
+    <hr class="header-line">
+
+    <div class="content">
+        <div class="forgot-box">
+            <h2>Reset Password</h2>
+            <p>Enter your email address and we'll send you a link to get back into your account.</p>
+            
+            <input type="email" placeholder="Email Address">
+            
+            <button class="btn-reset" onclick="alert('Reset link sent to your email! 🌸'); location.href='login.html'">Send Reset Link</button>
+            
+            <div class="links">
+                Remember your password? <a href="login.html">Log In</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

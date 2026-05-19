@@ -5,117 +5,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoodBloom | Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <style>
+        /* 1. 基础布局 */
         body { 
             margin: 0; 
             font-family: 'Segoe UI', Arial, sans-serif; 
             background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); 
             min-height: 100vh; 
-        }
-        .header-wrapper { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 20px 50px; 
-        }
-        .header-line { 
-            border: 0; 
-            height: 1px; 
-            background: #c5b3e6; 
-            margin: 0 40px 30px 40px; 
-        }
-        .logo img { width: 110px; } 
-        .title-img img { width: 230px; }
-        
-        .container { 
-            max-width: 600px; 
-            margin: 30px auto; 
-            background: white; 
-            padding: 40px; 
-            border-radius: 30px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-        }
-        
-        .field { margin-bottom: 20px; }
-        label { 
-            display: block; 
-            color: #6a4fbf; 
-            font-weight: bold; 
-            margin-bottom: 5px; 
-            font-size: 14px; 
-        }
-        input { 
-            width: 100%; 
-            padding: 12px; 
-            border-radius: 12px; 
-            border: 1px solid #eee; 
-            box-sizing: border-box; 
-            background: #fafafa; 
-            transition: 0.3s; 
-        }
-        input:focus { 
-            border-color: #b39ddb; 
-            outline: none; 
-            background: white; 
-        }
-        
-        /* 针对 type="date" 的微调，确保样式统一 */
-        input[type="date"] {
-            font-family: inherit;
             color: #4a3494;
         }
-        
+
+        /* 2. 头部导航 */
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 110px; } 
+        .title-area { text-align: center; }
+        .title-area img { width: 200px; }
+        .back-link { font-weight: bold; color: #6a4fbf; text-decoration: none; font-size: 16px; width: 110px; text-align: right; }
+        .header-line { border: 0; height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 40px 20px 40px; }
+
+        /* 3. 个人资料卡片 */
+        .container { 
+            max-width: 500px; 
+            margin: 20px auto 50px; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 40px; 
+            box-shadow: 0 10px 30px rgba(106, 79, 191, 0.1); 
+            text-align: center;
+        }
+
+        /* 头像样式 */
+        .avatar-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 10px auto;
+        }
+        .avatar-display {
+            width: 100%; height: 100%;
+            background: #f0ebff;
+            border-radius: 50%;
+            border: 3px solid #b39ddb;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; cursor: pointer; transition: 0.3s;
+        }
+        .avatar-display:hover { border-color: #6a4fbf; transform: scale(1.05); }
+        .avatar-display img { width: 100%; height: 100%; object-fit: cover; }
+        .edit-label { font-size: 12px; color: #b39ddb; cursor: pointer; display: block; margin-bottom: 25px; }
+
+        /* 表单样式 */
+        .field { margin-bottom: 18px; text-align: left; }
+        label { display: block; color: #6a4fbf; font-weight: bold; margin-bottom: 6px; font-size: 13px; margin-left: 5px; }
+        input, select { 
+            width: 100%; padding: 12px 15px; border-radius: 15px; 
+            border: 1px solid #e8e0ff; background: #fafaff; 
+            box-sizing: border-box; transition: 0.3s; color: #4a3494; font-size: 15px;
+        }
+        input:focus, select:focus { border-color: #b39ddb; outline: none; background: white; box-shadow: 0 0 8px rgba(179, 157, 219, 0.2); }
+
+        /* 按钮样式 */
         .btn { 
-            width: 100%; 
-            padding: 14px; 
-            background: #b39ddb; 
-            border: none; 
-            border-radius: 12px; 
-            color: white; 
-            cursor: pointer; 
-            font-weight: bold; 
-            margin-top: 10px; 
-            transition: 0.3s; 
-            font-size: 16px;
+            width: 100%; padding: 14px; background: #6a4fbf; border: none; 
+            border-radius: 25px; color: white; cursor: pointer; 
+            font-weight: bold; margin-top: 15px; transition: 0.3s; font-size: 16px;
         }
-        .btn:hover { background: #9a81c7; }
+        .btn:hover { background: #5a3ea3; transform: translateY(-2px); }
         
-        .btn-del { 
-            background: none; 
-            border: 1px solid #ffb3b3; 
-            color: #ff6666; 
-            margin-top: 15px; 
+        .btn-logout { 
+            background: none; border: 1px solid #ffb3b3; color: #ff6666; 
+            margin-top: 12px; font-size: 14px; padding: 10px;
         }
-        
-        .back-btn {
-            background: none; 
-            border: none; 
-            color: #6a4fbf; 
-            cursor: pointer; 
-            font-weight: bold;
-            font-size: 16px;
-            text-decoration: none;
-        }
+        .btn-logout:hover { background: #fff5f5; border-color: #ff6666; }
+
+        .messages { color: #2ecc71; background: #e8f8f0; padding: 10px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; }
+
+        footer { text-align: center; padding: 20px; color: #b39ddb; font-size: 13px; }
     </style>
 </head>
 <body>
+
     <div class="header-wrapper">
-        <div class="logo">
-            <img src="{% static 'logo.png' %}" alt="Logo">
+        <div class="logo"><img src="{% static 'logo.png' %}" alt="Logo"></div>
+        <div class="title-area">
+            <img src="{% static 'title.png' %}" alt="Title"><br>
+            <span style="font-family: 'Dancing Script'; font-size: 16px; color: #6a4fbf;">Mood your day, Bloom your mind.</span>
         </div>
-        <div class="title-img">
-            <img src="{% static 'title.png' %}" alt="Title">
-        </div>
-        <div class="menu">
-            <a href="{% url 'mainpage' %}" class="back-btn">Back</a>
-        </div>
+        <a href="{% url 'mainpage' %}" class="back-link">Back</a>
     </div>
     <hr class="header-line">
 
     <div class="container">
-        <div style="width:120px; height:120px; background:#f0f0f0; border-radius:50%; margin: 0 auto 20px; border: 2px solid #e8e0ff; display: flex; align-items:center; justify-content:center; font-size:40px;">👤</div>
+        <!-- Django 消息提示 -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="messages">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- 头像上传预览区 -->
+        <label for="avatarInput">
+            <div class="avatar-container">
+                <div class="avatar-display">
+                    {% if profile.avatar %}
+                        <img id="profilePic" src="{{ profile.avatar.url }}">
+                    {% else %}
+                        <img id="profilePic" src="{% static 'icons/user-placeholder.png' %}">
+                    {% endif %}
+                </div>
+            </div>
+            <input type="file" id="avatarInput" name="avatar" hidden onchange="previewAvatar(this)" accept="image/*">
+            <span class="edit-label">Change Photo</span>
+        </label>
         
-        <form method="POST" action="{% url 'profile' %}">
+        <form method="POST">
             {% csrf_token %}
             
             <div class="field">
@@ -124,39 +127,49 @@
             </div>
             
             <div class="field">
+                <label>Email Address</label>
+                <input type="email" name="email" value="{{ user.email }}" required>
+            </div>
+
+            <div class="field">
                 <label>Birthday</label>
-                <!-- 关键修改：type="date" 并使用 |date:'Y-m-d' 过滤器格式化数据 -->
+                <!-- 使用 type="date" 且格式化为 Y-m-d -->
                 <input type="date" name="birthday" value="{{ profile.birthday|date:'Y-m-d' }}">
             </div>
             
             <div class="field">
                 <label>Gender</label>
-                <input type="text" name="gender" value="{{ profile.gender|default:'' }}" placeholder="e.g. Female">
-            </div>
-            
-            <div class="field">
-                <label>Email</label>
-                <input type="email" name="email" value="{{ user.email }}" required>
-            </div>
-
-            <div class="field">
-                <label>Password</label>
-                <input type="password" value="********" disabled title="Password cannot be changed here">
+                <select name="gender">
+                    <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+                    <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+                    <option value="Private" {% if profile.gender == "Private" %}selected{% endif %}>Prefer not to say</option>
+                </select>
             </div>
 
             <button type="submit" class="btn">Save Changes</button>
         </form>
 
-        <form method="POST" action="{% url 'logout' %}">
+        <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-del" onclick="return confirm('Are you sure you want to logout?')">Logout</button>
+            <button type="submit" class="btn btn-logout" onclick="return confirm('Log out from MoodBloom?')">Logout</button>
         </form>
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <script>alert("{{ message }}");</script>
-        {% endfor %}
-    {% endif %}
+    <footer>
+        © 2026 MoodBloom | Mood your day, Bloom your mind.
+    </footer>
+
+    <script>
+        // 头像本地预览逻辑
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profilePic').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 </body>
 </html>

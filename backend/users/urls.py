@@ -40,7 +40,24 @@ urlpatterns = [
 
     path('upload-photo/<int:entry_id>/', views.upload_photo),
 
+<<<<<<< HEAD
     path('api/photo-gallery/', views.photo_gallery),
     
     path('api/feedback/', views.submit_feedback),
 ]
+=======
+    path('search/', views.search_entries),
+
+    path('api/articles/', views.get_articles),
+
+    path('api/favorite/<int:article_id>/', views.add_favorite),
+
+    path('api/favorites/', views.get_favorites),
+
+    path('api/unfavorite/<int:article_id>/', views.remove_favorite),
+
+    path('api/search-articles/', views.search_articles),
+
+    path('api/dashboard-status/', views.dashboard_status),
+]
+>>>>>>> 1cf0bc72941d20ebf3d074c5b54b690a57de2e66
