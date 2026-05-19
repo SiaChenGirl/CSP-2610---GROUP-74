@@ -39,4 +39,8 @@ urlpatterns = [
     path('today-mood/', views.today_mood),
 
     path('upload-photo/<int:entry_id>/', views.upload_photo),
+
+    path('api/photo-gallery/', views.photo_gallery),
+    
+    path('api/feedback/', views.submit_feedback),
 ]

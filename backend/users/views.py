@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from .models import Profile, MoodEntry, MoodPhoto
+from .models import Profile, MoodEntry, MoodPhoto, Feedback
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.utils.timezone import now
@@ -185,5 +185,43 @@ def upload_photo(request, entry_id):
         return JsonResponse({
             'error': 'Invalid request.'
         })
-        
+
+@login_required
+def photo_gallery(request):
+    photos = MoodPhoto.objects.filter(
+        mood_entry__user=request.user
+    ).order_by('-mood_entry__created_at')       
+
+    gallery = []
+
+    for photo in photos:
+        gallery.append({
+            'image': photo.image.url,
+            'mood': photo.mood_entry.mood,
+            'date': photo.mood_entry.created_at.strftime('%Y-%m-%d')
+        })
+
+    return JsonResponse({
+        'photos': gallery
+    })
+
+@login_required
+def submit_feedback(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        rating = data.get('rating')
+        message = data.get('message')
+        feedback = Feedback.objects.create(
+            user = request.user,
+            rating = rating,
+            message = message
+        )
+
+        return JsonResponse({
+            'message': 'Feedback submitted successfully.'
+        })
+    
+    return JsonResponse({
+        'error': 'Invalid request.'
+    }, status=400)
     
