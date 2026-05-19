@@ -24,7 +24,6 @@ class MoodPhoto(models.Model):
     image = models.ImageField(upload_to='mood_photos/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
-<<<<<<< HEAD
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.IntegerField()
@@ -33,7 +32,6 @@ class Feedback(models.Model):
 
     def __str__(self):
         return self.user.username
-=======
 class Article(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
@@ -48,4 +46,12 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.article.title}"
->>>>>>> 1cf0bc72941d20ebf3d074c5b54b690a57de2e66
+    
+class Feedback(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username

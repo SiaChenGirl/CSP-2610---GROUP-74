@@ -4,11 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-<<<<<<< HEAD
-from .models import Profile, MoodEntry, MoodPhoto, Feedback
-=======
-from .models import Profile, MoodEntry, MoodPhoto, Favorite, Article
->>>>>>> 1cf0bc72941d20ebf3d074c5b54b690a57de2e66
+from .models import Profile, MoodEntry, MoodPhoto, Favorite, Article, Feedback
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.utils.timezone import now
@@ -192,7 +188,6 @@ def upload_photo(request, entry_id):
         return JsonResponse({
             'error': 'Invalid request.'
         })
-<<<<<<< HEAD
 
 @login_required
 def photo_gallery(request):
@@ -232,7 +227,6 @@ def submit_feedback(request):
     return JsonResponse({
         'error': 'Invalid request.'
     }, status=400)
-=======
     
 def search_entries(request):
     query = request.GET.get('q')
@@ -447,9 +441,69 @@ def dashboard_status(request):
         'longest_streak': longest_streak
     })
 
+
+@csrf_exempt
+@login_required
+def upload_photo(request, entry_id):
+    if request.method == 'POST':
+        entry = get_object_or_404(MoodEntry, id=entry_id, user=request.user)
+
+        for file in request.FILES.getlist('photos'):
+            MoodPhoto.objects.create(
+                mood_entry=entry,
+                image=file
+            )
+
+            return JsonResponse({
+                'message': 'Photos uploaded successfully!'
+            })
+        
+        return JsonResponse({
+            'error': 'Invalid request.'
+        })
+
+
+@login_required
+def photo_gallery(request):
+    photos = MoodPhoto.objects.filter(
+        mood_entry__user=request.user
+    ).order_by('-mood_entry__created_at')       
+
+    gallery = []
+
+    for photo in photos:
+        gallery.append({
+            'image': photo.image.url,
+            'mood': photo.mood_entry.mood,
+            'date': photo.mood_entry.created_at.strftime('%Y-%m-%d')
+        })
+
+    return JsonResponse({
+        'photos': gallery
+    })
+
+@login_required
+def submit_feedback(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        rating = data.get('rating')
+        message = data.get('message')
+        feedback = Feedback.objects.create(
+            user = request.user,
+            rating = rating,
+            message = message
+        )
+
+        return JsonResponse({
+            'message': 'Feedback submitted successfully.'
+        })
+    
+    return JsonResponse({
+        'error': 'Invalid request.'
+    }, status=400)
+
     
     
 
         
->>>>>>> 1cf0bc72941d20ebf3d074c5b54b690a57de2e66
     
