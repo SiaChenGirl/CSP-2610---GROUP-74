@@ -3,61 +3,132 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoodBloom | Feedback</title>
     <style>
-        body { margin: 0; font-family: Arial; background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); min-height: 100vh; }
+        /* 1. 基础样式 */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); 
+            min-height: 100vh; 
+            color: #4a3494;
+        }
+
+        /* 2. 头部导航 */
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
-        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 30px 40px; }
-        .logo img { width: 110px; } .title-img img { width: 230px; }
-        .container { max-width: 500px; margin: 50px auto; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
-        .star { font-size: 35px; color: #ddd; cursor: pointer; transition: 0.2s; }
-        .star.active { color: #ffcc00; }
-        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 12px; border: 1px solid #eee; box-sizing: border-box; background: #fafafa; }
-        .btn { width: 100%; padding: 14px; background: #b39ddb; border: none; border-radius: 12px; color: white; cursor: pointer; font-weight: bold; }
+        .logo img { width: 110px; } 
+        .title-img img { width: 230px; }
+        .back-link { text-decoration: none; color: #6a4fbf; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        .back-link:hover { opacity: 0.7; }
+        .header-line { border: 0; height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 40px 30px 40px; }
+
+        /* 3. 反馈卡片容器 */
+        .container { 
+            max-width: 500px; 
+            margin: 50px auto; 
+            background: white; 
+            padding: 45px; 
+            border-radius: 40px; 
+            box-shadow: 0 15px 35px rgba(106, 79, 191, 0.1); 
+            text-align: center; 
+        }
+
+        /* 评分星星 */
+        .star-rating { margin: 20px 0; }
+        .star { font-size: 40px; color: #eee; cursor: pointer; transition: 0.2s; margin: 0 5px; }
+        .star.active { color: #ffcc00; text-shadow: 0 0 10px rgba(255, 204, 0, 0.3); }
+
+        /* 输入框样式 */
+        input, textarea { 
+            width: 100%; 
+            padding: 14px; 
+            margin: 12px 0; 
+            border-radius: 15px; 
+            border: 1px solid #e8e0ff; 
+            box-sizing: border-box; 
+            background: #fafaff; 
+            font-size: 15px;
+            transition: 0.3s;
+            outline: none;
+            color: #4a3494;
+        }
+        input:focus, textarea:focus { border-color: #b39ddb; background: white; box-shadow: 0 0 10px rgba(179, 157, 219, 0.15); }
+
+        /* 按钮 */
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            background: #6a4fbf; 
+            border: none; 
+            border-radius: 25px; 
+            color: white; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 16px;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+        .btn:hover { background: #5a3ea3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(106, 79, 191, 0.2); }
+        
+        footer { text-align: center; margin-top: 30px; color: #b39ddb; font-size: 13px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="header-wrapper">
-        <!-- 使用 static 标签确保图片正常显示 -->
-        <div class="logo"><img src="{% static 'logo.png' %}"></div>
-        <div class="title-img"><img src="{% static 'title.png' %}"></div>
+        <div class="logo"><img src="{% static 'logo.png' %}" alt="Logo"></div>
+        <div class="title-img"><img src="{% static 'title.png' %}" alt="Title"></div>
         <div class="menu">
-    <a href="{% url 'mainpage' %}" style="text-decoration:none; color:#6a4fbf; font-weight:bold; cursor:pointer;">Back</a>
-</div>
+            <a href="{% url 'mainpage' %}" class="back-link">Back</a>
+        </div>
     </div>
     <hr class="header-line">
+
     <div class="container">
-        <h2 style="color:#6a4fbf;">Feedback</h2>
-        <div id="stars">
-            <span class="star" onclick="rate(1)">★</span><span class="star" onclick="rate(2)">★</span><span class="star" onclick="rate(3)">★</span><span class="star" onclick="rate(4)">★</span><span class="star" onclick="rate(5)">★</span>
+        <h2 style="color:#6a4fbf; margin-top: 0;">Feedback</h2>
+        <p style="color: #b39ddb; font-size: 14px;">We'd love to hear your thoughts!</p>
+        
+        <!-- 星级评分 -->
+        <div class="star-rating" id="stars">
+            <span class="star" onclick="rate(1)">★</span>
+            <span class="star" onclick="rate(2)">★</span>
+            <span class="star" onclick="rate(3)">★</span>
+            <span class="star" onclick="rate(4)">★</span>
+            <span class="star" onclick="rate(5)">★</span>
         </div>
-        <!-- 保持原样，仅添加 id 供 JS 获取数据 -->
+
+        <!-- 这里的 ID 保持不变，确保你的 JS 能够获取数据 -->
         <input type="email" id="email_input" placeholder="Your Email" value="{{ request.user.email }}">
-        <textarea id="content_input" placeholder="How can we improve?" rows="4"></textarea>
-        <!-- 修改 onclick 函数名 -->
-        <button class="btn" onclick="submitFeedback()">Submit</button>
+        <textarea id="content_input" placeholder="How can we improve MoodBloom?" rows="5"></textarea>
+        
+        <button class="btn" onclick="submitFeedback()">Submit Feedback</button>
     </div>
 
-    <script>
-        let selectedRating = 0; // 记录评分
+    <footer>© 2026 MoodBloom | Mood your day, Bloom your mind.</footer>
 
+    <script>
+        let selectedRating = 0;
+
+        // 处理评分视觉效果
         function rate(n) {
             selectedRating = n;
-            const s = document.querySelectorAll('.star');
-            s.forEach((star, i) => star.classList.toggle('active', i < n));
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, i) => {
+                star.classList.toggle('active', i < n);
+            });
         }
 
+        // 提交反馈逻辑（完整保留你的 AJAX 实现）
         function submitFeedback() {
             const email = document.getElementById('email_input').value;
             const content = document.getElementById('content_input').value;
 
-            // 简单的验证
             if (selectedRating === 0 || !content) {
                 alert("Please provide a rating and your feedback! 🌸");
                 return;
             }
 
-            // 使用 fetch 发送到后端
+            // 发送到 Django 后端
             fetch("{% url 'feedback' %}", {
                 method: "POST",
                 headers: {
@@ -68,13 +139,13 @@
                     rating: selectedRating,
                     email: email,
                     content: content,
-                    subject: "General Feedback" // 默认主题
+                    subject: "General Feedback"
                 })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    alert('Thanks!'); 
+                    alert('Thank you for your feedback! It helps us grow. 🌸'); 
                     location.href = "{% url 'mainpage' %}";
                 } else {
                     alert('Error: ' + data.message);
@@ -82,7 +153,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                alert('An error occurred. Please try again later.');
             });
         }
     </script>

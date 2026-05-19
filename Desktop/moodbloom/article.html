@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MoodBloom | Articles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
+            background-attachment: fixed; 
+            min-height: 100vh; 
+            color: #4a3494;
+            overflow-x: hidden;
+        }
+
+        /* --- WHITE NAVIGATION MENU --- */
+        .side-nav {
+            position: fixed; 
+            top: 0; 
+            right: -300px; 
+            width: 280px; 
+            height: 100%;
+            background: #ffffff; 
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.08); 
+            border-left: 1px solid #eee;
+            z-index: 1000;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding: 50px 30px; 
+            box-sizing: border-box;
+        }
+        
+        .side-nav.active { right: 0; }
+
+        .side-nav a {
+            display: block; 
+            padding: 18px 0; 
+            color: #4a3494; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 18px;
+            border-bottom: 1px solid #f9f9f9; 
+            transition: 0.3s;
+        }
+        
+        .side-nav a:hover { 
+            color: #b39ddb; 
+            padding-left: 10px;
+            background: #fcfcfc;
+        }
+
+        .close-nav { 
+            font-size: 40px; 
+            cursor: pointer; 
+            position: absolute; 
+            top: 15px; 
+            right: 25px; 
+            color: #6a4fbf; 
+        }
+
+        /* --- HEADER STYLING --- */
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 180px; }
+        .title-area { text-align: center; }
+        .title-area img { width: 230px; }
+        
+        .menu-icon { 
+            font-size: 35px; 
+            cursor: pointer; 
+            color: #6a4fbf; 
+            width: 180px; 
+            text-align: right; 
+        }
+
+        .divider-line { height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 50px 20px 50px; }
+
+        /* --- ARTICLE CONTENT --- */
+        .article-wrap { 
+            display: flex; 
+            gap: 30px; 
+            padding: 0 60px; 
+            transition: 0.5s; 
+            margin-top: 20px;
+        }
+        
+        .card-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 20px; 
+            width: 100%; 
+            transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-grid.side { 
+            width: 35%; 
+            grid-template-columns: 1fr; 
+        }
+
+        .cute-card { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 20px; 
+            text-align: center; 
+            cursor: pointer; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+        .cute-card:hover { transform: translateY(-5px); background: #fdfbff; }
+        
+        .emoji-box { font-size: 40px; margin-bottom: 10px; }
+        .cute-card h4 { margin: 5px 0; color: #6a4fbf; }
+
+        .article-results { 
+            display: none; 
+            width: 60%; 
+            background: white; 
+            border-radius: 40px; 
+            padding: 40px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeIn 0.8s ease;
+        }
+
+        .article-link-box { 
+            border-bottom: 1px solid #eee; 
+            padding: 20px 0; 
+        }
+        .article-link-box a { 
+            display: inline-block;
+            margin-top: 10px;
+            color: #6a4fbf; 
+            font-weight: bold; 
+            text-decoration: underline; 
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        footer { text-align: center; padding: 40px 0; color: #6a4fbf; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="side-nav" id="sideNav">
+    <span class="close-nav" onclick="toggleNav()">&times;</span>
+    <div style="margin-top: 40px;">
+        <a href="profile.html">Profile</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="login.html" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+    </div>
+</div>
+
+<div class="header-wrapper">
+    <div class="logo"><img src="logo.png"></div>
+    <div class="title-area">
+        <img src="title.png"><br>
+        <span class="slogan" style="color: #6a4fbf; font-style: italic; font-family: 'Dancing Script', cursive; font-size: 18px;">
+            Mood your day, Bloom your mind.
+        </span>
+    </div>
+    <div class="menu-icon" onclick="toggleNav()">☰</div>
+</div>
+
+<div class="divider-line"></div>
+
+<div class="article-wrap">
+    <div class="card-grid" id="grid">
+        <div class="cute-card" onclick="loadLinks('Sleep', '🌙')"><div class="emoji-box">🌙</div><h4>Better Sleep</h4></div>
+        <div class="cute-card" onclick="loadLinks('Stress', '☁️')"><div class="emoji-box">☁️</div><h4>Stress Relief</h4></div>
+        <div class="cute-card" onclick="loadLinks('Self-Love', '🌸')"><div class="emoji-box">🌸</div><h4>Self-Love</h4></div>
+        <div class="cute-card" onclick="loadLinks('Focus', '🎯')"><div class="emoji-box">🎯</div><h4>Deep Focus</h4></div>
+        <div class="cute-card" onclick="loadLinks('Anxiety', '🍃')"><div class="emoji-box">🍃</div><h4>Calm Mind</h4></div>
+        <div class="cute-card" onclick="loadLinks('Exercise', '🏃')"><div class="emoji-box">🏃</div><h4>Move More</h4></div>
+        <div class="cute-card" onclick="loadLinks('Hydration', '💧')"><div class="emoji-box">💧</div><h4>Drink Water</h4></div>
+        <div class="cute-card" onclick="loadLinks('Social', '👯')"><div class="emoji-box">👯</div><h4>Socialize</h4></div>
+        <div class="cute-card" onclick="loadLinks('Gratitude', '✨')"><div class="emoji-box">✨</div><h4>Grateful</h4></div>
+    </div>
+
+    <div class="article-results" id="resultsPane">
+        <h2 id="topicTitle" style="font-family:'Dancing Script', cursive; color:#6a4fbf; font-size: 32px;"></h2>
+        <div id="linksContainer"></div>
+    </div>
+</div>
+
+<footer>
+    © 2026 MoodBloom | Mood your day, Bloom your mind.
+</footer>
+
+<script>
+    function toggleNav() {
+        document.getElementById('sideNav').classList.toggle('active');
+    }
+
+    function loadLinks(topic, emoji) {
+        document.getElementById('grid').classList.add('side');
+        const pane = document.getElementById('resultsPane');
+        pane.style.display = 'block';
+        document.getElementById('topicTitle').innerText = emoji + " " + topic + " Articles";
+        
+        document.getElementById('linksContainer').innerHTML = `
+            <div class="article-link-box">
+                <p><b>简介:</b> Discover the connection between ${topic} and mental well-being. This guide offers practical tips for a healthier mind.</p>
+                <a href="https://www.google.com/search?q=${topic}+mental+health+articles" target="_blank">Click to read more on Google →</a>
+            </div>
+            <div class="article-link-box">
+                <p><b>简介:</b> Why ${topic} matters more than you think. Exploring the latest research on mood improvement.</p>
+                <a href="https://www.google.com/search?q=${topic}+wellness+tips" target="_blank">Explore scientific insights →</a>
+            </div>
+        `;
+    }
+</script>
+
+</body>
+</html>
