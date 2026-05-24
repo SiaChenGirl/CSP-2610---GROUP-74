@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoodBloom | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <!-- 引入 Chart.js 库 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+<<<<<<< HEAD
         html, body {
             margin: 0;
             padding: 0;
@@ -174,10 +177,61 @@
         .action-btn img { width: 22px; opacity: 0.7; }
         .active { background: #b39ddb; } 
         .active img { filter: brightness(0) invert(1); opacity: 1; }
+=======
+        body { 
+            margin: 0; font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
+            background-attachment: fixed; min-height: 100vh; color: #4a3494; overflow-x: hidden;
+        }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 180px; }
+        .title-area { text-align: center; }
+        .title-area img { width: 230px; }
+        .menu-icon { font-size: 35px; cursor: pointer; color: #6a4fbf; width: 180px; text-align: right; user-select: none; }
+        
+        /* 侧边栏 */
+        .side-nav {
+            position: fixed; top: 0; right: -300px; width: 280px; height: 100%;
+            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
+            box-shadow: -10px 0 30px rgba(106, 79, 191, 0.2); z-index: 1000;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 50px 30px; box-sizing: border-box;
+        }
+        .side-nav.active { right: 0; }
+        .side-nav a { display: block; padding: 18px 0; color: #4a3494; text-decoration: none; font-weight: bold; font-size: 18px; border-bottom: 1px solid #f0f0f0; transition: 0.3s; }
+        .side-nav a:hover { color: #6a4fbf; padding-left: 15px; }
+        .close-nav { font-size: 40px; cursor: pointer; position: absolute; top: 15px; right: 25px; color: #b39ddb; }
+
+        .divider-line { height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 50px 30px 50px; }
+
+        /* 内容布局 */
+        .dashboard-content { display: flex; justify-content: center; align-items: flex-start; gap: 30px; padding: 0 50px; }
+        
+        /* 左侧：百分比卡片 */
+        .card-left { background: white; border-radius: 40px; padding: 30px; width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        .mood-icons { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; min-height: 50px; }
+        .mood-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: bold; }
+        .mood-dot { width: 25px; height: 25px; border-radius: 50%; border: 2px solid #eee; margin-bottom: 5px; }
+
+        /* 中间：趋势卡片 */
+        .card-middle { background: white; border-radius: 40px; padding: 30px; width: 550px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .flow-header { text-align: center; margin-bottom: 20px; }
+        .month-selector { border: 2px solid #e8e0ff; padding: 5px 20px; border-radius: 20px; font-family: 'Dancing Script'; font-size: 24px; color: #6a4fbf; font-weight: bold; }
+
+        /* 右侧：动作按钮 */
+        .circle-actions { display: flex; flex-direction: column; gap: 20px; }
+        .action-btn { width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s; }
+        .action-btn:hover { transform: scale(1.1); }
+        .action-btn img { width: 28px; opacity: 0.7; }
+        .action-btn.active { background: #b39ddb; } 
+        .action-btn.active img { filter: brightness(0) invert(1); opacity: 1; }
+
+        footer { text-align: center; padding: 40px 0; color: #6a4fbf; font-weight: bold; }
+>>>>>>> a9d4e70a38db7b9dff1f2338a2ce54abdc1a7659
     </style>
 </head>
 <body>
 
+<<<<<<< HEAD
     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
         <div style="margin-top: 40px;">
@@ -198,10 +252,31 @@
             </select>
             <div class="menu-icon" onclick="toggleNav()">☰</div>
         </div>
+=======
+    <!-- 侧边导航栏 -->
+    <div class="side-nav" id="sideNav">
+        <span class="close-nav" onclick="toggleNav()">&times;</span>
+        <div style="margin-top: 40px;">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'feedback' %}">Feedback</a>
+            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+        </div>
+    </div>
+
+    <!-- 头部区域 -->
+    <div class="header-wrapper">
+        <div class="logo"><img src="{% static 'logo.png' %}" alt="Logo"></div>
+        <div class="title-area">
+            <img src="{% static 'title.png' %}" alt="MoodBloom"><br>
+            <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood your day, Bloom your mind.</span>
+        </div>
+        <div class="menu-icon" onclick="toggleNav()">☰</div>
+>>>>>>> a9d4e70a38db7b9dff1f2338a2ce54abdc1a7659
     </div>
 
     <div class="divider-line"></div>
 
+<<<<<<< HEAD
     <div class="dashboard-container">
         
         <div class="main-panel">
@@ -431,6 +506,145 @@
             const selectedMonth = document.getElementById('monthPicker').value;
             document.getElementById('currentPeriodLabel').innerText = selectedMonth + " 2026";
             changeTimeScale();
+=======
+    <div class="dashboard-content">
+        <!-- 左侧：统计卡片 -->
+        <div class="card-left">
+            <p style="font-size: 13px; font-weight: bold; margin-bottom: 20px;">Total percentage of mood record</p>
+            <div class="mood-icons" id="moodIconsContainer">
+                <!-- 由 JavaScript 填充 -->
+            </div>
+            <canvas id="barChart"></canvas>
+        </div>
+
+        <!-- 中间：情绪趋势卡片 -->
+        <div class="card-middle">
+            <div class="flow-header">
+                <span class="month-selector">Last 7 Days ↕</span>
+            </div>
+            <h3 style="font-family:'Dancing Script'; margin-top:0; font-size: 32px; color: #6a4fbf;">Mood flow</h3>
+            <canvas id="lineChart" height="180"></canvas>
+        </div>
+
+        <!-- 右侧：圆形导航按钮 -->
+        <div class="circle-actions">
+            <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'">
+                <img src="{% static 'icons/search.png' %}" alt="Search">
+            </div>
+            <div class="action-btn" title="History" onclick="location.href='{% url 'article' %}'">
+                <img src="{% static 'icons/book.png' %}" alt="History">
+            </div>
+            <div class="action-btn active" title="Stats" onclick="location.href='{% url 'dashboard' %}'">
+                <img src="{% static 'icons/stats.png' %}" alt="Stats">
+            </div>
+            <div class="action-btn" title="Gallery" onclick="location.href='{% url 'gallery' %}'">
+                <img src="{% static 'icons/camera.png' %}" alt="Gallery">
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2026 MoodBloom | Mood your day, Bloom your mind.</footer>
+
+    <script>
+        function toggleNav() {
+            const nav = document.getElementById('sideNav');
+            nav.classList.toggle('active');
+        }
+
+        // 安全解析后端数据
+        let distributionData = [];
+        let trendData = [];
+
+        try {
+            // 使用 || '[]' 防止数据为空时报错导致 JS 崩溃
+            distributionData = JSON.parse('{{ mood_distribution_json|safe }}' || '[]');
+            trendData = JSON.parse('{{ mood_trends_json|safe }}' || '[]');
+            console.log("Distribution Data:", distributionData);
+            console.log("Trend Data:", trendData);
+        } catch (e) {
+            console.error("JSON Parsing Error:", e);
+        }
+
+        const colorMap = {
+            'Happy': '#FFD700', 'Neutral': '#C0C0C0', 'Sad': '#9370DB',
+            'Angry': '#FF6347', 'Calm': '#40E0D0'
+        };
+
+        // 1. 动态生成心情百分比圆点
+        const iconsContainer = document.getElementById('moodIconsContainer');
+        const totalCount = distributionData.reduce((sum, item) => sum + item.count, 0);
+
+        if (totalCount > 0) {
+            iconsContainer.innerHTML = ""; // 清空
+            distributionData.forEach(item => {
+                const percentage = Math.round((item.count / totalCount) * 100);
+                const color = colorMap[item.category] || '#b39ddb';
+                const moodHtml = `
+                    <div class="mood-item">
+                        <div class="mood-dot" style="background:${color}"></div>
+                        ${percentage}%
+                    </div>`;
+                iconsContainer.innerHTML += moodHtml;
+            });
+        } else {
+            iconsContainer.innerHTML = '<p style="font-size: 12px; color: #999;">No records found yet.</p>';
+        }
+
+        // 2. 渲染柱状图 (Bar Chart)
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: distributionData.map(item => item.category),
+                datasets: [{
+                    data: distributionData.map(item => item.count),
+                    backgroundColor: distributionData.map(item => colorMap[item.category] || '#b39ddb'),
+                    borderRadius: 8
+                }]
+            },
+            options: { 
+                responsive: true,
+                plugins: { legend: { display: false } }, 
+                scales: { 
+                    y: { beginAtZero: true, display: false }, 
+                    x: { grid: { display: false } } 
+                } 
+            }
+        });
+
+        // 3. 渲染曲线图 (Line Chart)
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        if (trendData.length > 0) {
+            new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: trendData.map(item => item.created_at__date),
+                    datasets: [{
+                        label: 'Intensity',
+                        data: trendData.map(item => item.avg_intensity),
+                        borderColor: '#6a4fbf',
+                        backgroundColor: 'rgba(106, 79, 191, 0.1)',
+                        fill: true, 
+                        tension: 0.4, 
+                        pointRadius: 5, 
+                        pointBackgroundColor: '#6a4fbf'
+                    }]
+                },
+                options: { 
+                    responsive: true,
+                    scales: { 
+                        y: { 
+                            min: 1, 
+                            max: 5, 
+                            ticks: { stepSize: 1, color: '#6a4fbf' },
+                            grid: { color: 'rgba(106, 79, 191, 0.1)' }
+                        },
+                        x: { grid: { display: false }, ticks: { color: '#6a4fbf' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+>>>>>>> a9d4e70a38db7b9dff1f2338a2ce54abdc1a7659
         }
     </script>
 </body>

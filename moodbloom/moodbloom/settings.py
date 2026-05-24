@@ -88,14 +88,16 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
+# --- Internationalization ---
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+
+# 修改这里：改为马来西亚/北京时间，这样 record 的时间才和你本地对得上
+TIME_ZONE = 'Asia/Kuala_Lumpur' 
+
 USE_I18N = True
+
+# 必须保持为 True，Django 会自动处理时区转换
 USE_TZ = True
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
@@ -105,3 +107,6 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'mood' / 'static',
 ]
+
+# settings.py 底部添加
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']

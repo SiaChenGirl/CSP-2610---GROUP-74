@@ -5,6 +5,7 @@
     <title>MoodBloom | Articles</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600&display=swap" rel="stylesheet">
     <style>
+<<<<<<< HEAD
         body { 
             margin: 0; 
             font-family: 'Segoe UI', sans-serif; 
@@ -127,10 +128,28 @@
         .active img { filter: brightness(0) invert(1); opacity: 1; }
 
         footer { text-align: center; padding: 10px 0; color: #6a4fbf; font-weight: bold; font-size: 14px; }
+=======
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%); background-attachment: fixed; min-height: 100vh; color: #4a3494; overflow-x: hidden; }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 180px; }
+        .menu-icon { font-size: 35px; cursor: pointer; color: #6a4fbf; }
+        .divider-line { height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 50px 20px 50px; }
+        .article-wrap { display: flex; gap: 30px; padding: 0 60px; margin-top: 20px; }
+        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; transition: 0.5s; }
+        .card-grid.side { width: 35%; grid-template-columns: 1fr; }
+        .cute-card { background: white; border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; }
+        .cute-card:hover { transform: translateY(-5px); background: #fdfbff; }
+        .article-results { display: none; width: 60%; background: white; border-radius: 40px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); min-height: 400px; }
+        .article-link-box { border-bottom: 1px solid #eee; padding: 20px 0; }
+        .read-btn { display: inline-block; padding: 10px 20px; background: #6a4fbf; color: white; text-decoration: none; border-radius: 25px; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        .read-btn:hover { background: #4a3494; box-shadow: 0 4px 12px rgba(106, 79, 191, 0.3); }
+        footer { text-align: center; padding: 40px 0; color: #6a4fbf; font-weight: bold; }
+>>>>>>> a9d4e70a38db7b9dff1f2338a2ce54abdc1a7659
     </style>
 </head>
 <body>
 
+<<<<<<< HEAD
     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
         <div style="margin-top: 40px;">
@@ -203,5 +222,62 @@
     <script>
         function toggleNav() { document.getElementById('sideNav').classList.toggle('active'); }
     </script>
+=======
+<div class="header-wrapper">
+    <div class="logo"><img src="/static/logo.png" alt="MoodBloom"></div>
+    <div class="menu-icon" onclick="location.href='/mainpage/'">Home</div>
+</div>
+
+<div class="divider-line"></div>
+
+<div class="article-wrap">
+    <!-- 九宫格按钮 -->
+    <div class="card-grid" id="grid">
+        <div class="cute-card" onclick="loadArticles('Sleep', '🌙')">🌙 <h4>Sleep</h4></div>
+        <div class="cute-card" onclick="loadArticles('Stress', '☁️')">☁️ <h4>Stress</h4></div>
+        <div class="cute-card" onclick="loadArticles('Self-Love', '🌸')">🌸 <h4>Self-Love</h4></div>
+        <div class="cute-card" onclick="loadArticles('Focus', '🎯')">🎯 <h4>Focus</h4></div>
+        <div class="cute-card" onclick="loadArticles('Anxiety', '🍃')">🍃 <h4>Anxiety</h4></div>
+        <div class="cute-card" onclick="loadArticles('Exercise', '🏃')">🏃 <h4>Exercise</h4></div>
+    </div>
+
+    <!-- 结果显示区域 -->
+    <div class="article-results" id="resultsPane">
+        <h2 id="topicTitle" style="font-family:'Dancing Script', cursive; color:#6a4fbf; font-size: 32px;"></h2>
+        <div id="linksContainer"></div>
+    </div>
+</div>
+
+<footer>© 2026 MoodBloom</footer>
+
+<script>
+    async function loadArticles(category, emoji) {
+        // 1. UI 动画：网格变窄
+        document.getElementById('grid').classList.add('side');
+        const pane = document.getElementById('resultsPane');
+        pane.style.display = 'block';
+        document.getElementById('topicTitle').innerText = emoji + " " + category + " Resources";
+        
+        // 2. 从数据库抓取数据
+        const response = await fetch(`/api/articles/?category=${category}`);
+        const data = await response.json();
+        
+        // 3. 渲染到页面
+        const container = document.getElementById('linksContainer');
+        if (data.length === 0) {
+            container.innerHTML = "<p style='text-align:center; color:#999; margin-top:50px;'>No articles found yet. Please check back later!</p>";
+        } else {
+            container.innerHTML = data.map(item => `
+                <div class="article-link-box">
+                    <h3 style="margin-bottom:5px;">${item.title}</h3>
+                    <p style="color:#666; font-size:14px;">${item.summary}</p>
+                    <a href="${item.external_url}" target="_blank" class="read-btn">Read More →</a>
+                </div>
+            `).join('');
+        }
+    }
+</script>
+
+>>>>>>> a9d4e70a38db7b9dff1f2338a2ce54abdc1a7659
 </body>
 </html>
