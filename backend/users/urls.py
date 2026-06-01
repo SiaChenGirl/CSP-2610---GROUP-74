@@ -63,4 +63,6 @@ urlpatterns = [
     path('api/photo-gallery/', views.photo_gallery),
     
     path('api/feedback/', views.submit_feedback),
+
+    path('api/delete-account/', views.delete_account),
 ]

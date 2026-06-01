@@ -169,65 +169,7 @@ def today_mood(request):
         "message": "No mood today. Please add a mood."
     })
 
-@csrf_exempt
 @login_required
-def upload_photo(request, entry_id):
-    if request.method == 'POST':
-        entry = get_object_or_404(MoodEntry, id=entry_id, user=request.user)
-
-        for file in request.FILES.getlist('photos'):
-            MoodPhoto.objects.create(
-                mood_entry=entry,
-                image=file
-            )
-
-            return JsonResponse({
-                'message': 'Photos uploaded successfully!'
-            })
-        
-        return JsonResponse({
-            'error': 'Invalid request.'
-        })
-
-@login_required
-def photo_gallery(request):
-    photos = MoodPhoto.objects.filter(
-        mood_entry__user=request.user
-    ).order_by('-mood_entry__created_at')       
-
-    gallery = []
-
-    for photo in photos:
-        gallery.append({
-            'image': photo.image.url,
-            'mood': photo.mood_entry.mood,
-            'date': photo.mood_entry.created_at.strftime('%Y-%m-%d')
-        })
-
-    return JsonResponse({
-        'photos': gallery
-    })
-
-@login_required
-def submit_feedback(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        rating = data.get('rating')
-        message = data.get('message')
-        feedback = Feedback.objects.create(
-            user = request.user,
-            rating = rating,
-            message = message
-        )
-
-        return JsonResponse({
-            'message': 'Feedback submitted successfully.'
-        })
-    
-    return JsonResponse({
-        'error': 'Invalid request.'
-    }, status=400)
-    
 def search_entries(request):
     query = request.GET.get('q')
     mood = request.GET.get('mood')
@@ -403,7 +345,7 @@ def dashboard_status(request):
 
     current_streak = 0
     if dates:
-        today = dates.today()
+        today = date.today()
 
         for entry_date in dates:
             if entry_date == today:
@@ -454,9 +396,9 @@ def upload_photo(request, entry_id):
                 image=file
             )
 
-            return JsonResponse({
-                'message': 'Photos uploaded successfully!'
-            })
+        return JsonResponse({
+            'message': 'Photos uploaded successfully!'
+        })
         
         return JsonResponse({
             'error': 'Invalid request.'
@@ -498,10 +440,23 @@ def submit_feedback(request):
             'message': 'Feedback submitted successfully.'
         })
     
+    if not rating or not message:
+        return JsonResponse({
+            'error': 'Rating and message required'
+        }, status=400)
+
+@csrf_exempt
+@login_required
+def delete_account(request):
+    if request.method == 'DELETE':
+        request.user.delete()
+        return JsonResponse({
+            'message': 'Account deleted seccessfully.'
+        })
+    
     return JsonResponse({
         'error': 'Invalid request.'
-    }, status=400)
-
+    },status=400)
     
     
 
