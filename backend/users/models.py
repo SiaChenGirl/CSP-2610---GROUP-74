@@ -80,6 +80,9 @@ class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = ('user', 'article')
+
     def __str__(self):
         return f"{self.user.username} - {self.article.title}"
 
