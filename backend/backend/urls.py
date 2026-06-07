@@ -17,10 +17,15 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-
+# ✨ 引入配置和静态路由扩展工具
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls')),
+    path('', include('users.urls')), # 保持你原本和 users 关联的路由不变
 ]
 
+# ✨ 关键：允许系统通过网址直接访问到用户上传的媒体照片
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

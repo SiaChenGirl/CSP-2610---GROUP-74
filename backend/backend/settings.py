@@ -121,4 +121,8 @@ CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+import os  # 如果文件顶部没有 import os，请在顶部加上，或者直接用下面这行
 
+# ✨ 开启 Media 媒体文件支持
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

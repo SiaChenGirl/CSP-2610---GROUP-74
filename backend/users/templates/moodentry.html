@@ -119,6 +119,7 @@
             <div class="box">
                 <h3>Memories</h3>
                 <div class="photo-slots">
+                    <div id="previewContainer" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
                     <div class="slot" onclick="openPhotoModal()">+</div>
                     <div class="slot"></div><div class="slot"></div>
                 </div>
@@ -149,58 +150,40 @@
                 <label style="cursor:pointer; display:flex; flex-direction:column; align-items:center;">
                     <span style="font-size:35px;">📷</span>
                     <span style="font-size:11px; font-weight:bold;">TAKE PHOTO</span>
-                    <input type="file" accept="image/*" capture="environment" style="display:none">
+                    <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleFileSelect(this)">
                 </label>
                 <label style="cursor:pointer; display:flex; flex-direction:column; align-items:center;">
                     <span style="font-size:35px;">📁</span>
                     <span style="font-size:11px; font-weight:bold;">UPLOAD FILES</span>
-                    <input type="file" accept="image/*" style="display:none">
+                    <input type="file" accept="image/*" multiple style="display:none" onchange="handleFileSelect(this)">
                 </label>
             </div>
         </div>
     </div>
 
     <script>
+        let selectedPhotos = []; 
         const staticUrl = "/static/emojis/";
         let selectedCategory = "";
         let selectedMoodName = "";
 
         function toggleNav() { document.getElementById('sideNav').classList.toggle('active'); }
 
-        // Complete dictionary mapping all 21 custom doodles with fixed syntax commas
         const pngMap = {
             'happy': [
-                {f:'happy.png', n:'Happy'}, 
-                {f:'kiss.png', n:'Kiss'}, 
-                {f:'yeah.png', n:'Yeah'}, 
-                {f:'fighting.png', n:'Fighting'},
-                {f:'good.png', n:'Good'},
-                {f:'lovely.png', n:'Lovely'},
-                {f:'admire.png', n:'Admire'},
-                {f:'warm.png', n:'Warm'},
-                {f:'energetic.png', n:'Energetic'}, 
-                {f:'motivated.png', n:'Motivated'}
+                {f:'happy.png', n:'Happy'}, {f:'kiss.png', n:'Kiss'}, {f:'yeah.png', n:'Yeah'}, {f:'fighting.png', n:'Fighting'},
+                {f:'good.png', n:'Good'}, {f:'lovely.png', n:'Lovely'}, {f:'admire.png', n:'Admire'}, {f:'warm.png', n:'Warm'},
+                {f:'energetic.png', n:'Energetic'}, {f:'motivated.png', n:'Motivated'}
             ],
             'neutral': [
-                {f:'neutral.png', n:'Neutral'}, 
-                {f:'shy.png', n:'Shy'}, 
-                {f:'sleepy.png', n:'Sleepy'},
-                {f:'curious.png', n:'Curious'}
+                {f:'neutral.png', n:'Neutral'}, {f:'shy.png', n:'Shy'}, {f:'sleepy.png', n:'Sleepy'}, {f:'curious.png', n:'Curious'}
             ],
             'sad': [
-                {f:'sad.png', n:'Sad'}, 
-                {f:'sick.png', n:'Sick'}, 
-                {f:'cringe.png', n:'Cringe'},
-                {f:'tired.png', n:'Tired'},
-                {f:'exhausted.png', n:'Exhausted'},
-                {f:'guilty.png', n:'Guilty'}, 
-                {f:'afraid.png', n:'Afraid'}
+                {f:'sad.png', n:'Sad'}, {f:'sick.png', n:'Sick'}, {f:'cringe.png', n:'Cringe'}, {f:'tired.png', n:'Tired'},
+                {f:'exhausted.png', n:'Exhausted'}, {f:'guilty.png', n:'Guilty'}, {f:'afraid.png', n:'Afraid'}
             ],
             'angry': [
-                {f:'angry.png', n:'Angry'}, 
-                {f:'shock.png', n:'Shock'},
-                {f:'trick.png', n:'Trick'},
-                {f:'awkward.png', n:'Awkward'}
+                {f:'angry.png', n:'Angry'}, {f:'shock.png', n:'Shock'}, {f:'trick.png', n:'Trick'}, {f:'awkward.png', n:'Awkward'}
             ]
         };
 
@@ -241,29 +224,55 @@
         function openPhotoModal() { document.getElementById('photoModal').style.display = 'flex'; }
         function closePhotoModal(e) { if(e.target.id === 'photoModal') e.target.style.display = 'none'; }
 
+        function handleFileSelect(input) {
+            if (input.files && input.files.length > 0) {
+                selectedPhotos = Array.from(input.files);
+                const previewContainer = document.getElementById('previewContainer');
+                previewContainer.innerHTML = ''; 
+
+                selectedPhotos.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '80px';
+                        img.style.height = '80px';
+                        img.style.borderRadius = '10px';
+                        img.style.objectFit = 'cover';
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+                alert("Selected " + selectedPhotos.length + " photo(s)! 🌸");
+                document.getElementById('photoModal').style.display = 'none';
+            }
+        }
+
         function saveEntry() {
             if (!selectedCategory || !selectedMoodName) {
                 alert("Please select your mood first! 🌸");
                 return;
             }
-            const data = {
-                category: selectedCategory,
-                mood_name: selectedMoodName,
-                intensity: document.getElementById('intensityRange').value,
-                content: document.getElementById('diaryEntry').value,
-                song: document.getElementById('songInput').value
-            };
+
+            const formData = new FormData();
+            formData.append('category', selectedCategory);
+            formData.append('mood_name', selectedMoodName);
+            formData.append('intensity', document.getElementById('intensityRange').value);
+            formData.append('content', document.getElementById('diaryEntry').value);
+            formData.append('song', document.getElementById('songInput').value);
+            
+            selectedPhotos.forEach(file => formData.append('photos', file));
             
             fetch("{% url 'moodentry' %}", {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
-                body: JSON.stringify(data)
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                body: formData
             })
             .then(res => res.json())
             .then(result => {
                 if(result.status === "success") {
                     alert("Your mood has been bloomed! 🌸");
-                    window.location.href = "{% url 'dashboard' %}";
+                    window.location.href = "{% url 'mainpage' %}";
                 }
             });
         }

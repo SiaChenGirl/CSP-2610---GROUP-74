@@ -10,6 +10,10 @@ class Profile(models.Model):
     birthday = models.DateField(null=True, blank=True)             # 融入 Model 1 的生日字段
     email_verified = models.BooleanField(default=False)          # 保留 Model 2 邮件验证核心
 
+# ✨ 增加这个头像字段，用于在 Profile 页面上传和显示图片
+    # upload_to='avatars/' 会自动在你的 MEDIA_ROOT 下创建一个 avatars 文件夹
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+   
     def __str__(self):
         return self.user.username
 

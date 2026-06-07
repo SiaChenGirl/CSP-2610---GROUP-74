@@ -114,25 +114,34 @@ def change_password(request):
 def profile_view(request):
     user = request.user
     profile, _ = Profile.objects.get_or_create(user=user)
-    
+
     if request.method == 'POST':
+        
         user.username = request.POST.get('username')
         user.email = request.POST.get('email')
         user.save()
+        
+    
         profile.gender = request.POST.get('gender')
         profile.birthday = request.POST.get('birthday') or None
+        
+    
+        if request.FILES.get('avatar'):
+            profile.avatar = request.FILES.get('avatar')
+            
         profile.save()
         return redirect('profile') 
         
-    # 如果是 AJAX 请求，返回 JSON（支持 views2）
     if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
         return JsonResponse({
             'username': user.username,
             'email': user.email,
             'gender': profile.gender,
-            'birthday': str(profile.birthday) if profile.birthday else None
+            'birthday': str(profile.birthday) if profile.birthday else None,
+            'avatar': profile.avatar.url if profile.avatar else None
         })
     return render(request, 'profile.html', {'profile': profile})
+
 
 
 # ==========================================
@@ -148,38 +157,39 @@ def mainpage_view(request):
 @login_required
 def moodentry_view(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        
-        # 完美揉合：既兼容 views1 字段，又首选 views2 核心字段
-        mood = data.get('mood') or data.get('mood_name')
-
+        # 💡 这里改为使用 request.POST.get 而不是 json.loads
+        mood = request.POST.get('mood') or request.POST.get('mood_name')
         if not mood:
-            return JsonResponse(
-                {'error': 'Mood is required'},
-                status=400
-            )
-        diary = data.get('diary_text') or data.get('content')
-        category = data.get('category')
-        intensity = data.get('intensity', 3)
-        
-        # 音乐字段兼容
-        song_title = data.get('song_title') or data.get('song')
-        artist = data.get('artist')
-        music_link = data.get('music_link')
+            return JsonResponse({'error': 'Mood is required'}, status=400)
+            
+        diary = request.POST.get('diary_text') or request.POST.get('content')
+        category = request.POST.get('category')
+        intensity = request.POST.get('intensity', 3)
+        song_title = request.POST.get('song_title') or request.POST.get('song')
+        artist = request.POST.get('artist')
+        music_link = request.POST.get('music_link')
 
-        MoodEntry.objects.create(
-            user=request.user,
-            mood=mood,
-            category=category,
-            diary_text=diary,
-            intensity=intensity,
-            song_title=song_title,
-            artist=artist,
+        # 1. 创建 MoodEntry，确保 user=request.user (实现数据隔离)
+        entry = MoodEntry.objects.create(
+            user=request.user, 
+            mood=mood, 
+            category=category, 
+            diary_text=diary, 
+            intensity=intensity, 
+            song_title=song_title, 
+            artist=artist, 
             music_link=music_link
         )
+        
+        # 2. 核心：处理照片上传，关联到刚才创建的 entry
+        # 前端 <input type="file" name="photos" multiple> 对应的就是 'photos'
+        if request.FILES.getlist('photos'):
+            for file in request.FILES.getlist('photos'):
+                MoodPhoto.objects.create(mood_entry=entry, image=file)
+                
         return JsonResponse({'status': 'success', 'message': 'Mood entry saved successfully!'})
+    
     return render(request, 'moodentry.html')
-
 
 @login_required
 def today_mood(request):
@@ -205,11 +215,27 @@ def upload_photo(request, entry_id):
 def gallery_view(request):
     # 既能渲染网页，也能提供数据
     if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
-        photos = MoodPhoto.objects.filter(mood_entry__user=request.user).order_by('-mood_entry__created_at')       
-        gallery = [{'image': photo.image.url, 'mood': photo.mood_entry.mood, 'date': photo.mood_entry.created_at.strftime('%Y-%m-%d')} for photo in photos]
+        # 优化查询：使用 select_related 提升性能，并按时间倒序
+        photos = MoodPhoto.objects.filter(mood_entry__user=request.user)\
+                                  .select_related('mood_entry')\
+                                  .order_by('-mood_entry__created_at')
+        
+        gallery = []
+        for photo in photos:
+            # 增加安全检查，确保 image 存在
+            if photo.image:
+                gallery.append({
+                    'image': photo.image.url, 
+                    'mood': photo.mood_entry.mood, 
+                    'date': photo.mood_entry.created_at.strftime('%Y-%m-%d')
+                })
+        
         return JsonResponse({'photos': gallery})
-    return render(request, 'gallery.html', {'moods': MoodEntry.objects.filter(user=request.user)})
-
+    
+    # 渲染网页时，确保只传该用户的 entries
+    return render(request, 'gallery.html', {
+        'moods': MoodEntry.objects.filter(user=request.user).order_by('-created_at')
+    })
 
 # ==========================================
 # 3. 搜索与探索模块
@@ -242,15 +268,26 @@ def search_view(request):
         
     return render(request, 'search.html')
 
-
 # ==========================================
 # 4. 心理健康文章与收藏夹模块 (支持前端动态卡片点击获取分类数据)
 # ==========================================
 
 @login_required
 def article_view(request):
+    # 1. 恢复它！让它继续渲染你的中转选择页
     return render(request, 'article.html')
 
+
+@login_required
+def paragraph_view(request):
+    # 2. 新增这个！专门用来渲染具体看文章的三栏主网页
+    return render(request, 'paragraph.html')
+
+
+@login_required
+def favourite_page_view(request):
+    # 3. 保持这个！专门用来渲染收藏夹卡片页
+    return render(request, 'favourite.html')
 
 # 关键融合：views1 用于支持你和陈女孩前台页面异步点击的分类 API
 @login_required
@@ -311,25 +348,39 @@ def remove_favorite(request, article_id):
 # 5. 反馈管理与数据仪表盘模块 (集成 views2 的高效 Streak 算法)
 # ==========================================
 
-@csrf_exempt
+# ✨ 完美安全修改：移除了 @csrf_exempt 以免文件流冲突，加入了 request.POST 和 request.FILES 的处理机制
 @login_required
 def feedback_view(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        subject = data.get('subject', 'General Feedback')
-        rating = data.get('rating')
-        # 兼容 views1 的 content 命名与 views2 的 message 命名
-        message = data.get('message') or data.get('content')
-        email = data.get('email', request.user.email)
+        try:
+            # 💡 因为前端用了 FormData，所以用 request.POST 替代 json.loads(request.body)
+            subject = request.POST.get('subject', 'General Feedback')
+            rating = request.POST.get('rating')
+            # 完美兼容：获取前端传来的 content 并与你数据库的 message 绑定
+            message = request.POST.get('content') or request.POST.get('message')
+            email = request.POST.get('email', request.user.email)
 
-        Feedback.objects.create(
-            user=request.user, 
-            subject=subject, 
-            rating=rating, 
-            message=message,
-            email=email
-        )
-        return JsonResponse({'status': 'success', 'message': 'Feedback submitted successfully.'})
+            # ✨ 核心功能：接住前端传过来的图片文件
+            screenshot = request.FILES.get('screenshot')
+
+            if not rating or not message:
+                return JsonResponse({'status': 'error', 'message': 'Rating and content are required.'})
+
+            # 插入并保存到数据库（message 完美对齐你的数据库字段）
+            Feedback.objects.create(
+                user=request.user, 
+                subject=subject, 
+                rating=int(rating), 
+                message=message,
+                email=email,
+                screenshot=screenshot  # 成功保存图片路径到数据库，图片落入 media/feedback/
+            )
+            return JsonResponse({'status': 'success', 'message': 'Feedback submitted successfully.'})
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    # GET 请求时，保持原样渲染 feedback.html
     return render(request, 'feedback.html')
 
 
@@ -401,7 +452,3 @@ def dashboard_view(request):
 
 def forgot_view(request): 
     return render(request, 'forgot.html')
-    
-
-        
-    

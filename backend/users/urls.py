@@ -20,14 +20,13 @@ urlpatterns = [
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('profile/', views.profile_view, name='profile'),
     path('moodentry/', views.moodentry_view, name='moodentry'),
-    path('article/', views.article_view, name='article'),
+    path('article/', views.article_view, name='article'),              # 指向中转页 article.html
+    path('article/paragraph/', views.paragraph_view, name='paragraph'), # 指向文章页 paragraphs.html
+    path('article/favourite/', views.favourite_page_view, name='favourite'), # 指向收藏夹 favourite.html
     path('gallery/', views.gallery_view, name='gallery'),
     path('search/', views.search_view, name='search'),
     path('feedback/', views.feedback_view, name='feedback'),
-
-    # 🔗 【核心修复】在此处补齐文章方块跳转所需的路由名，100% 对应 article.html 的 href
-    path('article/paragraph/', views.article_view, name='paragraph'),  
-    path('article/favourite/', views.article_view, name='favourite'),  
+    
 
     # ==========================================
     # 2. 核心后端核心 API 接口 (完全采用你们原有的体系)
