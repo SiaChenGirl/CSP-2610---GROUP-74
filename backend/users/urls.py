@@ -1,10 +1,15 @@
+"""
+URL configuration for users app.
+本文件已完美整合网页模板渲染路由与核心后端 API 接口。
+"""
+
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
     # ==========================================
-    # 1. 网页模板渲染路由 (来自 urls1，负责让你和队友打开页面)
+    # 1. 网页模板渲染路由 (负责让你和队友打开页面)
     # ==========================================
     path('', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
@@ -20,8 +25,12 @@ urlpatterns = [
     path('search/', views.search_view, name='search'),
     path('feedback/', views.feedback_view, name='feedback'),
 
+    # 🔗 【核心修复】在此处补齐文章方块跳转所需的路由名，100% 对应 article.html 的 href
+    path('article/paragraph/', views.article_view, name='paragraph'),  
+    path('article/favourite/', views.article_view, name='favourite'),  
+
     # ==========================================
-    # 2. 核心后端核心 API 接口 (完全采用 urls2 的命名与体系)
+    # 2. 核心后端核心 API 接口 (完全采用你们原有的体系)
     # ==========================================
     path('api/register/', views.register_view), # 已绑定你最新的合并注册逻辑
     path('login/', views.login_view, name='login_page'),     # 已绑定合并登录
@@ -53,7 +62,7 @@ urlpatterns = [
     path('api/dashboard-status/', views.dashboard_view),
 
     # ==========================================
-    # 3. 密码重置官方内置路由 (保留 urls2 的高阶安全功能)
+    # 3. 密码重置官方内置路由 (保留原有高阶安全功能)
     # ==========================================
     path(
         'api/password-reset/',
