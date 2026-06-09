@@ -10,6 +10,13 @@ class Profile(models.Model):
     birthday = models.DateField(null=True, blank=True)             # 融入 Model 1 的生日字段
     email_verified = models.BooleanField(default=False)          # 保留 Model 2 邮件验证核心
 
+<<<<<<< HEAD
+# ✨ 增加这个头像字段，用于在 Profile 页面上传和显示图片
+    # upload_to='avatars/' 会自动在你的 MEDIA_ROOT 下创建一个 avatars 文件夹
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+   
+=======
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     def __str__(self):
         return self.user.username
 
@@ -25,9 +32,18 @@ class MoodEntry(models.Model):
     intensity = models.IntegerField(default=3, null=True, blank=True) # 保留默认权重 3 
     
     # 音乐模块：完美融合 Model 1 的单字段与 Model 2 的详细字段
+<<<<<<< HEAD
+    selected_music = models.ForeignKey(
+        'Music',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+=======
     song_title = models.CharField(max_length=255, null=True, blank=True) # 对应 Model 1 的 song 字段
     artist = models.CharField(max_length=255, null=True, blank=True)
     music_link = models.URLField(null=True, blank=True)
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -99,4 +115,16 @@ class Feedback(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+<<<<<<< HEAD
         return self.user.username if self.user else "Guest"
+    
+class Music(models.Model):
+    title = models.CharField(max_length=100)
+    mood_category = models.CharField(max_length=50)
+    audio_file = models.FileField(upload_to='music/')
+
+    def __str__(self):
+        return self.title
+=======
+        return self.user.username if self.user else "Guest"
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
