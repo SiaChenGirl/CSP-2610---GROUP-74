@@ -140,8 +140,13 @@
         }
         .action-btn:hover { transform: scale(1.08); }
         .action-btn img { width: 22px; opacity: 0.7; }
+<<<<<<< HEAD
         .action-btn.active { background: #b39ddb; } 
         .action-btn.active img { filter: brightness(0) invert(1); opacity: 1; }
+=======
+        .active { background: #b39ddb; } 
+        .active img { filter: brightness(0) invert(1); opacity: 1; }
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
 
         footer { text-align: center; padding: 25px 0 40px; color: #6a4fbf; font-weight: bold; font-size: 14px; clear: both; }
     </style>
@@ -153,7 +158,11 @@
         <div style="margin-top: 40px;">
             <a href="{% url 'profile' %}">Profile</a>
             <a href="{% url 'feedback' %}">Feedback</a>
+<<<<<<< HEAD
             <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+=======
+            <a href="{% url 'login' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         </div>
     </div>
 
@@ -174,41 +183,70 @@
         <div class="main-panel">
             <div class="article-grid-layout">
                 
+<<<<<<< HEAD
                 <a href="{% url 'paragraph' %}?category=basics" class="category-block">
+=======
+                <!-- Box 1 -->
+                <a href="{% url 'paragraph' %}" class="category-block">
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                     <div class="img-placeholder-section">
                         <img src="{% static 'images/mental_health.jpg' %}" alt="Mental Health Basics">
                     </div>
                     <div class="label-title-section">Mental Health Basics</div>
                 </a>
 
+<<<<<<< HEAD
                 <a href="{% url 'paragraph' %}?category=motivation" class="category-block">
+=======
+                <!-- Box 2 -->
+                <a href="{% url 'paragraph' %}" class="category-block">
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                     <div class="img-placeholder-section">
                         <img src="{% static 'images/motivation.jpg' %}" alt="Motivation">
                     </div>
                     <div class="label-title-section">Motivation & Positive Mindset</div>
                 </a>
 
+<<<<<<< HEAD
                 <a href="{% url 'paragraph' %}?category=relationships" class="category-block">
+=======
+                <!-- Box 3 -->
+                <a href="{% url 'paragraph' %}" class="category-block">
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                     <div class="img-placeholder-section">
                         <img src="{% static 'images/relationships.jpg' %}" alt="Relationships">
                     </div>
                     <div class="label-title-section">Relationships & Social Well-Being</div>
                 </a>
 
+<<<<<<< HEAD
                 <a href="{% url 'paragraph' %}?category=stress" class="category-block">
+=======
+                <!-- Box 4 -->
+                <a href="{% url 'paragraph' %}" class="category-block">
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                     <div class="img-placeholder-section">
                         <img src="{% static 'images/stress.jpg' %}" alt="Stress Management">
                     </div>
                     <div class="label-title-section">Stress & Anxiety Management</div>
                 </a>
 
+<<<<<<< HEAD
                 <a href="{% url 'paragraph' %}?category=selfcare" class="category-block">
+=======
+                <!-- Box 5 -->
+                <a href="{% url 'paragraph' %}" class="category-block">
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                     <div class="img-placeholder-section">
                         <img src="{% static 'images/self_care.jpg' %}" alt="Self Care">
                     </div>
                     <div class="label-title-section">Self Care & Daily Habits</div>
                 </a>
 
+<<<<<<< HEAD
+=======
+                <!-- Box 6 (Favourites fallback star icon remains for branding) -->
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                 <a href="{% url 'favourite' %}" class="category-block fav-block">
                     <div class="img-placeholder-section">
                         <div class="star-jump-icon">★</div>
@@ -219,6 +257,10 @@
             </div>
         </div>
 
+<<<<<<< HEAD
+=======
+        <!-- Right Side Nav Actions Bar -->
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         <div class="circle-actions">
             <div class="action-btn" title="Calendar" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
             <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>

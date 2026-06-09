@@ -110,14 +110,24 @@
     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
         <div style="margin-top: 40px;">
+<<<<<<< HEAD
             <a href="{% url 'profile' %}">Profile</a>
             <a href="{% url 'feedback' %}">Feedback</a>
             <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+=======
+            <a href="profile.html">Profile</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="login.html" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         </div>
     </div>
 
     <div class="header-wrapper">
+<<<<<<< HEAD
         <div class="logo" onclick="location.href='{% url 'mainpage' %}'" style="cursor: pointer;"><img src="logo.png"></div>
+=======
+        <div class="logo"><img src="logo.png"></div>
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         <div class="title-area">
             <img src="title.png"><br>
             <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood your day, Bloom your mind.</span>
@@ -130,6 +140,7 @@
     <div class="gallery-container">
         <div class="gallery-box">
             <div class="photo-grid" id="photoGrid">
+<<<<<<< HEAD
     {% for entry in moods %} 
     {% for photo in entry.photos.all %} 
         <div class="photo-item">
@@ -149,6 +160,20 @@
             <div class="action-btn" title="History" onclick="location.href='{% url 'article' %}'"><img src="icons/book.png"></div>
             <div class="action-btn" title="Stats" onclick="location.href='{% url 'dashboard' %}'"><img src="icons/stats.png"></div>
             <div class="action-btn active-circle" title="Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="icons/camera.png"></div>
+=======
+                <div class="photo-item"><div class="photo-placeholder"></div><span class="photo-date">2026-04-01</span></div>
+                <div class="photo-item"><div class="photo-placeholder"></div><span class="photo-date">2026-04-03</span></div>
+                <div class="photo-item"><div class="photo-placeholder"></div><span class="photo-date">2026-04-05</span></div>
+                <div class="photo-item"><div class="photo-placeholder"></div><span class="photo-date">2026-04-10</span></div>
+            </div>
+        </div>
+
+        <div class="circle-actions">
+            <div class="action-btn" title="Search" onclick="location.href='search.html'"><img src="icons/search.png"></div>
+            <div class="action-btn" title="History" onclick="location.href='article.html'"><img src="icons/book.png"></div>
+            <div class="action-btn" title="Stats" onclick="location.href='dashboard.html'"><img src="icons/stats.png"></div>
+            <div class="action-btn active-circle" title="Gallery"><img src="icons/camera.png"></div>
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         </div>
     </div>
 

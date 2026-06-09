@@ -1,10 +1,17 @@
+<<<<<<< HEAD
 {% load static %}
+=======
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>MoodBloom | Paragraphs</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<<<<<<< HEAD
+=======
+    <link rel="stylesheet" href="style.css">
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     <style>
         body { 
             margin: 0; 
@@ -41,7 +48,11 @@
 
         /* --- LOGO AND BRAND HEADER --- */
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+<<<<<<< HEAD
         .logo img { width: 180px; cursor: pointer; }
+=======
+        .logo img { width: 180px; }
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         .title-area { text-align: center; }
         .title-area img { width: 230px; }
         .menu-icon { font-size: 35px; cursor: pointer; color: #6a4fbf; width: 180px; text-align: right; }
@@ -107,6 +118,10 @@
             margin-bottom: 20px;
         }
 
+<<<<<<< HEAD
+=======
+        /* Scrollable container holding paragraph data blocks matching your style templates */
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         .scrollable-text-body {
             flex: 1;
             overflow-y: auto;
@@ -115,6 +130,10 @@
         .scrollable-text-body::-webkit-scrollbar { width: 5px; }
         .scrollable-text-body::-webkit-scrollbar-thumb { background: #e2dafb; border-radius: 10px; }
 
+<<<<<<< HEAD
+=======
+        /* Article layout matching image structures sent */
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         .article-block {
             display: flex;
             flex-direction: column;
@@ -206,6 +225,10 @@
         .action-btn.active { background: #b39ddb; } 
         .action-btn.active img { filter: brightness(0) invert(1); opacity: 1; }
 
+<<<<<<< HEAD
+=======
+        /* --- SYSTEM FOOTER --- */
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         footer { 
             text-align: center; 
             padding: 15px 0; 
@@ -224,18 +247,30 @@
 <div class="side-nav" id="sideNav">
     <span class="close-nav" onclick="toggleNav()">&times;</span>
     <div style="margin-top: 40px;">
+<<<<<<< HEAD
         <a href="{% url 'profile' %}">Profile</a>
         <a href="{% url 'feedback' %}">Feedback</a>
         <!-- 已成功接入后台路由，安全指向收藏夹 -->
         <a href="{% url 'favourite' %}">Bookmarks</a>
         <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+=======
+        <a href="profile.html">Profile</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="login.html" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     </div>
 </div>
 
 <div class="header-wrapper">
+<<<<<<< HEAD
     <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'logo.png' %}"></div>
     <div class="title-area">
         <img src="{% static 'title.png' %}"><br>
+=======
+    <div class="logo"><img src="logo.png"></div>
+    <div class="title-area">
+        <img src="title.png"><br>
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         <span class="slogan" style="color: #6a4fbf; font-style: italic; font-family: 'Dancing Script', cursive; font-size: 18px;">
             Mood your day, Bloom your mind.
         </span>
@@ -270,6 +305,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- 侧边全局悬浮导航已完美替换为 Django 核心模板标签 -->
     <div class="circle-actions">
         <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
@@ -277,6 +313,14 @@
         <div class="action-btn active" title="Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/book.png' %}"></div>
         <div class="action-btn" title="Stats" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/stats.png' %}"></div>
         <div class="action-btn" title="Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
+=======
+    <div class="circle-actions">
+        <div class="action-btn" title="Search" onclick="location.href='search.html'"><img src="icons/search.png"></div>
+        <div class="action-btn" title="Calendar" onclick="location.href='mainpage.html'"><img src="icons/calendar.png"></div>
+        <div class="action-btn active" title="Articles" onclick="location.href='article.html'"><img src="icons/book.png"></div>
+        <div class="action-btn" title="Stats" onclick="location.href='dashboard.html'"><img src="icons/stats.png"></div>
+        <div class="action-btn" title="Gallery" onclick="location.href='gallery.html'"><img src="icons/camera.png"></div>
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     </div>
 
 </div>
@@ -300,11 +344,19 @@
         }
     }
 
+<<<<<<< HEAD
+=======
+    // Set default active highlight state on startup
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     document.addEventListener("DOMContentLoaded", function() {
         const firstCard = document.querySelector('.cute-card');
         if(firstCard) firstCard.classList.add('selected-active');
     });
 
+<<<<<<< HEAD
+=======
+    // Dynamic Article Content Mapping according to your layout wireframe
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     function displayParagraph(topic, emoji, element) {
         const cards = document.querySelectorAll('.cute-card');
         cards.forEach(c => c.classList.remove('selected-active'));
@@ -375,5 +427,9 @@
         document.getElementById('textViewport').scrollTop = 0;
     }
 </script>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
 </body>
 </html>
