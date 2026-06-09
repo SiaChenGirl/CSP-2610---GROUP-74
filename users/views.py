@@ -944,6 +944,7 @@ def forgot_view(request):
            # 确保 reset_url 的格式和 urls.py 里的 path('reset/<uidb64>/<token>/', ...) 一致
             reset_url = f"http://127.0.0.1:8000/reset/{uid}/{token}/"
             
+            
             # 4. 发送邮件
             try:
                 send_mail(
@@ -963,5 +964,4 @@ def forgot_view(request):
 
 class AjaxPasswordResetView(View):
     def post(self, request, *args, **kwargs):
-        # 直接复用你现有的 forgot_view 逻辑
         return forgot_view(request)

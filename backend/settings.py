@@ -126,9 +126,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'adminmoodbloom@gmail.com'
 EMAIL_HOST_PASSWORD = 'uqpvbyswqvszsbjr' # 在 Google 账号设置中生成
-# settings.py
-# 加上这一行，可以让 Django 在控制台打印出与 SMTP 服务器的所有通讯细节
-EMAIL_DEBUG = True
+
 
 import os  # 如果文件顶部没有 import os，请在顶部加上，或者直接用下面这行
 
