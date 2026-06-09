@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | Reset Password</title>
+    <style>
+        /* 保持你原本的精美样式 */
+        body { 
+            margin: 0; font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
+            background-attachment: fixed; min-height: 100vh; 
+            color: #4a3494; display: flex; flex-direction: column;
+        }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 180px; }
+        .title-area img { width: 253px; }
+        .content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        
+        .box { 
+            width: 400px; background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(12px); padding: 40px; border-radius: 30px; 
+            border: 1px solid rgba(255, 255, 255, 0.8); text-align: center; 
+            box-shadow: 0 8px 25px rgba(106, 79, 191, 0.1); 
+        }
+
+        /* 覆盖 Django 表单生成的 input 样式 */
+        input { 
+            width: 100%; padding: 14px 15px; border-radius: 15px; 
+            border: 1px solid #e0d7ff; background: white; 
+            box-sizing: border-box; outline: none; color: #4a3494; font-size: 15px;
+            margin: 10px 0;
+        }
+
+        .btn-main { 
+            width: 100%; padding: 15px; background: #6a4fbf; 
+            border: none; border-radius: 15px; color: white; 
+            font-weight: bold; font-size: 16px; cursor: pointer; 
+            margin-top: 15px; transition: 0.3s;
+        }
+        .btn-main:hover { background: #4a3494; transform: scale(1.02); }
+        
+        footer { text-align: center; padding: 20px; color: #6a4fbf; font-weight: bold; opacity: 0.8; }
+        
+        /* Django 错误信息样式 */
+        .errorlist { color: #e57373; font-size: 12px; list-style: none; padding: 0; }
+    </style>
+</head>
+<body>
+
+    <div class="header-wrapper">
+        <div class="logo"><img src="{% static 'logo.png' %}"></div>
+        <div class="title-area">
+            <img src="{% static 'title.png' %}"><br>
+            <span style="color: #6a4fbf; font-style: italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
+        </div>
+        <div style="width: 180px;"></div>
+    </div>
+
+    <div class="content">
+        <div class="box">
+            <h2 style="color: #6a4fbf; margin-bottom: 25px;">Reset Password</h2>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                {{ form.as_p }}
+                
+                <button type="submit" class="btn-main">Save Password</button>
+            </form>
+            
+            <p style="font-size: 13px; margin-top: 20px; color: #6a4fbf;">
+                Remembered your password? <a href="{% url 'login' %}" style="color: #4a3494; font-weight: bold; text-decoration: none;">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <footer>© 2026 MoodBloom | Mood Your Day, Bloom Your Mind.</footer>
+
+</body>
+</html>

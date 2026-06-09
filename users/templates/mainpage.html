@@ -1,0 +1,253 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | Main Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600&display=swap" rel="stylesheet">
+    <style>
+        /* 1. 基础布局 - 统一队友的渐变风格 */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
+            background-attachment: fixed; 
+            min-height: 100vh; 
+            color: #4a3494;
+            overflow-x: hidden;
+        }
+
+        /* 2. 侧边导航栏 (Side Nav) - Updated to a soft neutral drop shadow */
+        .side-nav {
+            position: fixed; 
+            top: 0; 
+            right: -300px; 
+            width: 280px; 
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98); 
+            backdrop-filter: blur(10px);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05); 
+            z-index: 1000;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding: 50px 30px; 
+            box-sizing: border-box;
+        }
+        .side-nav.active { right: 0; }
+        .side-nav a {
+            display: block; 
+            padding: 18px 0; 
+            color: #4a3494; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 18px;
+            border-bottom: 1px solid #f0f0f0; 
+            transition: 0.3s;
+        }
+        .side-nav a:hover { color: #6a4fbf; padding-left: 15px; }
+        .close-nav { font-size: 40px; cursor: pointer; position: absolute; top: 15px; right: 25px; color: #b39ddb; }
+
+        /* 3. 头部设计 */
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 180px; cursor: pointer; }
+        .title-area { text-align: center; }
+        .title-area img { width: 230px; }
+        .menu-icon { font-size: 35px; cursor: pointer; color: #6a4fbf; width: 180px; text-align: right; }
+
+        /* 4. 日历与侧边按钮布局 */
+        .main-container { display: flex; justify-content: center; gap: 40px; padding: 20px 60px; align-items: flex-start; }
+        
+        .calendar-box { 
+            background: white; 
+            border-radius: 40px; 
+            padding: 35px; 
+            width: 700px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+        }
+
+        .cal-header { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .cal-header select { 
+            border: none; font-size: 24px; color: #6a4fbf; font-weight: bold; 
+            cursor: pointer; outline: none; background: transparent;
+        }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .day-label { font-weight: bold; color: #b39ddb; padding-bottom: 10px; font-size: 14px; }
+        
+        .day-cell { 
+            height: 55px; line-height: 55px; border-radius: 15px; 
+            cursor: pointer; transition: 0.3s; font-weight: bold; 
+            background: #fcfaff; border: 1px solid #f0ebff;
+        }
+        .day-cell:hover { background: #6a4fbf; color: white; transform: scale(1.05); }
+        .highlight-today { background: #b39ddb !important; color: white; }
+
+        /* 侧边五圈功能按钮 */
+        .circle-nav { display: flex; flex-direction: column; gap: 15px; }
+        .nav-btn { 
+            width: 65px; height: 65px; background: white; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; transition: 0.3s; 
+        }
+        .nav-btn:hover { transform: scale(1.1); background: #fcfaff; }
+        .nav-btn img { width: 28px; opacity: 0.7; }
+        .nav-btn.active { background: #b39ddb; }
+        .nav-btn.active img { filter: brightness(0) invert(1); opacity: 1; }
+
+        /* 弹窗样式 (Modal) */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 2000; backdrop-filter: blur(3px); }
+        .modal-box { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 30px; z-index: 2001; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); width: 320px; }
+        .modal-btn { margin: 10px auto; padding: 12px 25px; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s; width: 85%; display: block; }
+        
+        footer { text-align: center; padding: 30px; color: #6a4fbf; font-weight: bold; opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+    <div class="side-nav" id="sideNav">
+        <span class="close-nav" onclick="toggleNav()">&times;</span>
+        <div style="margin-top: 40px;">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'feedback' %}">Feedback</a>
+            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+        </div>
+    </div>
+
+    <div class="header-wrapper">
+        <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'logo.png' %}"></div>
+        <div class="title-area">
+            <img src="{% static 'title.png' %}"><br>
+            <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
+        </div>
+        <div class="menu-icon" onclick="toggleNav()">☰</div>
+    </div>
+    
+    <div class="divider-line" style="height:1px; background:rgba(106, 79, 191, 0.2); margin:0 50px 20px 50px;"></div>
+
+    <div class="main-container">
+        <div class="calendar-box">
+            <div class="cal-header">
+                <select id="mSelect" onchange="buildCal()"></select>
+                <select id="ySelect" onchange="buildCal()"></select>
+            </div>
+            <div class="calendar-grid" id="grid"></div>
+        </div>
+
+        <div class="circle-nav">
+            <div class="nav-btn active" title="Calendar Home" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
+            <div class="nav-btn" title="Search & Explore" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
+            <div class="nav-btn" title="Mental Health Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/book.png' %}"></div>
+            <div class="nav-btn" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/stats.png' %}"></div>
+            <div class="nav-btn" title="Photo Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
+    <div class="modal-box" id="modal">
+        <h3 id="dateTitle" style="color: #6a4fbf; margin-top: 0;"></h3>
+        <button class="modal-btn" style="background:#E8E0FF; color:#4a3494;" onclick="goHistory()">View Previous</button>
+        <button class="modal-btn" id="createNewBtn" style="background:#6a4fbf; color:white;" onclick="goEntry()">Create New</button>
+    </div>
+
+    <footer>© 2026 MoodBloom | Mood Your Day, Bloom Your Mind.</footer>
+
+    <script>
+        function toggleNav() {
+            document.getElementById('sideNav').classList.toggle('active');
+        }
+
+        const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        let displayStr = ""; 
+        let formattedDateForBackend = ""; 
+
+        function startup() {
+            const ms = document.getElementById('mSelect');
+            const ys = document.getElementById('ySelect');
+            const now = new Date();
+
+            mNames.forEach((n, i) => ms.innerHTML += `<option value="${i}">${n}</option>`);
+            for(let y = now.getFullYear()-1; y <= now.getFullYear()+1; y++) {
+                ys.innerHTML += `<option value="${y}">${y}</option>`;
+            }
+
+            ms.value = now.getMonth();
+            ys.value = now.getFullYear();
+            buildCal();
+        }
+
+        function buildCal() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            const m = parseInt(document.getElementById('mSelect').value);
+            const y = parseInt(document.getElementById('ySelect').value);
+            const now = new Date();
+
+            const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+            ["S","M","T","W","T","F","S"].forEach(d => {
+                grid.innerHTML += `<div class="day-label">${d}</div>`;
+            });
+
+            const firstDay = new Date(y, m, 1).getDay();
+            const totalDays = new Date(y, m + 1, 0).getDate();
+
+            for(let i=0; i<firstDay; i++) grid.innerHTML += `<div></div>`;
+
+            for(let d=1; d<=totalDays; d++) {
+                const cell = document.createElement('div');
+                cell.className = 'day-cell';
+                if(d === now.getDate() && m === now.getMonth() && y === now.getFullYear()) {
+                    cell.classList.add('highlight-today');
+                }
+                cell.innerText = d;
+                
+                cell.onclick = () => {
+                    displayStr = `${mNames[m]} ${d}, ${y}`;
+                    document.getElementById('dateTitle').innerText = displayStr;
+
+                    const mm = String(m + 1).padStart(2, '0');
+                    const dd = String(d).padStart(2, '0');
+                    formattedDateForBackend = `${y}-${mm}-${dd}`;
+
+                    const clickedDate = new Date(y, m, d).getTime();
+                    const diffTime = clickedDate - todayMidnight;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    const createBtn = document.getElementById('createNewBtn');
+
+                    if (diffDays > 0) {
+                        createBtn.onclick = function() {
+                            alert("Oops! You can't write for a future diary date. Please come back tomorrow or later!");
+                        };
+                    } else if (diffDays < -3) {
+                        createBtn.onclick = function() {
+                            alert("Oops! It has been more than 72 hours. Memories fade, so you can only write entries up to 3 days ago!");
+                        };
+                    } else {
+                        createBtn.onclick = goEntry;
+                    }
+
+                    document.getElementById('modal').style.display = 'block';
+                    document.getElementById('overlay').style.display = 'block';
+                };
+                grid.appendChild(cell);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display='none';
+            document.getElementById('overlay').style.display='none';
+        }
+
+        function goHistory() { 
+            location.href = `{% url 'search' %}?date=${formattedDateForBackend}`; 
+        }
+        
+        function goEntry() { 
+            location.href = `{% url 'moodentry' %}?date=${formattedDateForBackend}`; 
+        }
+
+        startup();
+    </script>
+</body>
+</htm

@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MoodBloom | Bookmarks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
+            background-attachment: fixed; 
+            min-height: 100vh; 
+            overflow-y: auto; 
+            color: #4a3494;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- SIDE NAVIGATION DRAWER --- */
+        .side-nav {
+            position: fixed; top: 0; right: -300px; width: 280px; height: 100%;
+            background: #ffffff; box-shadow: -10px 0 30px rgba(0, 0, 0, 0.08); border-left: 1px solid #eee; z-index: 1000;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 50px 30px; box-sizing: border-box;
+        }
+        .side-nav.active { right: 0; }
+        .side-nav a { display: block; padding: 18px 0; color: #4a3494; text-decoration: none; font-weight: bold; font-size: 18px; border-bottom: 1px solid #f9f9f9; }
+        .side-nav a:hover { color: #b39ddb; padding-left: 10px; background: #fcfcfc; }
+        .close-nav { font-size: 40px; cursor: pointer; position: absolute; top: 15px; right: 25px; color: #6a4fbf; }
+
+        /* --- FIXED BRAND HEADER --- */
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 180px; cursor: pointer; }
+        .title-area { text-align: center; }
+        .title-area img { width: 230px; }
+        .menu-icon { font-size: 35px; cursor: pointer; color: #6a4fbf; width: 180px; text-align: right; }
+        .divider-line { height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 50px 15px 50px; }
+
+        /* --- MAIN LAYOUT STRUCTURE --- */
+        .favourite-display-container { 
+            display: flex; 
+            gap: 35px; 
+            padding: 0 50px; 
+            flex: 1; 
+            box-sizing: border-box; 
+            align-items: flex-start;
+        }
+        
+        .main-panel { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+        }
+
+        /* --- GRID DISPLAY --- */
+        .bookmark-scroll-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; 
+            padding-right: 8px; 
+            margin-bottom: 30px; 
+            align-content: start; 
+        }
+
+        /* --- CARD STYLE DESIGNS --- */
+        .bookmarked-card { background: white; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); padding: 15px; display: flex; flex-direction: column; gap: 8px; position: relative; transition: transform 0.2s, opacity 0.3s; }
+        .bookmarked-card:hover { transform: translateY(-3px); }
+        
+        .bookmark-cover { width: 100%; height: 90px; background: #f6f3ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .bookmark-cover img { width: 100%; height: 100%; object-fit: cover; }
+
+        .bookmark-text-info h3 { margin: 0; font-size: 13.5px; color: #4a3494; padding-right: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .bookmark-text-info p { margin: 4px 0 6px 0; font-size: 11.5px; color: #7f71a7; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        .bookmark-action-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 5px; }
+        .read-article-link { font-size: 11.5px; font-weight: bold; color: #6a4fbf; text-decoration: none; }
+        .source-origin-link { font-size: 11px; color: #b39ddb; text-decoration: underline; }
+
+        .cancel-bookmark-star { position: absolute; top: 10px; right: 10px; background: white; border: none; font-size: 18px; color: #ffcc00; cursor: pointer; outline: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); z-index: 2; }
+        .cancel-bookmark-star:hover { color: #e57373; }
+
+        /* --- VERTICAL ACTIONS PANEL --- */
+        .circle-actions { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            justify-content: center; 
+            position: sticky; 
+            top: 20px; 
+        }
+        .action-btn { width: 52px; height: 52px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
+        .action-btn:hover { transform: scale(1.08); }
+        .action-btn img { width: 22px; opacity: 0.7; }
+        .active { background: #b39ddb; } .active img { filter: brightness(0) invert(1); opacity: 1; }
+
+        footer { text-align: center; padding: 25px 0 40px; color: #6a4fbf; font-weight: bold; font-size: 14px; width: 100%; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <div class="side-nav" id="sideNav">
+        <span class="close-nav" onclick="toggleNav()">&times;</span>
+        <div style="margin-top: 40px;">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'feedback' %}">Feedback</a>
+            <a href="{% url 'article' %}">Articles Feed</a>
+            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+        </div>
+    </div>
+
+    <div class="header-wrapper">
+        <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'logo.png' %}"></div>
+        <div class="title-area">
+            <img src="{% static 'title.png' %}"><br>
+            <span class="slogan" style="color: #6a4fbf; font-style: italic; font-family: 'Dancing Script', cursive; font-size: 18px;">
+                Mood Your Day, Bloom Your Mind.
+            </span>
+        </div>
+        <div class="menu-icon" onclick="toggleNav()">☰</div>
+    </div>
+
+    <div class="divider-line"></div>
+
+    <div class="favourite-display-container">
+        <div class="main-panel">
+            <div class="bookmark-scroll-grid">
+                
+                <!-- 卡片 1 -->
+                <div class="bookmarked-card">
+                    <button class="cancel-bookmark-star" title="Cancel Favourite" onclick="dismissBookmarkCard(this)">★</button>
+                    <div class="bookmark-cover">
+                        <img src="{% static 'images/mental_health.jpg' %}" alt="Mental Health Basics">
+                    </div>
+                    <div class="bookmark-text-info">
+                        <h3>Mental Health Basics</h3>
+                        <p>Core foundational guide outlining emotional safety frameworks.</p>
+                    </div>
+                    <div class="bookmark-action-row">
+                        <!-- 🔗 完美链接回三栏文章主页 -->
+                        <a href="{% url 'article' %}" class="read-article-link">Read more</a>
+                        <a href="https://example.com" target="_blank" class="source-origin-link">Original Source</a>
+                    </div>
+                </div>
+
+                <!-- 卡片 2 -->
+                <div class="bookmarked-card">
+                    <button class="cancel-bookmark-star" title="Cancel Favourite" onclick="dismissBookmarkCard(this)">★</button>
+                    <div class="bookmark-cover">
+                        <img src="{% static 'images/motivation.jpg' %}" alt="Motivation Tactics">
+                    </div>
+                    <div class="bookmark-text-info">
+                        <h3>Motivation Tactics</h3>
+                        <p>How to construct durable internal triggers when dealing with fatigue.</p>
+                    </div>
+                    <div class="bookmark-action-row">
+                        <!-- 🔗 完美链接回三栏文章主页 -->
+                        <a href="{% url 'article' %}" class="read-article-link">Read more</a>
+                        <a href="https://example.com" target="_blank" class="source-origin-link">Original Source</a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- 侧边全局悬浮导航已成功适配 Django 路由标签 -->
+        <div class="circle-actions">
+            <div class="action-btn" title="Calendar" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
+            <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
+            <div class="action-btn active" title="Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/book.png' %}"></div>
+            <div class="action-btn" title="Stats" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/stats.png' %}"></div>
+            <div class="action-btn" title="Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
+        </div>
+    </div>
+
+    <footer>© 2026 MoodBloom | Mood Your Day, Bloom Your Mind.</footer>
+
+    <script>
+        function toggleNav() { document.getElementById('sideNav').classList.toggle('active'); }
+        function dismissBookmarkCard(button) {
+            const card = button.closest('.bookmarked-card');
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.8)';
+            setTimeout(() => { card.remove(); }, 300);
+        }
+    </script>
+</body>
+</html>

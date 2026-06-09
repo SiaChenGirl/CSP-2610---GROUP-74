@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); min-height: 100vh; color: #4a3494; }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 110px; } 
+        .title-area { text-align: center; }
+        .title-area img { width: 200px; }
+        .back-link { font-weight: bold; color: #6a4fbf; text-decoration: none; font-size: 16px; width: 110px; text-align: right; }
+        .header-line { border: 0; height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 40px 20px 40px; }
+        .container { max-width: 500px; margin: 20px auto 50px; background: white; padding: 40px; border-radius: 40px; box-shadow: 0 10px 30px rgba(106, 79, 191, 0.1); text-align: center; }
+        
+        /* 头像容器美化 */
+        .avatar-upload-box { position: relative; width: 110px; height: 110px; margin: 0 auto 20px auto; cursor: pointer; }
+        .avatar-display { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #b39ddb; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .avatar-display img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-upload-box:hover .avatar-display { border-color: #6a4fbf; transform: scale(1.05); }
+        .edit-label { display: block; font-size: 12px; color: #b39ddb; margin-top: 5px; }
+
+        .field { margin-bottom: 18px; text-align: left; }
+        label { display: block; color: #6a4fbf; font-weight: bold; margin-bottom: 6px; font-size: 13px; margin-left: 5px; }
+        input, select { width: 100%; padding: 12px 15px; border-radius: 15px; border: 1px solid #e8e0ff; background: #fafaff; box-sizing: border-box; color: #4a3494; font-size: 15px; }
+        .btn { width: 100%; padding: 14px; background: #6a4fbf; border: none; border-radius: 25px; color: white; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
+        .btn:hover { background: #5a3ea3; transform: translateY(-2px); }
+        .btn-logout { background: none; border: 1px solid #ffb3b3; color: #ff6666; margin-top: 12px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header-wrapper">
+        <div class="logo"><img src="{% static 'logo.png' %}" alt="Logo"></div>
+        <div class="title-area"><img src="{% static 'title.png' %}"><br><span style="font-family: 'Dancing Script'; font-size: 16px; color: #6a4fbf;">Mood your day, Bloom your mind.</span></div>
+        <a href="{% url 'mainpage' %}" class="back-link">Back</a>
+    </div>
+    <hr class="header-line">
+
+    <div class="container">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="avatar-upload-box" onclick="document.getElementById('avatarInput').click()">
+                <div class="avatar-display">
+                    {% if profile.avatar %}
+                        <img id="profilePic" src="{{ profile.avatar.url }}">
+                    {% else %}
+                        <img id="profilePic" src="{% static 'icons/user-placeholder.png' %}">
+                    {% endif %}
+                </div>
+                <span class="edit-label">Change Photo</span>
+            </div>
+            <input type="file" id="avatarInput" name="avatar" hidden onchange="previewAvatar(this)" accept="image/*">
+            
+            <div class="field"><label>Username</label><input type="text" name="username" value="{{ user.username }}" required></div>
+            <div class="field"><label>Email Address</label><input type="email" name="email" value="{{ user.email }}" required></div>
+            <div class="field"><label>Birthday</label><input type="date" name="birthday" value="{{ profile.birthday|date:'Y-m-d' }}"></div>
+            <div class="field"><label>Gender</label>
+                <select name="gender">
+                    <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+                    <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+                    <option value="Private" {% if profile.gender == "Private" %}selected{% endif %}>Prefer not to say</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">Save Changes</button>
+        </form>
+
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-logout" onclick="return confirm('Log out?')">Logout</button>
+        </form>
+    </div>
+
+    <script>
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) { document.getElementById('profilePic').src = e.target.result; }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>
