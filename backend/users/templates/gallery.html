@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MoodBloom | Gallery</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
+            background-attachment: fixed; 
+            min-height: 100vh; 
+            color: #4a3494;
+            overflow-x: hidden;
+        }
+
+        /* --- WHITE NAVIGATION MENU --- */
+        .side-nav {
+            position: fixed; 
+            top: 0; 
+            right: -300px; 
+            width: 280px; 
+            height: 100%;
+            background: #ffffff; 
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.08); 
+            border-left: 1px solid #eee;
+            z-index: 1000;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding: 50px 30px; 
+            box-sizing: border-box;
+        }
+        
+        .side-nav.active { right: 0; }
+
+        .side-nav a {
+            display: block; 
+            padding: 18px 0; 
+            color: #4a3494; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 18px;
+            border-bottom: 1px solid #f9f9f9; 
+            transition: 0.3s;
+        }
+        
+        .side-nav a:hover { 
+            color: #b39ddb; 
+            padding-left: 10px;
+            background: #fcfcfc;
+        }
+
+        .close-nav { 
+            font-size: 40px; 
+            cursor: pointer; 
+            position: absolute; 
+            top: 15px; 
+            right: 25px; 
+            color: #6a4fbf; 
+        }
+
+        /* --- HEADER STYLING --- */
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 180px; }
+        .title-area { text-align: center; }
+        .title-area img { width: 230px; }
+        
+        .menu-icon { 
+            font-size: 35px; 
+            cursor: pointer; 
+            color: #6a4fbf; 
+            width: 180px; 
+            text-align: right; 
+        }
+
+        .divider-line { height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 50px 30px 50px; }
+
+        /* --- GALLERY LAYOUT --- */
+        .gallery-container { display: flex; justify-content: center; gap: 40px; padding: 0 60px; }
+        .gallery-box { 
+            background: white; border-radius: 40px; padding: 40px; 
+            width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; }
+        .photo-item { text-align: center; transition: 0.3s; }
+        .photo-item:hover { transform: scale(1.05); }
+        .photo-placeholder { 
+            width: 100%; aspect-ratio: 1; background: #f8f6ff; 
+            border-radius: 15px; margin-bottom: 8px; border: 1px dashed #b39ddb;
+        }
+        .photo-date { font-size: 12px; font-weight: bold; color: #6a4fbf; }
+
+        /* --- ACTIONS --- */
+        .circle-actions { display: flex; flex-direction: column; gap: 20px; }
+        .action-btn { 
+            width: 65px; height: 65px; background: white; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; 
+            transition: 0.3s;
+        }
+        .action-btn:hover { transform: scale(1.1); }
+        .action-btn img { width: 28px; opacity: 0.7; }
+        .active-circle { background: #b39ddb; } 
+        .active-circle img { filter: brightness(0) invert(1); opacity: 1; }
+        
+        footer { text-align: center; padding: 40px 0; color: #6a4fbf; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="side-nav" id="sideNav">
+        <span class="close-nav" onclick="toggleNav()">&times;</span>
+        <div style="margin-top: 40px;">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'feedback' %}">Feedback</a>
+            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+        </div>
+    </div>
+
+    <div class="header-wrapper">
+        <div class="logo" onclick="location.href='{% url 'mainpage' %}'" style="cursor: pointer;"><img src="logo.png"></div>
+        <div class="title-area">
+            <img src="title.png"><br>
+            <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood your day, Bloom your mind.</span>
+        </div>
+        <div class="menu-icon" onclick="toggleNav()">☰</div>
+    </div>
+
+    <div class="divider-line"></div>
+
+    <div class="gallery-container">
+        <div class="gallery-box">
+            <div class="photo-grid" id="photoGrid">
+    {% for entry in moods %} 
+    {% for photo in entry.photos.all %} 
+        <div class="photo-item">
+            <div class="photo-placeholder" style="background-image: url('{{ photo.image.url }}'); background-size: cover; background-position: center;">
+            </div>
+            <span class="photo-date">{{ entry.created_at|date:"Y-m-d" }}</span>
+        </div>
+    {% endfor %}
+{% empty %}
+    <p style="grid-column: 1/-1; text-align: center; color: #b39ddb;">No memories found yet. Go bloom your day! 🌸</p>
+{% endfor %}
+</div>
+        </div>
+
+        <div class="circle-actions">
+            <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="icons/search.png"></div>
+            <div class="action-btn" title="History" onclick="location.href='{% url 'article' %}'"><img src="icons/book.png"></div>
+            <div class="action-btn" title="Stats" onclick="location.href='{% url 'dashboard' %}'"><img src="icons/stats.png"></div>
+            <div class="action-btn active-circle" title="Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="icons/camera.png"></div>
+        </div>
+    </div>
+
+    <footer>© 2026 MoodBloom | Mood your day, Bloom your mind.</footer>
+
+    <script>
+        function toggleNav() {
+            document.getElementById('sideNav').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

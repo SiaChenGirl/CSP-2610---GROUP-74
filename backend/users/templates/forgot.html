@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | Forgot Password</title>
+    <style>
+        /* 1. 基础主题：保持与其他页面一致的 135deg 渐变 */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            color: #4a3494;
+        }
+
+        /* 2. 头部样式 */
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 110px; }
+        .title-img img { width: 230px; }
+        .menu-placeholder { width: 110px; } /* 占位符，确保标题居中 */
+        .header-line { border: 0; height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 40px 30px 40px; }
+
+        /* 3. 内容盒子 */
+        .content { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding-bottom: 50px;
+        }
+
+        .forgot-box { 
+            width: 380px; 
+            background: white; 
+            padding: 45px; 
+            border-radius: 40px; 
+            box-shadow: 0 15px 35px rgba(106, 79, 191, 0.08); 
+            text-align: center; 
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        h2 { color: #6a4fbf; margin-bottom: 15px; font-size: 26px; }
+        p { color: #8a7fb9; font-size: 14px; margin-bottom: 25px; line-height: 1.6; }
+
+        /* 输入框 */
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 15px; 
+            border: 1px solid #eee; 
+            background: #fafaff;
+            box-sizing: border-box; 
+            outline: none;
+            transition: 0.3s;
+            font-size: 15px;
+        }
+        input:focus { border-color: #b39ddb; background: white; box-shadow: 0 0 10px rgba(179, 157, 219, 0.2); }
+
+        /* 重置按钮 */
+        .btn-reset { 
+            width: 100%; 
+            padding: 16px; 
+            background: #6a4fbf; 
+            border: none; 
+            border-radius: 30px; 
+            color: white; 
+            font-weight: bold; 
+            font-size: 16px;
+            cursor: pointer; 
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .btn-reset:hover { background: #5a3ea3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(106, 79, 191, 0.2); }
+
+        .links { margin-top: 30px; font-size: 14px; color: #aaa; }
+        .links a { color: #6a4fbf; text-decoration: none; font-weight: bold; }
+        .links a:hover { text-decoration: underline; }
+        
+        footer { text-align: center; margin-bottom: 20px; color: #b39ddb; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="header-wrapper">
+        <div class="logo"><img src="{% static 'logo.png' %}" alt="Logo"></div>
+        <div class="title-img"><img src="{% static 'title.png' %}" alt="MoodBloom"></div>
+        <div class="menu-placeholder"></div> 
+    </div>
+    <hr class="header-line">
+
+    <div class="content">
+        <div class="forgot-box">
+            <h2>Reset Password</h2>
+            <p>Don't worry! Enter your email address and we'll send you a link to reset your password. 🌸</p>
+            
+            <!-- Django Form -->
+            <form method="POST" action="{% url 'password_reset' %}">
+                {% csrf_token %}
+                <input type="email" name="email" placeholder="Enter your email" required>
+                
+                <button type="submit" class="btn-reset">Send Reset Link</button>
+            </form>
+            
+            <div class="links">
+                Remember your password? <a href="{% url 'login' %}">Back to Login</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2026 MoodBloom | Bloom your mind.</footer>
+
+</body>
+</html>

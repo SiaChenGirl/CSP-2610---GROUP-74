@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden; /* Strictly no scroll allowed */
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
+            color: #4a3494;
+        }
+
+        /* --- SIDE NAVIGATION (UPDATED TO NEUTRAL SHADOW) --- */
+        .side-nav {
+            position: fixed; 
+            top: 0; 
+            right: -300px; 
+            width: 280px; 
+            height: 100%;
+            background: #ffffff; 
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05); /* Soft neutral shadow instead of purple */
+            border-left: 1px solid #f2eeff;
+            z-index: 1000;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding: 50px 30px; 
+            box-sizing: border-box;
+        }
+        .side-nav.active { right: 0; }
+        .side-nav a { display: block; padding: 15px 0; color: #4a3494; text-decoration: none; font-weight: bold; font-size: 16px; border-bottom: 1px solid #fcfbff; }
+        .close-nav { font-size: 35px; cursor: pointer; position: absolute; top: 15px; right: 25px; color: #6a4fbf; }
+
+        /* --- HEADER CONTROL BAR --- */
+        .header-mini {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 40px;
+            height: 55px;
+            box-sizing: border-box;
+        }
+        .header-mini .logo img { height: 38px; cursor: pointer; display: block; }
+        .header-mini .title-area img { height: 34px; display: block; }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .month-range-picker {
+            border: 1px solid #e8e0ff;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 13px;
+            color: #6a4fbf;
+            background: white;
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+        }
+        .menu-icon { font-size: 28px; cursor: pointer; color: #6a4fbf; }
+
+        .divider-line { height: 1px; background: rgba(106, 79, 191, 0.15); margin: 0 40px 15px 40px; }
+
+        /* --- DASHBOARD MAIN LAYOUT WORKSPACE --- */
+        .dashboard-container {
+            display: flex;
+            gap: 35px; 
+            padding: 0 40px;
+            height: calc(100vh - 95px);
+            box-sizing: border-box;
+            justify-content: center;
+        }
+
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px; 
+            height: 100%;
+            min-height: 0;
+        }
+
+        /* --- STATS SUMMARY ROW --- */
+        .stats-summary-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px; 
+        }
+        .summary-card {
+            background: white;
+            border-radius: 18px;
+            padding: 10px 16px;
+            box-shadow: 0 4px 15px rgba(106, 79, 191, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .summary-icon-box { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .summary-info p { margin: 0; font-size: 11px; font-weight: bold; color: #8e80bc; }
+        .summary-info h3 { margin: 0; font-size: 16px; color: #4a3494; font-weight: bold; }
+        .summary-info span { font-size: 10px; color: #b39ddb; }
+
+        /* --- VISUAL GRAPH GRID LAYOUT --- */
+        .grid-row-two {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 20px; 
+            flex: 1.2;
+            min-height: 0;
+        }
+        
+        /* --- ROW THREE --- */
+        .grid-row-three {
+            display: grid;
+            grid-template-columns: 0.8fr 1fr 1.7fr; 
+            gap: 20px; 
+            flex: 0.9;
+            min-height: 0;
+            margin-bottom: 15px;
+        }
+        
+        .chart-box {
+            background: white;
+            border-radius: 20px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 15px rgba(106, 79, 191, 0.03);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 0;
+        }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .chart-header h4 { margin: 0; font-size: 13px; font-weight: bold; color: #4a3494; }
+        .view-toggle-btn { border: 1px solid #e8e0ff; padding: 4px 10px; border-radius: 8px; font-size: 11px; color: #6a4fbf; background: white; font-weight: bold; cursor: pointer; }
+
+        /* --- PIE CHART CENTERED LABELS --- */
+        .pie-chart-wrapper {
+            position: relative; 
+            max-width: 100px; 
+            margin: 0 auto; 
+            flex: 1; 
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        .pie-center-label { 
+            position: absolute; 
+            top: 48%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            text-align: center; 
+            width: 100%;
+        }
+        .pie-center-label h2 { margin: 0; font-size: 16px; color: #4a3494; font-weight: bold; line-height: 1; }
+        .pie-center-label p { margin: 2px 0 0 0; font-size: 9px; color: #8e80bc; font-weight: bold; text-transform: uppercase; }
+
+        /* --- PIE CHART LEGEND --- */
+        .pie-description-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px solid #f5f2ff;
+        }
+        .legend-desc-item { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: bold; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .legend-desc-item span { color: #4a3494; }
+
+        /* --- EMOTION RECOMMENDATION CARD --- */
+        .recommendation-box {
+            background: white;
+            border-radius: 20px;
+            padding: 14px 20px; 
+            box-shadow: 0 4px 15px rgba(106, 79, 191, 0.03);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .rec-title-row {
+            font-size: 14px; 
+            font-weight: bold;
+            color: #4a3494;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #f5f2ff;
+            padding-bottom: 6px;
+        }
+        .rec-body-content {
+            flex: 1;
+            overflow-y: auto; 
+            padding-right: 4px;
+        }
+        .rec-mood-header {
+            font-size: 14px; 
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .rec-text {
+            font-size: 12px; 
+            line-height: 1.5; 
+            color: #5c5099;
+            margin: 0;
+            text-align: justify;
+        }
+        
+        .rec-body-content::-webkit-scrollbar { width: 4px; }
+        .rec-body-content::-webkit-scrollbar-track { background: none; }
+        .rec-body-content::-webkit-scrollbar-thumb { background: #ded4ff; border-radius: 10px; }
+
+        /* --- FIVE CIRCLE NAVIGATION BUTTONS --- */
+        .circle-actions { display: flex; flex-direction: column; gap: 12px; justify-content: center; }
+        .action-btn { 
+            width: 52px; height: 52px; background: white; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; 
+            transition: 0.2s;
+        }
+        .action-btn:hover { transform: scale(1.08); }
+        .action-btn img { width: 22px; opacity: 0.7; }
+        .active { background: #b39ddb; } 
+        .active img { filter: brightness(0) invert(1); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="side-nav" id="sideNav">
+        <span class="close-nav" onclick="toggleNav()">&times;</span>
+        <div style="margin-top: 40px;">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'feedback' %}">Feedback</a>
+            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 40px; border: none;">Logout</a>
+        </div>
+    </div>
+
+    <div class="header-mini">
+        <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="logo.png" alt="MoodBloom Logo"></div>
+        <div class="title-area"><img src="title.png" alt="Articles Title"></div>
+        <div class="header-controls">
+            <select class="month-range-picker" id="monthPicker" onchange="updateMonthRange()">
+                <option value="April">1st April - 30th April 2026</option>
+                <option value="May" selected>1st May - 31st May 2026</option>
+                <option value="June">1st June - 30th June 2026</option>
+                <option value="July">1st July - 31st July 2026</option>
+            </select>
+            <div class="menu-icon" onclick="toggleNav()">☰</div>
+        </div>
+    </div>
+
+    <div class="divider-line"></div>
+
+    <div class="dashboard-container">
+        
+        <div class="main-panel">
+            <div class="stats-summary-row">
+                <div class="summary-card">
+                    <div class="summary-icon-box" style="background: #eef7ff; color: #007aff;">💜</div>
+                    <div class="summary-info">
+                        <p>Total Entries</p>
+                        <h3 id="totalEntriesVal">50</h3>
+                        <span id="currentPeriodLabel">May 2026</span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon-box" style="background: #fff9e6; color: #ffcc00;">😊</div>
+                    <div class="summary-info">
+                        <p>Most Frequent</p>
+                        <h3 id="mostFrequentMoodTitle">Happy ↑</h3>
+                        <span id="mostFrequentMoodSub">42% of total</span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon-box" style="background: #e3fcef; color: #34c759;">📅</div>
+                    <div class="summary-info">
+                        <p>Current Streak</p>
+                        <h3>7 Days</h3>
+                        <span>Keep it up!</span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon-box" style="background: #ffebeb; color: #ff3b30;">⭐</div>
+                    <div class="summary-info">
+                        <p>Longest Streak</p>
+                        <h3>21 Days</h3>
+                        <span>Achieved Apr 15</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row-two">
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <h4>Mood Trend Over Time</h4>
+                        <select class="view-toggle-btn" id="timeScaleSelector" onchange="changeTimeScale()">
+                            <option value="day">By Day</option>
+                            <option value="week" selected>By Week</option>
+                            <option value="month">By Month</option>
+                        </select>
+                    </div>
+                    <div style="flex:1; min-height:0; position:relative;"><canvas id="trendLineChart"></canvas></div>
+                </div>
+                
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <h4>Mood Distribution</h4>
+                    </div>
+                    <div class="pie-chart-wrapper">
+                        <canvas id="distributionPieChart"></canvas>
+                        <div class="pie-center-label">
+                            <h2 id="pieTotalLabel">50</h2>
+                            <p>Total</p>
+                        </div>
+                    </div>
+                    <div class="pie-description-grid">
+                        <div class="legend-desc-item"><div class="legend-dot" style="background:#ffcc00;"></div><span id="pct-happy">Happy --%</span></div>
+                        <div class="legend-desc-item"><div class="legend-dot" style="background:#007aff;"></div><span id="pct-sad">Sad --%</span></div>
+                        <div class="legend-desc-item"><div class="legend-dot" style="background:#ff3b30;"></div><span id="pct-angry">Angry --%</span></div>
+                        <div class="legend-desc-item"><div class="legend-dot" style="background:#34c759;"></div><span id="pct-neutral">Neutral --%</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row-three">
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <h4>Mood Frequency</h4>
+                    </div>
+                    <div style="flex:1; min-height:0; position:relative;"><canvas id="frequencyBarChart"></canvas></div>
+                </div>
+                
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <h4>Aggregate Mood Flow</h4>
+                    </div>
+                    <div style="flex:1; min-height:0; position:relative;"><canvas id="weeklyAreaChart"></canvas></div>
+                </div>
+
+                <div class="recommendation-box">
+                    <div class="rec-title-row">Recommendation for Emotion</div>
+                    <div class="rec-body-content">
+                        <div class="rec-mood-header" id="recMoodHeader">😊 Happy</div>
+                        <p class="rec-text" id="recMoodText">Loading personalized guidance layout...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="circle-actions">
+            <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="icons/search.png"></div>
+            <div class="action-btn" title="Calendar" onclick="location.href='{% url 'mainpage' %}'"><img src="icons/calendar.png"></div>
+            <div class="action-btn" title="Article" onclick="location.href='{% url 'article' %}'"><img src="icons/book.png"></div>
+            <div class="action-btn active" title="Stats" onclick="location.href='{% url 'dashboard' %}'"><img src="icons/stats.png"></div>
+            <div class="action-btn" title="Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="icons/camera.png"></div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleNav() { document.getElementById('sideNav').classList.toggle('active'); }
+
+        const moodColors = {
+            happy: '#ffcc00',  
+            sad: '#007aff',    
+            angry: '#ff3b30',  
+            neutral: '#34c759' 
+        };
+
+        const emotionalTips = {
+            happy: {
+                title: "😊 Happy",
+                desc: "When you are feeling happy, it is a great opportunity to appreciate the positive moments in your life. Consider expressing gratitude, sharing your joy with others, setting new goals, or capturing memorable experiences to maintain your positive mindset and emotional well-being."
+            },
+            sad: {
+                title: "😢 Sad",
+                desc: "When you are feeling sad, it is important to acknowledge your emotions and practice self-care. Listening to calming music, writing about your feelings, talking to someone you trust, or spending time outdoors can help improve your mood and provide emotional support."
+            },
+            angry: {
+                title: "😠 Angry",
+                desc: "When you are feeling angry, taking time to calm down before reacting can help you manage your emotions effectively. Deep breathing, engaging in physical activities, taking a short break, or expressing your thoughts through creative activities can reduce stress and promote emotional balance."
+            },
+            neutral: {
+                title: "😐 Neutral",
+                desc: "When you are feeling neutral, it can be a good time to explore new interests and focus on personal growth. Trying a new hobby, reading an interesting article, reflecting on your day, or setting small achievable goals can help maintain motivation and create meaningful experiences."
+            }
+        };
+
+        const chartOptionsBase = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+
+        let trendChart, distributionChart, frequencyChart, flowChart;
+
+        window.onload = function() {
+            initCharts();
+            changeTimeScale(); 
+        };
+
+        function initCharts() {
+            trendChart = new Chart(document.getElementById('trendLineChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: { ...chartOptionsBase, plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 8, font: { size: 10 } } } }, scales: { y: { display: true }, x: { grid: { display: false } } } }
+            });
+
+            distributionChart = new Chart(document.getElementById('distributionPieChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Happy', 'Sad', 'Angry', 'Neutral'],
+                    datasets: [{ data: [], backgroundColor: [moodColors.happy, moodColors.sad, moodColors.angry, moodColors.neutral], borderWidth: 1 }]
+                },
+                options: { cutout: '75%', plugins: { legend: { display: false } } }
+            });
+
+            frequencyChart = new Chart(document.getElementById('frequencyBarChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Happy', 'Sad', 'Angry', 'Neutral'],
+                    datasets: [{ data: [], backgroundColor: [moodColors.happy, moodColors.sad, moodColors.angry, moodColors.neutral], borderRadius: 5, barThickness: 12 }]
+                },
+                options: { ...chartOptionsBase, scales: { y: { beginAtZero: true, ticks: { stepSize: 25 } }, x: { grid: { display: false }, ticks: { font: { size: 9 } } } } }
+            });
+
+            flowChart = new Chart(document.getElementById('weeklyAreaChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: { ...chartOptionsBase, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
+            });
+        }
+
+        function changeTimeScale() {
+            const val = document.getElementById('timeScaleSelector').value;
+            
+            let trendLabels, trendDatasets, freqData, pieData, flowLabels, flowData, totalCount, maxYVal;
+
+            if(val === 'day') {
+                trendLabels = ['12 AM', '4 AM', '8 AM', '12 PM', '4 PM', '8 PM'];
+                trendDatasets = [
+                    { label: 'Happy', data: [1, 0, 2, 3, 2, 1], borderColor: moodColors.happy, tension: 0.4, pointRadius: 2, fill: false },
+                    { label: 'Neutral', data: [0, 1, 1, 1, 1, 0], borderColor: moodColors.neutral, tension: 0.4, pointRadius: 2, fill: false },
+                    { label: 'Sad', data: [0, 0, 0, 0, 1, 0], borderColor: moodColors.sad, tension: 0.4, pointRadius: 2, fill: false }
+                ];
+                freqData = [9, 1, 0, 4];
+                pieData = [9, 1, 0, 4];
+                flowLabels = ['12AM', '4AM', '8AM', '12PM', '4PM', '8PM'];
+                flowData = [1, 1, 3, 4, 4, 1];
+                totalCount = 14;
+                maxYVal = 10;
+            } else if (val === 'week') {
+                trendLabels = ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4'];
+                trendDatasets = [
+                    { label: 'Happy', data: [6, 5, 5, 5], borderColor: moodColors.happy, tension: 0.4, pointRadius: 2, fill: false },
+                    { label: 'Sad', data: [3, 4, 3, 4], borderColor: moodColors.sad, tension: 0.4, pointRadius: 2, fill: false },
+                    { label: 'Angry', data: [2, 3, 2, 2], borderColor: moodColors.angry, tension: 0.4, pointRadius: 2, fill: false },
+                    { label: 'Neutral', data: [1, 2, 1, 2], borderColor: moodColors.neutral, tension: 0.4, pointRadius: 2, fill: false }
+                ];
+                freqData = [21, 14, 9, 6];
+                pieData = [21, 14, 9, 6];
+                flowLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                flowData = [12, 14, 11, 13];
+                totalCount = 50;
+                maxYVal = 25;
+            } else {
+                trendLabels = ['Apr', 'May', 'Jun', 'Jul'];
+                trendDatasets = [
+                    { label: 'Happy', data: [25, 21, 28, 30], borderColor: moodColors.happy, tension: 0.4, pointRadius: 2, fill: false },
+                    { label: 'Sad', data: [15, 14, 12, 10], borderColor: moodColors.sad, tension: 0.4, pointRadius: 2, fill: false },
+                    { label: 'Angry', data: [8, 9, 5, 4], borderColor: moodColors.angry, tension: 0.4, pointRadius: 2, fill: false }
+                ];
+                freqData = [104, 51, 26, 18];
+                pieData = [104, 51, 26, 18];
+                flowLabels = ['April', 'May', 'June', 'July'];
+                flowData = [48, 50, 45, 44];
+                totalCount = 199;
+                maxYVal = 120;
+            }
+
+            document.getElementById('totalEntriesVal').innerText = totalCount;
+            document.getElementById('pieTotalLabel').innerText = totalCount;
+
+            const pHappy = totalCount > 0 ? Math.round((pieData[0] / totalCount) * 100) : 0;
+            const pSad = totalCount > 0 ? Math.round((pieData[1] / totalCount) * 100) : 0;
+            const pAngry = totalCount > 0 ? Math.round((pieData[2] / totalCount) * 100) : 0;
+            const pNeutral = totalCount > 0 ? Math.round((pieData[3] / totalCount) * 100) : 0;
+
+            document.getElementById('pct-happy').innerText = `Happy ${pHappy}%`;
+            document.getElementById('pct-sad').innerText = `Sad ${pSad}%`;
+            document.getElementById('pct-angry').innerText = `Angry ${pAngry}%`;
+            document.getElementById('pct-neutral').innerText = `Neutral ${pNeutral}%`;
+
+            const counts = [
+                { type: 'happy', value: pieData[0] },
+                { type: 'sad', value: pieData[1] },
+                { type: 'angry', value: pieData[2] },
+                { type: 'neutral', value: pieData[3] }
+            ];
+            counts.sort((a, b) => b.value - a.value);
+            const topMood = counts[0].type;
+
+            document.getElementById('recMoodHeader').innerText = emotionalTips[topMood].title;
+            document.getElementById('recMoodText').innerText = emotionalTips[topMood].desc;
+
+            let moodCapString = topMood.charAt(0).toUpperCase() + topMood.slice(1);
+            let topPctValue = Math.round((counts[0].value / totalCount) * 100);
+            document.getElementById('mostFrequentMoodTitle').innerText = `${moodCapString} ↑`;
+            document.getElementById('mostFrequentMoodSub').innerText = `${topPctValue}% of total`;
+
+            trendChart.data.labels = trendLabels;
+            trendChart.data.datasets = trendDatasets;
+            trendChart.update();
+
+            distributionChart.data.datasets[0].data = pieData;
+            distributionChart.update();
+
+            frequencyChart.data.datasets[0].data = freqData;
+            frequencyChart.options.scales.y.max = maxYVal;
+            frequencyChart.update();
+
+            flowChart.data.labels = flowLabels;
+            flowChart.data.datasets = [{
+                label: 'Volume',
+                data: flowData,
+                borderColor: '#9370DB',
+                backgroundColor: 'rgba(147, 112, 219, 0.08)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 3
+            }];
+            flowChart.update();
+        }
+
+        function updateMonthRange() {
+            const selectedMonth = document.getElementById('monthPicker').value;
+            document.getElementById('currentPeriodLabel').innerText = selectedMonth + " 2026";
+            changeTimeScale();
+        }
+    </script>
+</body>
+</html>
