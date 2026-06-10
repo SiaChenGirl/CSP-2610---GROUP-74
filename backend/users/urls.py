@@ -1,10 +1,22 @@
+<<<<<<< HEAD
+"""
+URL configuration for users app.
+本文件已完美整合网页模板渲染路由与核心后端 API 接口。
+"""
+
+=======
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
     # ==========================================
+<<<<<<< HEAD
+    # 1. 网页模板渲染路由 (负责让你和队友打开页面)
+=======
     # 1. 网页模板渲染路由 (来自 urls1，负责让你和队友打开页面)
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     # ==========================================
     path('', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
@@ -15,6 +27,19 @@ urlpatterns = [
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('profile/', views.profile_view, name='profile'),
     path('moodentry/', views.moodentry_view, name='moodentry'),
+<<<<<<< HEAD
+    path('article/', views.article_view, name='article'),              # 指向中转页 article.html
+    path('article/paragraph/', views.paragraph_view, name='paragraph'), # 指向文章页 paragraphs.html
+    path('article/favourite/', views.favourite_page_view, name='favourite'), # 指向收藏夹 favourite.html
+    path('gallery/', views.gallery_view, name='gallery'),
+    path('search/', views.search_view, name='search'),
+    path('feedback/', views.feedback_view, name='feedback'),
+    path('api/music-library/', views.get_music_library),
+    
+
+    # ==========================================
+    # 2. 核心后端核心 API 接口 (完全采用你们原有的体系)
+=======
     path('article/', views.article_view, name='article'),
     path('gallery/', views.gallery_view, name='gallery'),
     path('search/', views.search_view, name='search'),
@@ -22,6 +47,7 @@ urlpatterns = [
 
     # ==========================================
     # 2. 核心后端核心 API 接口 (完全采用 urls2 的命名与体系)
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     # ==========================================
     path('api/register/', views.register_view), # 已绑定你最新的合并注册逻辑
     path('login/', views.login_view, name='login_page'),     # 已绑定合并登录
@@ -30,7 +56,11 @@ urlpatterns = [
     path('api/change-password/', views.change_password),
     
     # 邮件验证
+<<<<<<< HEAD
+    path('verify-email/<str:username>/', views.verify_email, name='verify_email'),
+=======
     path('verify-email/<str:username>/', views.verify_email),
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
 
     # 心情数据存取
     path('add-mood/', views.moodentry_view),     # 完美兼容你之前的测试逻辑与新录入
@@ -53,7 +83,11 @@ urlpatterns = [
     path('api/dashboard-status/', views.dashboard_view),
 
     # ==========================================
+<<<<<<< HEAD
+    # 3. 密码重置官方内置路由 (保留原有高阶安全功能)
+=======
     # 3. 密码重置官方内置路由 (保留 urls2 的高阶安全功能)
+>>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     # ==========================================
     path(
         'api/password-reset/',
