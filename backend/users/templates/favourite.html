@@ -4,11 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>MoodBloom | Bookmarks</title>
-<<<<<<< HEAD
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
-=======
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600&display=swap" rel="stylesheet">
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     <style>
         body { 
             margin: 0; 
@@ -16,11 +12,7 @@
             background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
             background-attachment: fixed; 
             min-height: 100vh; 
-<<<<<<< HEAD
-            overflow-y: auto; 
-=======
             overflow-y: auto; /* Allow the page to scroll if items fill down */
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
             color: #4a3494;
             display: flex;
             flex-direction: column;
@@ -50,11 +42,7 @@
             display: flex; 
             gap: 35px; 
             padding: 0 50px; 
-<<<<<<< HEAD
-            flex: 1; 
-=======
             flex: 1; /* Let container expand naturally */
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
             box-sizing: border-box; 
             align-items: flex-start;
         }
@@ -107,10 +95,7 @@
         .action-btn img { width: 22px; opacity: 0.7; }
         .active { background: #b39ddb; } .active img { filter: brightness(0) invert(1); opacity: 1; }
 
-<<<<<<< HEAD
-=======
         /* Footer stands outside columns to span properly at the true bottom */
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         footer { text-align: center; padding: 25px 0 40px; color: #6a4fbf; font-weight: bold; font-size: 14px; width: 100%; margin-top: auto; }
     </style>
 </head>
@@ -121,17 +106,12 @@
         <div style="margin-top: 40px;">
             <a href="{% url 'profile' %}">Profile</a>
             <a href="{% url 'feedback' %}">Feedback</a>
-<<<<<<< HEAD
-            <a href="{% url 'article' %}">Articles Feed</a>
-            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
-=======
             <a href="{% url 'login' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         </div>
     </div>
 
     <div class="header-wrapper">
-        <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'logo.png' %}"></div>
+        <div class="logo" onclick="location.href='mainpage.html'"><img src="{% static 'logo.png' %}"></div>
         <div class="title-area">
             <img src="{% static 'title.png' %}"><br>
             <span class="slogan" style="color: #6a4fbf; font-style: italic; font-family: 'Dancing Script', cursive; font-size: 18px;">
@@ -146,11 +126,6 @@
     <div class="favourite-display-container">
         <div class="main-panel">
             <div class="bookmark-scroll-grid">
-<<<<<<< HEAD
-                
-                <!-- 卡片 1 -->
-=======
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                 <div class="bookmarked-card">
                     <button class="cancel-bookmark-star" title="Cancel Favourite" onclick="dismissBookmarkCard(this)">★</button>
                     <div class="bookmark-cover">
@@ -161,20 +136,11 @@
                         <p>Core foundational guide outlining emotional safety frameworks.</p>
                     </div>
                     <div class="bookmark-action-row">
-<<<<<<< HEAD
-                        <!-- 🔗 完美链接回三栏文章主页 -->
-                        <a href="{% url 'article' %}" class="read-article-link">Read more</a>
-=======
                         <a href="{% url 'paragraph' %}" class="read-article-link">Read more</a>
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                         <a href="https://example.com" target="_blank" class="source-origin-link">Original Source</a>
                     </div>
                 </div>
 
-<<<<<<< HEAD
-                <!-- 卡片 2 -->
-=======
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                 <div class="bookmarked-card">
                     <button class="cancel-bookmark-star" title="Cancel Favourite" onclick="dismissBookmarkCard(this)">★</button>
                     <div class="bookmark-cover">
@@ -185,18 +151,6 @@
                         <p>How to construct durable internal triggers when dealing with fatigue.</p>
                     </div>
                     <div class="bookmark-action-row">
-<<<<<<< HEAD
-                        <!-- 🔗 完美链接回三栏文章主页 -->
-                        <a href="{% url 'article' %}" class="read-article-link">Read more</a>
-                        <a href="https://example.com" target="_blank" class="source-origin-link">Original Source</a>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-
-        <!-- 侧边全局悬浮导航已成功适配 Django 路由标签 -->
-=======
                         <a href="{% url 'paragraph' %}" class="read-article-link">Read more</a>
                         <a href="https://example.com" target="_blank" class="source-origin-link">Original Source</a>
                     </div>
@@ -204,13 +158,12 @@
             </div>
         </div>
 
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         <div class="circle-actions">
-            <div class="action-btn" title="Calendar" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
-            <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
-            <div class="action-btn active" title="Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/book.png' %}"></div>
-            <div class="action-btn" title="Stats" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/stats.png' %}"></div>
-            <div class="action-btn" title="Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
+            <div class="action-btn" title="Calendar" onclick="location.href='mainpage.html'"><img src="{% static 'icons/calendar.png' %}"></div>
+            <div class="action-btn" title="Search" onclick="location.href='search.html'"><img src="{% static 'icons/search.png' %}"></div>
+            <div class="action-btn active" title="Articles" onclick="location.href='article.html'"><img src="{% static 'icons/book.png' %}"></div>
+            <div class="action-btn" title="Stats" onclick="location.href='dashboard.html'"><img src="{% static 'icons/stats.png' %}"></div>
+            <div class="action-btn" title="Gallery" onclick="location.href='gallery.html'"><img src="{% static 'icons/camera.png' %}"></div>
         </div>
     </div>
 

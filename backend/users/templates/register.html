@@ -46,8 +46,6 @@
             font-size: 15px;
         }
 
-<<<<<<< HEAD
-=======
         /* 队友新增的 Verify 按钮样式 */
         .verify-btn {
             position: absolute;
@@ -66,7 +64,6 @@
         }
         .verify-btn:hover { background: #4a3494; }
 
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         /* PASSWORD CHECKLIST STYLING */
         .password-requirements {
             text-align: left;
@@ -126,11 +123,8 @@
 
             <div class="input-group">
                 <input type="email" id="reg-email" placeholder="Email Address">
-<<<<<<< HEAD
-=======
                 <!-- 队友新增的验证按钮 -->
                 <button type="button" class="verify-btn" onclick="triggerVerify()">Verify</button>
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
             </div>
 
             <div class="input-group">
@@ -196,18 +190,6 @@
             }
         }
 
-<<<<<<< HEAD
-=======
-        // 1. 触发邮箱验证逻辑
-        function triggerVerify() {
-            const email = document.getElementById('reg-email').value;
-            if(!email) {
-                alert("Please enter an email address first!");
-                return;
-            }
-            alert("Verification email has been sent to: " + email);
-        }
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
 
         // 2. 注册逻辑
         async function handleRegister() {
@@ -259,7 +241,6 @@
 
                 const data = await response.json();
                 if (data.message) {
-<<<<<<< HEAD
 
                     alert(
                         "Registration successful!\n\n" +
@@ -282,18 +263,6 @@
                 }
                 }
         
-=======
-                    alert("Success: " + data.message);
-                    window.location.href = '/login/'; // 注册成功跳回登录
-                } else {
-                    alert("Error: " + data.error);
-                }
-            } catch (error) {
-                console.error("Registration error:", error);
-                alert("Connection failed!");
-            }
-        }
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
     </script>
 </body>
 </html>

@@ -109,16 +109,12 @@
         <div style="margin-top: 40px;">
             <a href="{% url 'profile' %}">Profile</a>
             <a href="{% url 'feedback' %}">Feedback</a>
-<<<<<<< HEAD
-            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
-=======
             <a href="{% url 'login' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         </div>
     </div>
 
     <div class="header-wrapper">
-        <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'logo.png' %}"></div>
+        <div class="logo" onclick="location.href='mainpage.html'"><img src="{% static 'logo.png' %}"></div>
         <div class="title-area">
             <img src="{% static 'title.png' %}"><br>
             <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
@@ -134,27 +130,16 @@
                 <select id="mSelect" onchange="buildCal()"></select>
                 <select id="ySelect" onchange="buildCal()"></select>
             </div>
-<<<<<<< HEAD
-            <div class="calendar-grid" id="grid"></div>
-=======
             <div class="calendar-grid" id="grid">
                 </div>
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         </div>
 
         <div class="circle-nav">
-            <div class="nav-btn active" title="Calendar Home" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
-<<<<<<< HEAD
-            <div class="nav-btn" title="Search & Explore" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
-            <div class="nav-btn" title="Mental Health Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/book.png' %}"></div>
-            <div class="nav-btn" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/stats.png' %}"></div>
-            <div class="nav-btn" title="Photo Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
-=======
-            <div class="nav-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
-            <div class="nav-btn" title="Diary History" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/book.png' %}"></div>
-            <div class="nav-btn" title="Statistics" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/stats.png' %}"></div>
-            <div class="nav-btn" title="Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
+            <div class="nav-btn active" title="Calendar Home" onclick="location.href='mainpage.html'"><img src="{% static 'icons/calendar.png' %}"></div>
+            <div class="nav-btn" title="Search" onclick="location.href='search.html'"><img src="{% static 'icons/search.png' %}"></div>
+            <div class="nav-btn" title="Diary History" onclick="location.href='article.html'"><img src="{% static 'icons/book.png' %}"></div>
+            <div class="nav-btn" title="Statistics" onclick="location.href='dashboard.html'"><img src="{% static 'icons/stats.png' %}"></div>
+            <div class="nav-btn" title="Gallery" onclick="location.href='gallery.html'"><img src="{% static 'icons/camera.png' %}"></div>
         </div>
     </div>
 
@@ -168,23 +153,14 @@
     <footer>© 2026 MoodBloom | Mood Your Day, Bloom Your Mind.</footer>
 
     <script>
-<<<<<<< HEAD
-=======
         // 侧边栏开关
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         function toggleNav() {
             document.getElementById('sideNav').classList.toggle('active');
         }
 
-<<<<<<< HEAD
-        const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        let displayStr = ""; 
-        let formattedDateForBackend = ""; 
-=======
         // 动态生成日历逻辑
         const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         let selDate = "";
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
 
         function startup() {
             const ms = document.getElementById('mSelect');
@@ -208,10 +184,7 @@
             const y = parseInt(document.getElementById('ySelect').value);
             const now = new Date();
 
-<<<<<<< HEAD
-=======
             // Set timestamps to midnight for clean daytime comparisons
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
             const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 
             ["S","M","T","W","T","F","S"].forEach(d => {
@@ -232,7 +205,6 @@
                 cell.innerText = d;
                 
                 cell.onclick = () => {
-<<<<<<< HEAD
                     displayStr = `${mNames[m]} ${d}, ${y}`;
                     document.getElementById('dateTitle').innerText = displayStr;
 
@@ -241,43 +213,24 @@
                     formattedDateForBackend = `${y}-${mm}-${dd}`;
 
                     const clickedDate = new Date(y, m, d).getTime();
-=======
-                    selDate = `${mNames[m]} ${d}, ${y}`;
-                    document.getElementById('dateTitle').innerText = selDate;
-
-                    // Parse clicked box date
-                    const clickedDate = new Date(y, m, d).getTime();
-                    
-                    // Calculation differences in days
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                     const diffTime = clickedDate - todayMidnight;
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                     const createBtn = document.getElementById('createNewBtn');
 
-<<<<<<< HEAD
-                    if (diffDays > 0) {
-=======
                     // Validation rule: Restrict tracking entry if it's a future date or older than 3 days ago (72 hours window)
                     if (diffDays > 0) {
                         // Future Date Warning
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                         createBtn.onclick = function() {
                             alert("Oops! You can't write for a future diary date. Please come back tomorrow or later!");
                         };
                     } else if (diffDays < -3) {
-<<<<<<< HEAD
-=======
                         // Too old Warning (> 72 hours passed)
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                         createBtn.onclick = function() {
                             alert("Oops! It has been more than 72 hours. Memories fade, so you can only write entries up to 3 days ago!");
                         };
                     } else {
-<<<<<<< HEAD
-=======
                         // Active window (Today and previous 3 days)
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                         createBtn.onclick = goEntry;
                     }
 
@@ -293,7 +246,6 @@
             document.getElementById('overlay').style.display='none';
         }
 
-<<<<<<< HEAD
         function goHistory() { 
             location.href = `{% url 'search' %}?date=${formattedDateForBackend}`; 
         }
@@ -301,17 +253,8 @@
         function goEntry() { 
             location.href = `{% url 'moodentry' %}?date=${formattedDateForBackend}`; 
         }
-=======
-        // 跳转逻辑
-        function goHistory() { location.href = `{% url 'article' %}?date=${selDate}`; }
-        function goEntry() { location.href = `{% url 'moodentry' %}?date=${selDate}`; }
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
 
         startup();
     </script>
 </body>
-<<<<<<< HEAD
-</htm
-=======
 </html>
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411

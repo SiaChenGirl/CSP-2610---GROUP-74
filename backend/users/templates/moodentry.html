@@ -83,7 +83,7 @@
     </div>
 
     <div class="header-wrapper">
-        <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'logo.png' %}"></div>
+        <div class="logo" onclick="location.href='mainpage.html'"><img src="{% static 'logo.png' %}"></div>
         <div class="title-img"><img src="{% static 'title.png' %}"></div>
         <div class="menu-icon" onclick="toggleNav()">☰</div>
     </div>
@@ -119,10 +119,7 @@
             <div class="box">
                 <h3>Memories</h3>
                 <div class="photo-slots">
-<<<<<<< HEAD
                     <div id="previewContainer" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
-=======
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                     <div class="slot" onclick="openPhotoModal()">+</div>
                     <div class="slot"></div><div class="slot"></div>
                 </div>
@@ -153,53 +150,25 @@
                 <label style="cursor:pointer; display:flex; flex-direction:column; align-items:center;">
                     <span style="font-size:35px;">📷</span>
                     <span style="font-size:11px; font-weight:bold;">TAKE PHOTO</span>
-<<<<<<< HEAD
                     <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleFileSelect(this)">
-=======
-                    <input type="file" accept="image/*" capture="environment" style="display:none">
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                 </label>
                 <label style="cursor:pointer; display:flex; flex-direction:column; align-items:center;">
                     <span style="font-size:35px;">📁</span>
                     <span style="font-size:11px; font-weight:bold;">UPLOAD FILES</span>
-<<<<<<< HEAD
                     <input type="file" accept="image/*" multiple style="display:none" onchange="handleFileSelect(this)">
-=======
-                    <input type="file" accept="image/*" style="display:none">
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                 </label>
             </div>
         </div>
     </div>
 
     <script>
-<<<<<<< HEAD
         let selectedPhotos = []; 
-=======
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         const staticUrl = "/static/emojis/";
         let selectedCategory = "";
         let selectedMoodName = "";
 
         function toggleNav() { document.getElementById('sideNav').classList.toggle('active'); }
 
-<<<<<<< HEAD
-        const pngMap = {
-            'happy': [
-                {f:'happy.png', n:'Happy'}, {f:'kiss.png', n:'Kiss'}, {f:'yeah.png', n:'Yeah'}, {f:'fighting.png', n:'Fighting'},
-                {f:'good.png', n:'Good'}, {f:'lovely.png', n:'Lovely'}, {f:'admire.png', n:'Admire'}, {f:'warm.png', n:'Warm'},
-                {f:'energetic.png', n:'Energetic'}, {f:'motivated.png', n:'Motivated'}
-            ],
-            'neutral': [
-                {f:'neutral.png', n:'Neutral'}, {f:'shy.png', n:'Shy'}, {f:'sleepy.png', n:'Sleepy'}, {f:'curious.png', n:'Curious'}
-            ],
-            'sad': [
-                {f:'sad.png', n:'Sad'}, {f:'sick.png', n:'Sick'}, {f:'cringe.png', n:'Cringe'}, {f:'tired.png', n:'Tired'},
-                {f:'exhausted.png', n:'Exhausted'}, {f:'guilty.png', n:'Guilty'}, {f:'afraid.png', n:'Afraid'}
-            ],
-            'angry': [
-                {f:'angry.png', n:'Angry'}, {f:'shock.png', n:'Shock'}, {f:'trick.png', n:'Trick'}, {f:'awkward.png', n:'Awkward'}
-=======
         // Complete dictionary mapping all 21 custom doodles with fixed syntax commas
         const pngMap = {
             'happy': [
@@ -234,7 +203,6 @@
                 {f:'shock.png', n:'Shock'},
                 {f:'trick.png', n:'Trick'},
                 {f:'awkward.png', n:'Awkward'}
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
             ]
         };
 
@@ -275,7 +243,6 @@
         function openPhotoModal() { document.getElementById('photoModal').style.display = 'flex'; }
         function closePhotoModal(e) { if(e.target.id === 'photoModal') e.target.style.display = 'none'; }
 
-<<<<<<< HEAD
         function handleFileSelect(input) {
             if (input.files && input.files.length > 0) {
                 selectedPhotos = Array.from(input.files);
@@ -300,29 +267,11 @@
             }
         }
 
-=======
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
         function saveEntry() {
             if (!selectedCategory || !selectedMoodName) {
                 alert("Please select your mood first! 🌸");
                 return;
             }
-<<<<<<< HEAD
-
-            const formData = new FormData();
-            formData.append('category', selectedCategory);
-            formData.append('mood_name', selectedMoodName);
-            formData.append('intensity', document.getElementById('intensityRange').value);
-            formData.append('content', document.getElementById('diaryEntry').value);
-            formData.append('song', document.getElementById('songInput').value);
-            
-            selectedPhotos.forEach(file => formData.append('photos', file));
-            
-            fetch("{% url 'moodentry' %}", {
-                method: "POST",
-                headers: { "X-CSRFToken": "{{ csrf_token }}" },
-                body: formData
-=======
             const data = {
                 category: selectedCategory,
                 mood_name: selectedMoodName,
@@ -335,17 +284,12 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
                 body: JSON.stringify(data)
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
             })
             .then(res => res.json())
             .then(result => {
                 if(result.status === "success") {
                     alert("Your mood has been bloomed! 🌸");
-<<<<<<< HEAD
-                    window.location.href = "{% url 'mainpage' %}";
-=======
                     window.location.href = "{% url 'dashboard' %}";
->>>>>>> 1cbb4dcdde624d2e18ef2ed65720fe1bf840b411
                 }
             });
         }
