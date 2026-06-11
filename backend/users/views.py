@@ -10,7 +10,16 @@ from django.core.mail import send_mail
 from django.utils.timezone import now
 from django.db.models import Q, Count, Avg, DateField
 from django.db.models.functions import Cast, TruncMonth
-
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+# 确保你的顶部导入包含这一行
+from django.urls import reverse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.core.mail import send_mail
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 # 导入合并后的新模型
 from .models import Profile, MoodEntry, MoodPhoto, Favorite, Article, Feedback
 
@@ -452,3 +461,47 @@ def dashboard_view(request):
 
 def forgot_view(request): 
     return render(request, 'forgot.html')
+
+def custom_reset_view(request, uidb64, token):
+    # 这里只是单纯渲染你的 reset.html
+    # 并把 uidb64 和 token 传进去，以便你后续在 html 表单里用
+    return render(request, 'reset.html', {'uid': uidb64, 'token': token})
+ 
+@csrf_exempt
+def forgot_password_action(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_url = request.build_absolute_uri(
+                reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+            )
+            send_mail(
+                'Reset your MoodBloom password',
+                f'Click this link to reset your password: {reset_url}',
+                'adminmoodbloom@gmail.com',
+                [email],
+                fail_silently=False,
+            )
+            # 修改这里：不再返回 JSON，而是告诉页面“成功了”
+            return render(request, 'forgot.html', {'message': 'Check your email for the reset link!'})
+        except User.DoesNotExist:
+            # 也可以在这里传一个错误信息
+            return render(request, 'forgot.html', {'error': 'Email not found'})
+            
+    return render(request, 'forgot.html')
+# 2. 处理 reset.html 的提交（保存密码并跳回登录）
+@csrf_exempt
+def handle_password_save(request):
+    if request.method == 'POST':
+        uid = urlsafe_base64_decode(request.POST.get('uid')).decode()
+        token = request.POST.get('token')
+        user = User.objects.get(pk=uid)
+        
+        if default_token_generator.check_token(user, token):
+            user.set_password(request.POST.get('new_password'))
+            user.save()
+            return redirect('login') # 成功后跳转回登录页
+    return JsonResponse({'error': 'Invalid request'}, status=400)

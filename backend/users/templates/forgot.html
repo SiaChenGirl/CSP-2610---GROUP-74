@@ -94,23 +94,28 @@
     <hr class="header-line">
 
     <div class="content">
-        <div class="forgot-box">
-            <h2>Reset Password</h2>
-            <p>Don't worry! Enter your email address and we'll send you a link to reset your password. 🌸</p>
-            
-            <!-- Django Form -->
-            <form method="POST" action="{% url 'password_reset' %}">
-                {% csrf_token %}
-                <input type="email" name="email" placeholder="Enter your email" required>
-                
-                <button type="submit" class="btn-reset">Send Reset Link</button>
-            </form>
-            
-            <div class="links">
-                Remember your password? <a href="{% url 'login' %}">Back to Login</a>
-            </div>
+    <div class="forgot-box">
+        <h2>Reset Password</h2>
+        <p>Don't worry! Enter your email address and we'll send you a link to reset your password. 🌸</p>
+        
+        <form method="POST" action="{% url 'forgot' %}">
+            {% csrf_token %}
+            <input type="email" name="email" placeholder="Enter your email" required>
+            <button type="submit" class="btn-reset">Send Reset Link</button>
+        </form>
+
+        {% if message %}
+            <p style="color: #6a4fbf; font-weight: bold; margin-top: 20px;">{{ message }}</p>
+        {% endif %}
+        {% if error %}
+            <p style="color: red; margin-top: 20px;">{{ error }}</p>
+        {% endif %}
+        
+        <div class="links">
+            Remember your password? <a href="{% url 'login' %}">Back to Login</a>
         </div>
     </div>
+</div>
 
     <footer>© 2026 MoodBloom | Bloom your mind.</footer>
 
