@@ -6,7 +6,8 @@ from .models import (
     MoodPhoto,
     Article,
     Favorite,
-    Feedback
+    Feedback,
+    Music,
 )
 
 
@@ -93,4 +94,20 @@ class FavoriteAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'article'
+    )
+
+
+@admin.register(Music)
+class MusicAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'mood_category'
+    )
+
+    list_filter = (
+        'mood_category',
+    )
+
+    search_fields = (
+        'title',
     )

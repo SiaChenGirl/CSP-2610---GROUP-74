@@ -21,7 +21,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 # 导入合并后的新模型
-from .models import Profile, MoodEntry, MoodPhoto, Favorite, Article, Feedback
+from .models import Profile, MoodEntry, MoodPhoto, Favorite, Article, Feedback, Music
 
 # ==========================================
 # 1. 身份验证与账户管理模块 (融合 views2 的邮件验证与 views1 的模板跳转)
@@ -37,29 +37,44 @@ def register_view(request):
         gender = data.get('gender', 'Others')
 
         if User.objects.filter(username=username).exists():
-             return JsonResponse({'error': 'Username already exists'}, status=400)
+            return JsonResponse({'error': '👤Username already exists. Please choose another username.'
+            }, status=400)
 
         if User.objects.filter(email=email).exists():
-             return JsonResponse({'error': 'Email already exists'}, status=400)
+            return JsonResponse({'error': '📧Email already exists. Please use another email or log in.'
+            }, status=400)
 
         # 创建用户并同步创建 Profile
         user = User.objects.create_user(username=username, password=password, email=email)
-        Profile.objects.create(user=user, gender=gender)
+        Profile.objects.create(user=user, gender=gender, email_verified=False)
 
         # views2 强大的邮件验证系统
         verify_link = f"http://127.0.0.1:8000/verify-email/{username}/"
         try:
             send_mail(
                 'Verify your MoodBloom account',
-                f'Click this link to verify your email:\n{verify_link}',
-                'admin@moodbloom.com',
+                f'''
+Welcome to MoodBloom 🌸
+Thank you for registering!
+
+Please verify your email address by clicking the link below:
+
+{verify_link}
+
+⚠️ You must verify your email before logging in.
+
+Thank you for joining MoodBloom!
+                ''',
+                'adminmoodbloom@gmail.com',
                 [email],
                 fail_silently=False,
             )
+
         except Exception as e:
             print(f"Email sending failed: {e}")
 
-        return JsonResponse({'message': 'User created successfully', 'status': 'OK'})
+        return JsonResponse({'message': '🎉 Account created successfully! 📩 Please check your email and verify your account before logging in.', 
+                             'status': 'OK'})
     return render(request, 'register.html')
 
 
@@ -69,13 +84,38 @@ def login_view(request):
         data = json.loads(request.body)
         username = data.get('username')
         password = data.get('password')
-        
+
+        try: 
+            user_obj = User.objects.get(username=username) 
+        except User.DoesNotExist: 
+            return JsonResponse({ 
+                'error': '👤Account not found. Please register first.' 
+            }, status=404)
+    
         user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return JsonResponse({'message': 'Login successful', 'status': 'OK'})
-        else:
-            return JsonResponse({'error': 'Invalid username or password'}, status=400)
+        if user is None: 
+            return JsonResponse({ 
+                'error': '❌Invalid username or password.' 
+            }, status=400)
+
+        try: 
+            profile = Profile.objects.get(user=user) 
+            if not profile.email_verified: 
+                return JsonResponse({ 
+                    'error': '📧Please verify your email before logging in.' 
+                    }, status=403) 
+                
+        except Profile.DoesNotExist: 
+            return JsonResponse({ 
+                'error': 'Profile not found. Please contact support.' 
+            }, status=400)
+        
+        login(request, user)
+        return JsonResponse({ 
+            'message': '🌸Login successful. Welcome Back, {request.user.username}!', 
+            'username': user.username 
+        }, status=200)
+
     return render(request, 'login.html')
 
 
@@ -95,7 +135,7 @@ def verify_email(request, username):
     profile = get_object_or_404(Profile, user=user)
     profile.email_verified = True
     profile.save()
-    return JsonResponse({'message': 'Email verified successfully'})
+    return render(request,'email_verified.html')
 
 
 @csrf_exempt
@@ -158,8 +198,8 @@ def profile_view(request):
 # ==========================================
 
 @login_required
-def mainpage_view(request): 
-    return render(request, 'mainpage.html')
+def mainpage_view(request):
+    return render(request,'mainpage.html',)
 
 
 @csrf_exempt
@@ -174,9 +214,14 @@ def moodentry_view(request):
         diary = request.POST.get('diary_text') or request.POST.get('content')
         category = request.POST.get('category')
         intensity = request.POST.get('intensity', 3)
-        song_title = request.POST.get('song_title') or request.POST.get('song')
-        artist = request.POST.get('artist')
-        music_link = request.POST.get('music_link')
+        music_id = request.POST.get('music_id')
+
+        selected_music = None
+        if music_id:
+            try:
+                selected_music = Music.objects.get(id=music_id)
+            except Music.DoesNotExist:
+                pass
 
         # 1. 创建 MoodEntry，确保 user=request.user (实现数据隔离)
         entry = MoodEntry.objects.create(
@@ -185,9 +230,7 @@ def moodentry_view(request):
             category=category, 
             diary_text=diary, 
             intensity=intensity, 
-            song_title=song_title, 
-            artist=artist, 
-            music_link=music_link
+            selected_music=selected_music
         )
         
         # 2. 核心：处理照片上传，关联到刚才创建的 entry
@@ -403,11 +446,63 @@ def dashboard_view(request):
 
         monthly_distribution = moods.annotate(month=TruncMonth('created_at')).values('month', 'mood').annotate(total=Count('id')).order_by('month')
         frequent_mood = moods.values('mood').annotate(total=Count('id')).order_by('-total').first()
+        if not frequent_mood:
+            frequent_mood = {
+                'mood': 'No Data',
+                'total': 0
+            }
 
         percentage_data = []
         for item in mood_counts:
             percentage = (item['total'] / total_entries) * 100 if total_entries > 0 else 0
             percentage_data.append({'mood': item['mood'], 'percentage': round(percentage, 2)})
+
+            recommendation = (
+                "🌱 Your moods appear balanced. "
+                "Continue tracking your emotions to better understand your well-being."
+            )
+
+            sorted_data = sorted(
+                percentage_data,
+                key=lambda x: x['percentage'],
+                reverse=True
+            )
+
+            for item in sorted_data:
+                mood = item['mood'].lower()
+                percentage = item['percentage']
+ 
+                if mood == 'sad' and percentage >= 50:
+                    recommendation = (
+                        "😔 You have been feeling sad quite often recently. "
+                        "Consider taking some time to rest, talk with someone you trust, "
+                        "or explore our wellness articles."
+                    )
+                    break
+
+                elif mood == 'angry' and percentage >= 40:
+                    recommendation = (
+                        "😠 You seem to be experiencing a lot of frustration lately. "
+                        "Try relaxation techniques, deep breathing, or activities "
+                        "that help reduce stress."
+                    )
+                    break
+
+                elif mood == 'neutral' and percentage >= 40:
+                    recommendation = (
+                        "😐 You have been feeling neutral most of the time. "
+                        "This may be a good opportunity to explore new interests, "
+                        "set personal goals, or engage in activities that bring you joy."
+                    )
+                    break
+
+                elif mood == 'happy' and percentage >= 60:
+                    recommendation = (
+                        "😊 Great job! You've been feeling positive most of the time. "
+                        "Keep up the habits and activities that contribute to your happiness."
+                    )
+                    break
+
 
         trend_data = moods.values('created_at__date', 'mood').annotate(total=Count('id')).order_by('created_at__date')
 
@@ -443,7 +538,8 @@ def dashboard_view(request):
             'trend_over_time': list(trend_data),
             'most_frequent_mood': frequent_mood,
             'current_streak': current_streak,
-            'longest_streak': longest_streak
+            'longest_streak': longest_streak,
+            'recommendation': recommendation,
         })
 
     # 默认浏览器访问渲染原汁原味的 HTML Dashboard，并传输趋势参数
@@ -505,3 +601,20 @@ def handle_password_save(request):
             user.save()
             return redirect('login') # 成功后跳转回登录页
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+@login_required
+def get_music_library(request):
+    music_list = Music.objects.all()
+
+    data = []
+
+    for music in music_list:
+        data.append({
+            "id": music.id,
+            "title": music.title,
+            "mood_category": music.mood_category,
+            "audio_file": music.audio_file.url
+        })
+
+    return JsonResponse(data, safe=False)

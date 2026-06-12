@@ -27,7 +27,7 @@ urlpatterns = [
     path('api/logout/', views.user_logout),
     path('api/profile/', views.profile_view),
     path('api/change-password/', views.change_password),
-    path('verify-email/<str:username>/', views.verify_email),
+    path('verify-email/<str:username>/', views.verify_email, name='verify_email'),
     path('add-mood/', views.moodentry_view),
     path('today-mood/', views.today_mood),
     path('search-entries/', views.search_view),
@@ -38,6 +38,7 @@ urlpatterns = [
     path('api/unfavorite/<int:article_id>/', views.remove_favorite),
     path('api/feedback/', views.feedback_view),
     path('api/dashboard-status/', views.dashboard_view),
+    path('api/music-library/', views.get_music_library),
 
     # ==========================================
     # 3. 密码重置专用路由 (核心修复区)

@@ -17,6 +17,21 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+class Music(models.Model):
+
+    MOOD_CHOICES = [
+        ('Happy', 'Happy'),
+        ('Sad', 'Sad'),
+        ('Neutral', 'Neutral'),
+        ('Angry', 'Angry'),
+    ]
+
+    title = models.CharField(max_length=100)
+    mood_category = models.CharField(max_length=20, choices=MOOD_CHOICES)
+    audio_file = models.FileField(upload_to='music/')
+
+    def __str__(self):
+        return self.title
 
 # ==========================================
 # 2. 心情记录表 (以 Model 2 MoodEntry 为主结构，完美融合 Model 1 的歌单和分类逻辑)
@@ -27,12 +42,7 @@ class MoodEntry(models.Model):
     category = models.CharField(max_length=20, null=True, blank=True) # 融入 Model 1 的分类，方便前端过滤
     diary_text = models.TextField(blank=True, null=True)           # Model 2 核心日记字段 (对应 Model 1 content)
     intensity = models.IntegerField(default=3, null=True, blank=True) # 保留默认权重 3 
-    
-    # 音乐模块：完美融合 Model 1 的单字段与 Model 2 的详细字段
-    song_title = models.CharField(max_length=255, null=True, blank=True) # 对应 Model 1 的 song 字段
-    artist = models.CharField(max_length=255, null=True, blank=True)
-    music_link = models.URLField(null=True, blank=True)
-    
+    selected_music = models.ForeignKey('Music', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -104,3 +114,5 @@ class Feedback(models.Model):
 
     def __str__(self):
         return self.user.username if self.user else "Guest"
+    
+
