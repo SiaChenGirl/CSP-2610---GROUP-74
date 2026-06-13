@@ -1,30 +1,131 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Email Verified</title>
+{% load static %}
 
-    <script>
-        setTimeout(function() {
-            window.location.href = "/";
-        }, 6000);
-    </script>
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(
+            180deg,
+            #FFFFFF 0%,
+            #F5F2FF 40%,
+            #DED4FF 100%
+        );
+        background-attachment: fixed;
+        min-height: 100vh;
+        color: #4a3494;
+        display: flex;
+        flex-direction: column;
+    }
 
-</head>
-<body>
+    .header-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 50px;
+    }
 
-    <h1>✅ Email Verified Successfully</h1>
+    .logo img {
+        width: 180px;
+    }
 
-    <p>
-        Your MoodBloom account has been verified.
-    </p>
+    .title-area img {
+        width: 253px;
+    }
 
-    <p>
-        🌸 Your account is now active.
+    .content {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
 
-        You may now return to MoodBloom and log in.
-    </p>
+    .box {
+        width: 420px;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(12px);
+        padding: 45px;
+        border-radius: 30px;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.8);
+        box-shadow: 0 8px 25px rgba(106,79,191,0.1);
+    }
 
-    <p> Redirecting to login page... </p>
+    .icon {
+        font-size: 65px;
+        margin-bottom: 15px;
+    }
 
-</body>
-</html>
+    h2 {
+        color: #6a4fbf;
+        margin-bottom: 10px;
+    }
+
+    .message {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    .btn-main {
+        display: inline-block;
+        padding: 14px 30px;
+        background: #6a4fbf;
+        color: white;
+        text-decoration: none;
+        border-radius: 15px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .btn-main:hover {
+        background: #4a3494;
+        transform: scale(1.03);
+    }
+
+    footer {
+        text-align: center;
+        padding: 20px;
+        color: #6a4fbf;
+        font-weight: bold;
+        opacity: 0.8;
+    }
+</style>
+<div class="header-wrapper">
+    <div class="logo">
+        <img src="{% static 'logo.png' %}">
+    </div>
+
+    <div class="title-area">
+        <img src="{% static 'title.png' %}">
+        <br>
+        <span style="color:#6a4fbf;font-style:italic;font-size:14px;">
+            Mood Your Day, Bloom Your Mind.
+        </span>
+    </div>
+
+    <div style="width:180px;"></div>
+</div>
+
+<div class="content">
+    <div class="box">
+
+        <div class="icon">🌸</div>
+
+        <h2>Email Verified Successfully!</h2>
+
+        <p class="message">
+            Your email has been verified successfully.<br>
+            You may now log in and start your MoodBloom journey.
+        </p>
+
+        <a href="{% url 'login' %}" class="btn-main">
+            Go to Login
+        </a>
+
+    </div>
+</div>
+
+<footer>
+    © 2026 MoodBloom | Mood Your Day, Bloom Your Mind.
+</footer>

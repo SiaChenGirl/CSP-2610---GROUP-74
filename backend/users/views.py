@@ -112,7 +112,7 @@ def login_view(request):
         
         login(request, user)
         return JsonResponse({ 
-            'message': '🌸Login successful. Welcome Back, {request.user.username}!', 
+            'message': f'🌸Login successful. Welcome Back, {request.user.username}!', 
             'username': user.username 
         }, status=200)
 
