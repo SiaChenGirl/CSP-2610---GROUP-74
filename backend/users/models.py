@@ -65,27 +65,24 @@ class MoodPhoto(models.Model):
 # 4. 心理健康资源表 (以 Model 2 结构为主，无缝融合 Model 1 的分类、简介和外部跳转链接)
 # ==========================================
 class Article(models.Model):
+    # 这里的 Key 是内部逻辑用的，Value 是 Admin 后台显示的文字
     CATEGORY_CHOICES = [
-        ('Sleep', 'Better Sleep'),
-        ('Stress', 'Stress Relief'),
-        ('Self-Love', 'Self-Love'),
-        ('Focus', 'Deep Focus'),
-        ('Anxiety', 'Anxiety'),
-        ('Exercise', 'Exercise'),
-        ('Hydration', 'Hydration'),
-        ('Social', 'Social'),
-        ('Gratitude', 'Gratitude'),
+        ('basics', 'Mental Health Basics'),
+        ('motivation', 'Motivation & Positive Mindset'),
+        ('relationships', 'Relationships & Social Well-Being'),
+        ('stress', 'Stress & Anxiety Management'),
+        ('selfcare', 'Self-Care & Daily Habits'),
     ]
+    
     title = models.CharField(max_length=200)
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='Sleep') # 融入分类，完美对接你前端的动态 API 抓取
-    summary = models.CharField(max_length=500, blank=True)           # 融入 Model 1 简介
-    content = models.TextField(blank=True, null=True)               # 保留 Model 2 内容字段
-    external_url = models.URLField(max_length=500, null=True, blank=True) # 融入 Model 1 外部跳转链接，对接 Read More →
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='basics')
+    summary = models.CharField(max_length=500, blank=True)
+    content = models.TextField(blank=True, null=True)
+    external_url = models.URLField(max_length=500, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"[{self.category}] {self.title}"
-
+        return f"[{self.get_category_display()}] {self.title}"
 
 # ==========================================
 # 5. 文章收藏表 (完全保留 Model 2 收藏夹功能)

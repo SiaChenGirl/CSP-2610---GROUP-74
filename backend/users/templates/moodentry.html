@@ -255,25 +255,41 @@
             }
 
             const formData = new FormData();
+            // 注意：这里统一使用你的后端视图里期待的字段名
             formData.append('category', selectedCategory);
-            formData.append('mood_name', selectedMoodName);
+            formData.append('mood_name', selectedMoodName); // 后端通过 request.POST.get('mood_name') 获取
             formData.append('intensity', document.getElementById('intensityRange').value);
-            formData.append('content', document.getElementById('diaryEntry').value);
+            formData.append('content', document.getElementById('diaryEntry').value); // 后端通过 request.POST.get('content') 获取
             formData.append('song', document.getElementById('songInput').value);
             
             selectedPhotos.forEach(file => formData.append('photos', file));
             
+            // 安全且完整的 fetch 请求
             fetch("{% url 'moodentry' %}", {
                 method: "POST",
-                headers: { "X-CSRFToken": "{{ csrf_token }}" },
-                body: formData
+                headers: { 
+                    "X-CSRFToken": "{{ csrf_token }}" // 必须保留：防止 Django 触发安全反爬虫/跨站拦截
+                },
+                body: formData,
+                credentials: 'include' // 显式包含：强制要求浏览器发送该请求时携带用户的登录 Session ID
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Server temporary error.");
+                }
+                return res.json();
+            })
             .then(result => {
-                if(result.status === "success") {
+                if (result.status === "success") {
                     alert("Your mood has been bloomed! 🌸");
                     window.location.href = "{% url 'mainpage' %}";
+                } else {
+                    alert("Failed to save entry: " + (result.message || "Unknown error"));
                 }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("An error occurred while saving. Please ensure you are logged in.");
             });
         }
     </script>

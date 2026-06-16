@@ -336,8 +336,9 @@
             document.getElementById('overlay').style.display='none';
         }
 
+        // 找到 mainpage.html 里的这块代码并修改：
         function goHistory() { 
-            location.href = `{% url 'search' %}?date=${formattedDateForBackend}`; 
+             location.href = `{% url 'diaryhistory' %}?date=${formattedDateForBackend}`; 
         }
         
         function goEntry() { 
@@ -345,6 +346,18 @@
         }
 
         startup();
+        // 检查用户是否保持登录状态的监控
+    setInterval(() => {
+        fetch("{% url 'check_session' %}") // 我们稍后在后端定义这个小接口
+        .then(response => response.json())
+        .then(data => {
+            if (!data.is_authenticated) {
+                // 如果后端发现没有 session，立即跳转
+                window.location.href = "{% url 'login' %}";
+            }
+        });
+    }, 5000); // 每 5 秒检查一次
+    
     </script>
 </body>
 </html>

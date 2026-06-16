@@ -127,44 +127,27 @@
         <div class="main-panel">
             <div class="bookmark-scroll-grid">
                 
-                <!-- 卡片 1 -->
+                {% for fav in favorites %}
                 <div class="bookmarked-card">
-                    <button class="cancel-bookmark-star" title="Cancel Favourite" onclick="dismissBookmarkCard(this)">★</button>
+                    <button class="cancel-bookmark-star" onclick="removeFavorite(this, {{ fav.article.id }})">★</button>
                     <div class="bookmark-cover">
-                        <img src="{% static 'images/mental_health.jpg' %}" alt="Mental Health Basics">
+                        <img src="{% static 'images/default_article.jpg' %}" alt="{{ fav.article.title }}">
                     </div>
                     <div class="bookmark-text-info">
-                        <h3>Mental Health Basics</h3>
-                        <p>Core foundational guide outlining emotional safety frameworks.</p>
+                        <h3>{{ fav.article.title }}</h3>
+                        <p>{{ fav.article.summary }}</p>
                     </div>
                     <div class="bookmark-action-row">
-                        <!-- 🔗 完美链接回三栏文章主页 -->
-                        <a href="{% url 'article' %}" class="read-article-link">Read more</a>
-                        <a href="https://example.com" target="_blank" class="source-origin-link">Original Source</a>
+                        <a href="{{ fav.article.external_url }}" target="_blank" class="read-article-link">Read more</a>
                     </div>
                 </div>
-
-                <!-- 卡片 2 -->
-                <div class="bookmarked-card">
-                    <button class="cancel-bookmark-star" title="Cancel Favourite" onclick="dismissBookmarkCard(this)">★</button>
-                    <div class="bookmark-cover">
-                        <img src="{% static 'images/motivation.jpg' %}" alt="Motivation Tactics">
-                    </div>
-                    <div class="bookmark-text-info">
-                        <h3>Motivation Tactics</h3>
-                        <p>How to construct durable internal triggers when dealing with fatigue.</p>
-                    </div>
-                    <div class="bookmark-action-row">
-                        <!-- 🔗 完美链接回三栏文章主页 -->
-                        <a href="{% url 'article' %}" class="read-article-link">Read more</a>
-                        <a href="https://example.com" target="_blank" class="source-origin-link">Original Source</a>
-                    </div>
-                </div>
+                {% empty %}
+                    <p style="text-align: center; width: 100%; padding: 20px;">You haven't favorited any articles yet.</p>
+                {% endfor %}
                 
             </div>
         </div>
 
-        <!-- 侧边全局悬浮导航已成功适配 Django 路由标签 -->
         <div class="circle-actions">
             <div class="action-btn" title="Calendar" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
             <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
@@ -177,12 +160,58 @@
     <footer>© 2026 MoodBloom | Mood Your Day, Bloom Your Mind.</footer>
 
     <script>
+        
         function toggleNav() { document.getElementById('sideNav').classList.toggle('active'); }
-        function dismissBookmarkCard(button) {
-            const card = button.closest('.bookmarked-card');
-            card.style.opacity = '0';
-            card.style.transform = 'scale(0.8)';
-            setTimeout(() => { card.remove(); }, 300);
+        
+        function removeFavorite(button, articleId) {
+            fetch(`/remove-favorite/${articleId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Removed from favorites") {
+                    const card = button.closest('.bookmarked-card');
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.8)';
+                    setTimeout(() => { card.remove(); }, 300);
+                }
+                // 在 script 中添加这个辅助函数
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function removeFavorite(button, articleId) {
+    fetch(`/remove-favorite/${articleId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'), // 使用 Cookie 获取
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 只要后端处理了，就移除卡片
+        const card = button.closest('.bookmarked-card');
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.8)';
+        setTimeout(() => { card.remove(); }, 300);
+  
+            });
         }
     </script>
 </body>

@@ -231,7 +231,26 @@
     <footer>© 2026 MoodBloom | Mood your day, Bloom your mind.</footer>
 
     <script>
-        function toggleNav() { document.getElementById('sideNav').classList.toggle('active'); }
+        function toggleNav() { 
+            document.getElementById('sideNav').classList.toggle('active'); 
+        }
+
+        // 添加这个函数，以便在文章列表页调用
+        function toggleFavorite(articleId) {
+            fetch(`/api/favorite/${articleId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // 成功提示
+                // 如果你想在点击后改变样式，可以在这里操作 DOM
+            })
+            .catch(error => console.error('Error:', error));
+        }
     </script>
 </body>
 </html>

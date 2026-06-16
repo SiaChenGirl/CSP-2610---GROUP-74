@@ -141,6 +141,11 @@
                 <input type="text" id="reg-username" placeholder="Username">
             </div>
 
+            <div class="input-group">
+                <input type="email" id="reg-email" placeholder="Email Address">
+                <button type="button" class="verify-btn" onclick="triggerVerify()">Verify</button>
+            </div>
+
             <div class="input-group password-container">
                 <input type="password" id="reg-password" placeholder="Password" oninput="validatePasswordLive()">
                 <span class="eye-toggle" onclick="togglePasswordVisibility('reg-password', this)">👁️</span>

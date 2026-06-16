@@ -20,7 +20,7 @@
         }
 
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
-        .logo img { width: 180px; }
+        .logo img { width: 180px; cursor: pointer; }
         .title-area { text-align: center; }
         .title-area img { width: 253px; }
         .hamburger-menu { font-size: 24px; cursor: pointer; color: #6a4fbf; width: 180px; text-align: right; }
@@ -172,7 +172,7 @@
             color: #4a3494;
         }
 
-        /* Action Block - Placed Simply at the Bottom */
+        /* Action Block */
         .action-block {
             width: 100%;
             margin-top: 5px;
@@ -202,12 +202,12 @@
     {% csrf_token %}
 
     <div class="header-wrapper">
-        <div class="logo"><img src="{% static 'logo.png' %}" alt="Logo"></div>
+        <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'logo.png' %}" alt="Logo"></div>
         <div class="title-area">
             <img src="{% static 'title.png' %}" alt="Title"><br>
             <span style="color: #6a4fbf; font-style: italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
         </div>
-        <div class="hamburger-menu">☰</div>
+        <div class="hamburger-menu" onclick="location.href='{% url 'mainpage' %}'">主页 ↩</div>
     </div>
 
     <div class="divider-line" style="height:1px; background:rgba(106, 79, 191, 0.2); margin:0 50px;"></div>
@@ -233,7 +233,7 @@
             </div>
 
             <div class="diary-photo-container" id="photo-box">
-                <img src="/static/default_diary.jpg" class="diary-photo" id="diary-photo-img" alt="Diary attachment">
+                <img src="{% static 'default_diary.jpg' %}" class="diary-photo" id="diary-photo-img" alt="Diary attachment">
             </div>
 
             <div class="music-player">
@@ -265,26 +265,33 @@
     </footer>
 
     <script>
-        // Sample data mimicking database array rows
+        // 核心改动：完美的将 Django 数据库里的内容无缝注入到你原本的数据数组里
         const singleDayEntries = [
-            {
-                id: 101, 
-                date: "June 10, 2026",
-                emoji: "😊",
-                mood: "Happy",
-                text: "A lovely walk in the woods with family today. We found a small creek. Felt very calm and connected to nature. 🌸",
-                photo: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500",
-                track: "Gentle Breeze"
-            },
-            {
-                id: 102,
-                date: "June 10, 2026",
-                emoji: "😴",
-                mood: "Sleepy",
-                text: "Studied coding backend architectures with my group friends all afternoon. Ready to sleep early tonight!",
-                photo: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500",
-                track: "Midnight Lofi"
-            }
+            {% if entries %}
+                {% for entry in entries %}
+                {
+                    id: "{{ entry.id }}", 
+                    date: "{{ date_str }}", 
+                    emoji: "{{ entry.emoji|default:'😊' }}", 
+                    mood: "{{ entry.mood|default:'Happy' }}",
+                    text: `{{ entry.diary_text|escapejs }}`,
+                    // 如果数据库有图就显示图，没有就用你的本地静态默认图
+                    photo: "{% if entry.photo %}{{ entry.photo.url }}{% else %}{% static 'default_diary.jpg' %}{% endif %}",
+                    track: "{{ entry.track|default:'Gentle Breeze' }}"
+                }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            {% else %}
+                // 如果当天完全没有日记，默认塞入一条提示，保持你的卡片样式不崩塌
+                {
+                    id: 0,
+                    date: "{{ date_str }}",
+                    emoji: "🌸",
+                    mood: "No Entry",
+                    text: "No blossoming memories found for this day. Click Edit to create one!",
+                    photo: "{% static 'default_diary.jpg' %}",
+                    track: "Silence"
+                }
+            {% endif %}
         ];
 
         let currentEntryIndex = 0;
@@ -301,8 +308,14 @@
             document.getElementById('diary-photo-img').src = currentEntry.photo;
             document.getElementById('track-title').innerText = currentEntry.track;
 
-            document.getElementById('prev-btn').disabled = (currentEntryIndex === 0);
-            document.getElementById('next-btn').disabled = (currentEntryIndex === singleDayEntries.length - 1);
+            // 如果只有一条数据（或者是空提示），禁用翻页按钮
+            if (singleDayEntries.length <= 1 || currentEntry.id === 0) {
+                document.getElementById('prev-btn').disabled = true;
+                document.getElementById('next-btn').disabled = true;
+            } else {
+                document.getElementById('prev-btn').disabled = (currentEntryIndex === 0);
+                document.getElementById('next-btn').disabled = (currentEntryIndex === singleDayEntries.length - 1);
+            }
         }
 
         function changeEntry(direction) {
@@ -310,10 +323,17 @@
             updateCardUI();
         }
 
-        // Router handler function to redirect to your edit entry module
+        // 路由处理器：安全地跳往你的修改页面
         function navigateToEditPage() {
             const currentEntry = singleDayEntries[currentEntryIndex];
-            window.location.href = `/edit-entry/?id=${currentEntry.id}&date=${encodeURIComponent(currentEntry.date)}`;
+            
+            if (currentEntry.id === 0) {
+                // 如果是空数据，带上当前日期跳去创建或编辑页
+                window.location.href = `/moodentry/?date=${encodeURIComponent(currentEntry.date)}`;
+            } else {
+                // 正常数据带上数据库真实 ID 进行修改
+                window.location.href = `/edit-entry/?id=${currentEntry.id}&date=${encodeURIComponent(currentEntry.date)}`;
+            }
         }
 
         window.onload = function() {

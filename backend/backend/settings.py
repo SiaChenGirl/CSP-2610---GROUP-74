@@ -134,3 +134,7 @@ import os  # 如果文件顶部没有 import os，请在顶部加上，或者直
 # ✨ 开启 Media 媒体文件支持
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 告诉 Django：当 @login_required 装饰器拦截到未登录用户时，
+# 不要去默认的 /accounts/login/，而是去你定义的名为 'login' 的 URL
+LOGIN_URL = 'login'
