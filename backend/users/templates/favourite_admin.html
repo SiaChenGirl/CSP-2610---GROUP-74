@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Manage Favourites</title>
+
+<style>
+body{
+    font-family:'Segoe UI';
+    background:#f7f3ff;
+    padding:40px;
+}
+.container{
+    background:white;
+    padding:30px;
+    border-radius:25px;
+}
+h1{
+    color:#7a5fc7;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+th,td{
+    padding:12px;
+    border-bottom:1px solid #eee;
+}
+.btn{
+    background:#b39ddb;
+    color:white;
+    border:none;
+    padding:8px 15px;
+    border-radius:10px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>❤️ Manage Favourites</h1>
+
+<table>
+<tr>
+    <th>ID</th>
+    <th>User</th>
+    <th>Article</th>
+    <th>Date Saved</th>
+    <th>Action</th>
+</tr>
+
+{% for favourite in favourites %}
+<tr>
+    <td>{{ favourite.id }}</td>
+    <td>{{ favourite.user.username }}</td>
+    <td>{{ favourite.article.title }}</td>
+    <td>{{ favourite.created_at }}</td>
+    <td>
+        <button class="btn">Remove</button>
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+
+</body>
+</html>

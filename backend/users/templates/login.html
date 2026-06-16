@@ -3,57 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <title>MoodBloom | Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&family=Cormorant+Garamond:wght@500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     {% load static %}
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); min-height: 100vh; display: flex; flex-direction: column; }
-        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
-        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 30px 40px; }
-        .logo img { width: 180px; } 
-        .title img { width: 220px; }
-        .content { flex: 1; display: flex; justify-content: center; align-items: center; gap: 60px; padding: 20px; }
-        .main-slogan { font-family: 'Dancing Script', cursive; font-size: 32px; color: #6a4fbf; margin-bottom: 20px; text-align: center; }
-        .quote-box { width: 300px; height: 380px; background: white; border-radius: 25px; padding: 30px; display: flex; flex-direction: column; align-items: center; font-family: 'Dancing Script', cursive; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; }
-        .quote-title { font-size: 28px; margin-bottom: 20px; color: #6a4fbf; border-bottom: 1px solid #e8e0ff; width: 100%; padding-bottom: 10px; }
-        #quote-display { font-size: 20px; line-height: 1.8; color: #6a4fbf; white-space: pre-line; }
-        .box { width: 350px; background: white; padding: 40px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 12px; background: #b39ddb; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-main:hover { background: #9a81c7; }
-        .links { margin-top: 15px; font-size: 13px; }
-        a { color: #6a4fbf; text-decoration: none; }
+     body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Poppins',sans-serif;
+    background-image:url("{% static 'background.png' %}");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    overflow:hidden;
+}
+
+/* MAIN LAYOUT */
+
+.main-container{
+    width:100%;
+    min-height:100vh;               
+    display:flex;
+    justify-content:center;
+    gap: 100px;
+    align-items:center;
+    padding:20px 50px;
+    box-sizing:border-box;
+}
+
+/* LEFT SIDE */
+
+.left-section{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+/* LOGIN CARD */
+
+.login-card{
+    width:280px;
+    background:rgba(255,255,255,0.72);
+    border:1px solid rgba(255,255,255,0.8);
+    backdrop-filter:blur(12px);
+    border-radius:30px;
+    padding:25px;
+    box-shadow:
+    0 10px 25px rgba(0,0,0,0.08);
+}
+
+.welcome{
+
+    font-family:'Dancing Script',cursive;
+    font-size:30px;
+    color:#8d71df;
+    margin:0;
+}
+
+.subtitle{
+    color:#666;
+    margin-bottom:25px;
+    font-size:16px;
+}
+
+.login-card input{
+
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+    border-radius:15px;
+    border:1px solid #ddd;
+    box-sizing:border-box;
+    font-size:14px;
+}
+
+.login-card input:focus{
+
+    outline:none;
+    border-color:#9c7ff3;
+}
+
+.remember-row{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:15px 0 20px;
+    font-size:14px;
+}
+
+.remember-row a{
+
+    color:#8d71df;
+    text-decoration:none;
+}
+
+.btn-main{
+
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:15px;
+    background:
+    linear-gradient(
+    90deg,
+    #9b6df4,
+    #bb91ff
+    );
+
+    color:white;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn-main:hover{
+
+    transform:translateY(-2px);
+}
+
+.links{
+
+    text-align:center;
+    margin-top:20px;
+}
+
+.links a{
+    color:#8d71df;
+    text-decoration:none;
+    font-weight:500;
+}
+
+/* QUOTE CARD */
+
+.quote-box{
+    width:280px;
+    background:rgba(255,255,255,0.50);
+    backdrop-filter:blur(12px);
+    border-radius:30px;
+    padding:20px;
+    text-align:center;
+    box-shadow:
+    0 10px 25px rgba(0,0,0,0.08);
+}
+
+.quote-title{
+ font-size:55px;
+ color:#8d71df;
+}
+
+#quote-display{
+    font-family:'Cormorant Garamond',serif;
+    font-size:20px;
+    line-height:1.6;
+    color:#7a5fc7;
+    white-space:pre-line;
+    padding:0 10px;
+}
+
+/* RIGHT SIDE */
+
+.right-section{
+ flex:1;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center;
+}
+
+.mood-logo{
+ width:420px;
+ max-width:100%;
+}
+
+.main-slogan{
+  margin-top:20px;
+  font-size:24px;
+  color:#8d71df;
+  font-weight:600;
+  text-align:center;
+}
     </style>
 </head>
 <body>
-    {% csrf_token %}
+{% csrf_token %}
 
-    <div class="header-wrapper">
-        <div class="logo"><img src="{% static 'logo.png' %}" alt="Logo"></div>
-        <div class="title"><img src="{% static 'title.png' %}" alt="Title"></div>
-        <div style="width:150px;"></div>
-    </div>
-    <hr class="header-line">
+<div class="main-container">
+    <!-- LEFT SIDE -->
+    <div class="left-section">
+        <!-- LOGIN CARD -->
+        <div class="login-card">
+            <h1 class="welcome">Welcome Back!</h1>
+            <p class="subtitle">
+                Log in to continue your journey
+            </p>
+            <input type="text"
+                   id="username"
+                   placeholder="Username">
+            <input type="password"
+                   id="password"
+                   placeholder="Password">
+            <div class="remember-row">
 
-    <div class="content">
+                <label>
+                    <input type="checkbox"
+                           style="width:auto;">
+                    Remember Me
+            </div>
+            <button class="btn-main"
+                    onclick="handleLogin()">
+                Log In
+            </button>
+           <div class="links">
+    <a href="#">Forgot Password</a>
+    |
+    <a href="{% url 'register' %}">Register</a>
+</div>
+        </div>
+        <!-- QUOTE CARD -->
         <div class="quote-box">
-            <div class="quote-title">Daily Bloom</div>
+            <div class="quote-title">
+                ❝
+            </div>
             <p id="quote-display"></p>
         </div>
-
-        <div class="right-side">
-            <div class="main-slogan">Mood your mind, Bloom your day</div>
-            <div class="box">
-                <h2 style="color: #6a4fbf; margin-top:0;">Login</h2>
-                <input type="text" id="username" placeholder="Username">
-                <input type="password" id="password" placeholder="Password">
-                <button class="btn-main" onclick="handleLogin()">Log In</button>
-                <div class="links">
-                    <a href="{% url 'register' %}">Register</a> | <a href="{% url 'forgot' %}">Forgot Password?</a>
-                </div>
-            </div>
+    </div>
+    <!-- RIGHT SIDE -->
+    <div class="right-section">
+        <img src="{% static 'title.png' %}"
+             class="mood-logo"
+             alt="MoodBloom">
+        <div class="main-slogan">
+            Mood Your Day, Bloom Your Mind 🌸
         </div>
     </div>
-
+</div>
     <script>
         // 获取 Cookie 的工具函数
         function getCookie(name) {
@@ -104,11 +289,40 @@
 
         // 诗句逻辑保持不变
         const quotes = [
-            `Today feels gentle 🌙\nlike a quiet sky above ☁️\neven the smallest light ✨\nstill finds a way to shine 🌸`,
-            `You are growing slowly 🌱\neven when you cannot see 🍃\nevery step you’re taking\nis shaping who you’ll be 💜`,
-            `Some days feel heavy 🌧️\nlike waves you cannot fight 🌊\nbut storms don’t last forever\nthey fade into the light 🌈`,
-            `Breathe in softly 🌿\nlet your heart feel calm ☁️\nyou don’t need perfection\njust be who you are 💫`
-        ];
+
+        `Every flower blooms
+         at its own pace.
+         Trust your journey 🌸`,
+
+        `Your feelings are valid.
+         Even cloudy days
+         will pass ☁️`,
+
+        `Small steps still move
+         you forward.
+         Keep going ✨`,
+
+        `Take a deep breath.
+         You are stronger
+         than you think 💜`,
+
+        `Rest is part
+         of growing.
+         Be gentle with yourself 🌙`,
+
+        `Happiness blooms
+         from gratitude,
+         one moment at a time 🌷`,
+
+        `Kindness begins
+         with yourself.
+         You deserve it 💕`,
+
+        `Believe in your growth.
+         Beautiful things
+         take time 🌿`
+
+];
         let i = 0;
         function showQuote() {
             const display = document.getElementById("quote-display");

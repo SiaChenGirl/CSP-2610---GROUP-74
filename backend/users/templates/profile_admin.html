@@ -1,0 +1,176 @@
+<h1>👤Manage Profiles</h1>
+<style>
+
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(
+        180deg,
+        #ffffff,
+        #f7f3ff,
+        #ece4ff
+    );
+    min-height:100vh;
+}
+
+.header{
+    background:#b39ddb;
+    color:white;
+    padding:20px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.header h1{
+    margin:0;
+}
+
+.container{
+    width:90%;
+    margin:35px auto;
+    background:white;
+    border-radius:30px;
+    padding:30px;
+    box-shadow:0 8px 20px rgba(122,95,199,.15);
+}
+
+.page-title{
+    font-size:28px;
+    color:#7a5fc7;
+    font-weight:bold;
+    margin-bottom:25px;
+}
+
+.btn-add{
+    background:#7a5fc7;
+    color:white;
+    border:none;
+    padding:12px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+.btn-add:hover{
+    background:#694cb5;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#b39ddb;
+    color:white;
+    padding:15px;
+    text-align:left;
+}
+
+td{
+    padding:15px;
+    border-bottom:1px solid #eee;
+}
+
+tr:hover{
+    background:#faf8ff;
+}
+
+.btn-view{
+    background:#b39ddb;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.btn-delete{
+    background:#ff8a8a;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.btn-edit{
+    background:#7a5fc7;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.back-btn{
+    color:white;
+    text-decoration:none;
+}
+
+.profile-pic{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.photo-preview{
+    width:80px;
+    height:80px;
+    border-radius:12px;
+    object-fit:cover;
+}
+
+</style>
+<div class="container">
+
+<div class="page-title">
+👤 Manage Profiles
+</div>
+
+<table>
+
+<tr>
+<th>Avatar</th>
+<th>Username</th>
+<th>Email</th>
+<th>Gender</th>
+<th>Birthday</th>
+<th>Actions</th>
+</tr>
+
+{% for profile in profiles %}
+
+<tr>
+
+<td>
+
+{% if profile.avatar %}
+<img src="{{ profile.avatar.url }}"
+     class="profile-pic">
+{% endif %}
+
+</td>
+
+<td>{{ profile.user.username }}</td>
+
+<td>{{ profile.user.email }}</td>
+
+<td>{{ profile.gender }}</td>
+
+<td>{{ profile.birthday }}</td>
+
+<td>
+<button class="btn-edit">Edit</button>
+<button class="btn-delete">Delete</button>
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>

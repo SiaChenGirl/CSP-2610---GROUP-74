@@ -8,15 +8,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600&display=swap" rel="stylesheet">
     <style>
         /* 1. 基础布局 - 统一队友的渐变风格 */
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
-            background-attachment: fixed; 
-            min-height: 100vh; 
-            color: #4a3494;
-            overflow-x: hidden;
-        }
+       .profile-card{
+    position:fixed;
+    top:25px;
+    left:25px;
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    background:rgba(255,255,255,.85);
+
+    padding:12px 20px;
+
+    border-radius:25px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    z-index:999;
+}
+
+.profile-avatar{
+    width:55px;
+    height:55px;
+
+    border-radius:50%;
+
+    background:#ffe7a6;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:28px;
+}
+
+.profile-name{
+    font-weight:600;
+}
+
+.profile-text{
+    font-size:13px;
+    color:#7a5fc7;
+}
 
         /* 2. 侧边导航栏 (Side Nav) - Updated to a soft neutral drop shadow */
         .side-nav {
@@ -48,21 +82,44 @@
         .close-nav { font-size: 40px; cursor: pointer; position: absolute; top: 15px; right: 25px; color: #b39ddb; }
 
         /* 3. 头部设计 */
-        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .header-wrapper { display: flex; justify-content: center; align-items: center; padding: 30px 50px; }
         .logo img { width: 180px; cursor: pointer; }
         .title-area { text-align: center; }
-        .title-area img { width: 230px; }
-        .menu-icon { font-size: 35px; cursor: pointer; color: #6a4fbf; width: 180px; text-align: right; }
+        .title-area img { width: 420px; }
+        .menu-icon{
+    position:fixed;
 
+    top:30px;
+    right:30px;
+
+    width:55px;
+    height:55px;
+
+    background:white;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:30px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    color:#6a4fbf;
+
+    z-index:999;
+}
         /* 4. 日历与侧边按钮布局 */
-        .main-container { display: flex; justify-content: center; gap: 40px; padding: 20px 60px; align-items: flex-start; }
+        .main-container { display: flex; justify-content: center; align-items: flex-start; gap: 40px; padding: 20px 60px;}
         
         .calendar-box { 
-            background: white; 
+            background: rgba(255,255,255,.92); 
             border-radius: 40px; 
             padding: 35px; 
-            width: 700px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            width: 720px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
         }
 
         .cal-header { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
@@ -74,18 +131,38 @@
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
         .day-label { font-weight: bold; color: #b39ddb; padding-bottom: 10px; font-size: 14px; }
         
-        .day-cell { 
-            height: 55px; line-height: 55px; border-radius: 15px; 
-            cursor: pointer; transition: 0.3s; font-weight: bold; 
-            background: #fcfaff; border: 1px solid #f0ebff;
-        }
+        .day-cell{
+    height:80px;
+    border-radius:15px;
+    cursor:pointer;
+    transition:0.3s;
+
+    background:#fcfaff;
+    border:1px solid #f0ebff;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.day-number{
+    font-weight:bold;
+    font-size:14px;
+}
+
+.day-mood{
+    width:24px;
+    height:24px;
+    margin-top:5px;
+}
         .day-cell:hover { background: #6a4fbf; color: white; transform: scale(1.05); }
         .highlight-today { background: #b39ddb !important; color: white; }
 
         /* 侧边五圈功能按钮 */
-        .circle-nav { display: flex; flex-direction: column; gap: 15px; }
+        .circle-nav { display: flex; flex-direction: column; gap: 18px; }
         .nav-btn { 
-            width: 65px; height: 65px; background: white; border-radius: 50%; 
+            width: 75px; height: 75px; background: white; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; transition: 0.3s; 
         }
@@ -104,6 +181,24 @@
 </head>
 <body>
 
+    <div class="profile-card">
+
+    <div class="profile-avatar">
+        😊
+    </div>
+
+    <div>
+        <div class="profile-name">
+            Hi, User!
+        </div>
+
+        <div class="profile-text">
+            Let's have a great day!
+        </div>
+    </div>
+
+</div>
+
     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
         <div style="margin-top: 40px;">
@@ -114,7 +209,6 @@
     </div>
 
     <div class="header-wrapper">
-        <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'logo.png' %}"></div>
         <div class="title-area">
             <img src="{% static 'title.png' %}"><br>
             <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
@@ -199,7 +293,10 @@
                 if(d === now.getDate() && m === now.getMonth() && y === now.getFullYear()) {
                     cell.classList.add('highlight-today');
                 }
-                cell.innerText = d;
+                cell.innerHTML = `
+    <div class="day-number">${d}</div>
+    <img src="{% static 'icons/plus.png' %}" class="day-mood">
+`;
                 
                 cell.onclick = () => {
                     displayStr = `${mNames[m]} ${d}, ${y}`;

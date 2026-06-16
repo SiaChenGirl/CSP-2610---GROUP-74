@@ -46,6 +46,27 @@
             font-size: 15px;
         }
 
+        /* Padding right adjusted for fields with toggle icons */
+        .password-container input {
+            padding-right: 45px;
+        }
+
+        /* Eye toggle icon button design */
+        .eye-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 16px;
+            user-select: none;
+            color: #8c7dbd;
+            transition: color 0.2s;
+        }
+        .eye-toggle:hover {
+            color: #6a4fbf;
+        }
+
         /* 队友新增的 Verify 按钮样式 */
         .verify-btn {
             position: absolute;
@@ -99,7 +120,6 @@
     </style>
 </head>
 <body>
-    <!-- 必须保留：Django CSRF Token -->
     {% csrf_token %}
 
     <div class="header-wrapper">
@@ -121,17 +141,11 @@
                 <input type="text" id="reg-username" placeholder="Username">
             </div>
 
-            <div class="input-group">
-                <input type="email" id="reg-email" placeholder="Email Address">
-                <!-- 队友新增的验证按钮 -->
-                <button type="button" class="verify-btn" onclick="triggerVerify()">Verify</button>
-            </div>
-
-            <div class="input-group">
+            <div class="input-group password-container">
                 <input type="password" id="reg-password" placeholder="Password" oninput="validatePasswordLive()">
+                <span class="eye-toggle" onclick="togglePasswordVisibility('reg-password', this)">👁️</span>
             </div>
 
-            <!-- 密码强度实时检测看板 -->
             <div class="password-requirements">
                 <div class="requirement-item" id="req-length">
                     <span class="status-icon">⚪</span> At least 8 characters
@@ -144,8 +158,9 @@
                 </div>
             </div>
 
-            <div class="input-group">
+            <div class="input-group password-container">
                 <input type="password" id="reg-confirm-password" placeholder="Confirm Password">
+                <span class="eye-toggle" onclick="togglePasswordVisibility('reg-confirm-password', this)">👁️</span>
             </div>
 
             <button class="btn-main" onclick="handleRegister()">Sign Up</button>
@@ -161,6 +176,18 @@
     </footer>
 
     <script>
+        // Password visibility toggler framework function
+        function togglePasswordVisibility(fieldId, toggleEl) {
+            const passwordField = document.getElementById(fieldId);
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleEl.innerText = "🙈"; // Switch icon to monkey covering eyes when visible
+            } else {
+                passwordField.type = "password";
+                toggleEl.innerText = "👁️";  // Switch back to eye icon when hidden
+            }
+        }
+
         // 实时检查密码规则变化
         function validatePasswordLive() {
             const password = document.getElementById('reg-password').value;

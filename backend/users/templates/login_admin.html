@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MoodBloom | Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+    {% load static %}
+    <style>
+        /* ... keep your existing CSS styles ... */
+        body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); min-height: 100vh; display: flex; flex-direction: column; }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .header-line { border: 0; height: 1px; background: #c5b3e6; margin: 0 40px 30px 40px; }
+        .logo img { width: 180px; } 
+        .title img { width: 220px; }
+        .content { flex: 1; display: flex; justify-content: center; align-items: center; gap: 60px; padding: 20px; }
+        .main-slogan { font-family: 'Dancing Script', cursive; font-size: 32px; color: #6a4fbf; margin-bottom: 20px; text-align: center; }
+        .box { width: 350px; background: white; padding: 40px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 12px; background: #9575cd; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-main:hover { background: #7e57c2; }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+
+    <div class="header-wrapper">
+        <div class="logo"><img src="{% static 'logo.png' %}" alt="Logo"></div>
+        <div class="title"><img src="{% static 'title.png' %}" alt="Title"></div>
+        <div style="width:150px;"></div>
+    </div>
+    <hr class="header-line">
+
+    <div class="content">
+        <div class="right-side">
+            <div class="main-slogan">Administrator Access Only</div>
+            <div class="box">
+                <h2 style="color: #6a4fbf; margin-top:0;">Admin Login</h2>
+                <input type="text" id="username" placeholder="Admin Username">
+                <input type="password" id="password" placeholder="Password">
+                <button class="btn-main" onclick="handleLogin()">Sign In</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function handleLogin() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                const response = await fetch('/admin-login-url/', { // Change to your actual admin login URL
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken 
+                    },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+
+                if (response.ok) {
+                    // Redirects to admin.html (ensure this URL pattern exists in your Django urls.py)
+                    window.location.href = '/admin-dashboard/'; 
+                } else {
+                    alert('Invalid admin credentials');
+                }
+            } catch (error) {
+                alert('Connection error.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -26,9 +26,90 @@
         .field { margin-bottom: 18px; text-align: left; }
         label { display: block; color: #6a4fbf; font-weight: bold; margin-bottom: 6px; font-size: 13px; margin-left: 5px; }
         input, select { width: 100%; padding: 12px 15px; border-radius: 15px; border: 1px solid #e8e0ff; background: #fafaff; box-sizing: border-box; color: #4a3494; font-size: 15px; }
+        input[type="password"]{letter-spacing:1px;}
+        .password-section{margin-top:25px;padding-top:20px;border-top:1px solid #e8e0ff;}
         .btn { width: 100%; padding: 14px; background: #6a4fbf; border: none; border-radius: 25px; color: white; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }
         .btn:hover { background: #5a3ea3; transform: translateY(-2px); }
         .btn-logout { background: none; border: 1px solid #ffb3b3; color: #ff6666; margin-top: 12px; padding: 10px; }
+        
+        /* 密码 */
+         .change-password-link{
+    color:#6a4fbf;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:15px;
+    display:inline-block;
+    text-decoration:none;
+}
+
+.change-password-link:hover{
+    text-decoration:underline;
+}
+
+.password-section{
+    display:none;
+    margin-top:20px;
+    padding-top:20px;
+    border-top:1px solid #e8e0ff;
+}
+
+.password-wrapper{
+    position:relative;
+}
+
+.eye-btn{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    color:#888;
+    font-size:18px;
+}
+.password-overlay{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.35);
+    z-index:2000;
+}
+
+.password-modal{
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+
+    width:420px;
+    background:white;
+
+    padding:30px;
+
+    border-radius:25px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.15);
+
+    z-index:2001;
+}
+
+.password-modal h3{
+    color:#6a4fbf;
+    margin-top:0;
+    text-align:center;
+}
+
+.close-modal{
+    position:absolute;
+    top:15px;
+    right:20px;
+    font-size:28px;
+    cursor:pointer;
+    color:#999;
+}
     </style>
 </head>
 <body>
@@ -58,22 +139,91 @@
             <div class="field"><label>Username</label><input type="text" name="username" value="{{ user.username }}" required></div>
             <div class="field"><label>Email Address</label><input type="email" name="email" value="{{ user.email }}" required></div>
             <div class="field"><label>Birthday</label><input type="date" name="birthday" value="{{ profile.birthday|date:'Y-m-d' }}"></div>
-            <div class="field"><label>Gender</label>
-                <select name="gender">
-                    <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
-                    <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
-                    <option value="Private" {% if profile.gender == "Private" %}selected{% endif %}>Prefer not to say</option>
-                </select>
-            </div>
-            <button type="submit" class="btn">Save Changes</button>
-        </form>
+            <div class="field">
+    <label>Gender</label>
+    <select name="gender">
+        <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+        <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+        <option value="Private" {% if profile.gender == "Private" %}selected{% endif %}>Prefer not to say</option>
+    </select>
+</div>
+ <a class="change-password-link"
+   onclick="openPasswordModal()">
+   Change Password
+</a>
+
+<button type="submit" class="btn">
+    Save Changes
+</button>
 
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
             <button type="submit" class="btn btn-logout" onclick="return confirm('Log out?')">Logout</button>
         </form>
     </div>
+<div class="password-overlay"
+     id="passwordOverlay"
+     onclick="closePasswordModal()">
+</div>
 
+<div class="password-modal"
+     id="passwordModal">
+
+    <span class="close-modal"
+          onclick="closePasswordModal()">
+          ×
+    </span>
+
+    <h3>Change Password</h3>
+
+    <div class="field">
+        <label>Current Password</label>
+
+        <div class="password-wrapper">
+            <input type="password"
+                   id="currentPassword">
+
+            <span class="eye-btn"
+                  onclick="togglePassword('currentPassword')">
+                  👁
+            </span>
+        </div>
+    </div>
+
+    <div class="field">
+        <label>New Password</label>
+
+        <div class="password-wrapper">
+            <input type="password"
+                   id="newPassword">
+
+            <span class="eye-btn"
+                  onclick="togglePassword('newPassword')">
+                  👁
+            </span>
+        </div>
+    </div>
+
+    <div class="field">
+        <label>Confirm Password</label>
+
+        <div class="password-wrapper">
+            <input type="password"
+                   id="confirmPassword">
+
+            <span class="eye-btn"
+                  onclick="togglePassword('confirmPassword')">
+                  👁
+            </span>
+        </div>
+    </div>
+
+    <button class="btn"
+            onclick="closePasswordModal()">
+        Save Password
+    </button>
+
+</div>
     <script>
         function previewAvatar(input) {
             if (input.files && input.files[0]) {
@@ -83,5 +233,30 @@
             }
         }
     </script>
+    <script>
+        function openPasswordModal(){
+    document.getElementById('passwordModal').style.display='block';
+    document.getElementById('passwordOverlay').style.display='block';
+}
+
+function closePasswordModal(){
+    document.getElementById('passwordModal').style.display='none';
+    document.getElementById('passwordOverlay').style.display='none';
+}
+
+function togglePassword(id){
+
+    const input =
+    document.getElementById(id);
+
+    if(input.type === 'password'){
+        input.type = 'text';
+    }
+    else{
+        input.type = 'password';
+    }
+}
+
+</script>
 </body>
 </html>
