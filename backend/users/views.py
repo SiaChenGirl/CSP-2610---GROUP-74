@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.utils.timezone import now
 from django.db.models import Q, Count, Avg, DateField
-from django.db.models.functions import Cast, TruncMonth
+from django.db.models.functions import Cast, TruncMonth, ExtractWeek, ExtractDay
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
@@ -18,6 +18,8 @@ from django.urls import reverse
 from django.views.decorators.cache import cache_control
 from .models import Profile, MoodEntry, MoodPhoto, Favorite, Article, Feedback, Music
 from datetime import datetime
+from calendar import monthrange
+from collections import defaultdict
 
 # ==========================================
 # 1. 身份验证与账户管理模块 (融合 views2 的邮件验证与 views1 的模板跳转)
@@ -158,8 +160,14 @@ def profile_view(request):
     profile, _ = Profile.objects.get_or_create(user=user)
 
     if request.method == 'POST':
-        
-        user.username = request.POST.get('username')
+        new_username = request.POST.get('username')
+
+        if User.objects.exclude(id=user.id).filter(username=new_username).exists():
+            return JsonResponse({
+                'error': 'Username already exists'
+            }, status=400)
+
+        user.username = new_username
         user.email = request.POST.get('email')
         user.save()
         
@@ -220,6 +228,7 @@ def moodentry_view(request):
         category = request.POST.get('category')
         intensity = request.POST.get('intensity', 3)
         music_id = request.POST.get('music_id')
+        entry_date = request.POST.get('entry_date')
 
         selected_music = None
         if music_id:
@@ -235,7 +244,8 @@ def moodentry_view(request):
             category=category, 
             diary_text=diary, 
             intensity=intensity, 
-            selected_music=selected_music
+            selected_music=selected_music,
+            entry_date=entry_date
         )
         
         # 3. 处理照片
@@ -245,7 +255,11 @@ def moodentry_view(request):
                 
         return JsonResponse({'status': 'success', 'message': 'Mood entry saved successfully!'})
     
-    return render(request, 'moodentry.html')
+    selected_date = request.GET.get("date")
+    return render(request, 'moodentry.html', { "selected_date": selected_date })
+
+
+
 
 @login_required
 def today_mood(request):
@@ -274,7 +288,7 @@ def gallery_view(request):
         # 优化查询：使用 select_related 提升性能，并按时间倒序
         photos = MoodPhoto.objects.filter(mood_entry__user=request.user)\
                                   .select_related('mood_entry')\
-                                  .order_by('-mood_entry__created_at')
+                                  .order_by('-mood_entry__entry_date')
         
         gallery = []
         for photo in photos:
@@ -283,14 +297,14 @@ def gallery_view(request):
                 gallery.append({
                     'image': photo.image.url, 
                     'mood': photo.mood_entry.mood, 
-                    'date': photo.mood_entry.created_at.strftime('%Y-%m-%d')
+                    'date': photo.mood_entry.entry_date.strftime('%Y-%m-%d')
                 })
         
         return JsonResponse({'photos': gallery})
     
     # 渲染网页时，确保只传该用户的 entries
     return render(request, 'gallery.html', {
-        'moods': MoodEntry.objects.filter(user=request.user).order_by('-created_at')
+        'moods': MoodEntry.objects.filter(user=request.user).order_by('-entry_date')
     })
 
 
@@ -408,40 +422,97 @@ def check_session(request):
 def dashboard_view(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
         moods = MoodEntry.objects.filter(user=request.user)
-        mood_counts = moods.values('mood').annotate(total=Count('id'))
+
+        selected_month = request.GET.get("month")
+        if selected_month:
+            year, month = selected_month.split("-")
+            year = int(year)
+            month = int(month)
+            last_day = monthrange(year, month)[1]
+            moods = moods.filter(entry_date__year=year,entry_date__month=month)
+
+        mood_counts = moods.values('category').annotate(total=Count('id'))
         total_entries = moods.count()
+        weekly_entries = []
+        for start_day in [1, 8, 15, 22, 29]:
+            if start_day > last_day:
+                break
+            end_day = min(start_day + 6, last_day)
+            count = moods.filter(entry_date__day__gte=start_day, entry_date__day__lte=end_day).count()
+            weekly_entries.append({"label": f"{start_day}-{end_day}", "total": count })
 
         monthly_distribution = moods.annotate(month=TruncMonth('created_at')).values('month', 'mood').annotate(total=Count('id')).order_by('month')
-        frequent_mood = moods.values('mood').annotate(total=Count('id')).order_by('-total').first()
+        frequent_mood = moods.values('category').annotate(total=Count('id')).order_by('-total').first()
         if not frequent_mood:
-            frequent_mood = {'mood': 'No Data', 'total': 0}
+            frequent_mood = {'category': 'No Data', 'total': 0}
 
         percentage_data = []
         for item in mood_counts:
             percentage = (item['total'] / total_entries) * 100 if total_entries > 0 else 0
-            percentage_data.append({'mood': item['mood'], 'percentage': round(percentage, 2)})
+            percentage_data.append({'category': item['category'], 'percentage': round(percentage, 2)})
 
-        recommendation = "🌱 Your moods appear balanced. Continue tracking your emotions."
+        recommendation = (
+            "No mood records were found for this period. "
+            "Start tracking your moods to learn more about your emotional patterns."
+        )
+        
         sorted_data = sorted(percentage_data, key=lambda x: x['percentage'], reverse=True)
-        for item in sorted_data:
-            mood = item['mood'].lower()
-            percentage = item['percentage']
-            if mood == 'sad' and percentage >= 50:
-                recommendation = "😔 Consider taking some time to rest."
-                break
-            elif mood == 'angry' and percentage >= 40:
-                recommendation = "😠 Try relaxation techniques."
-                break
-            elif mood == 'neutral' and percentage >= 40:
-                recommendation = "😐 Explore new interests."
-                break
-            elif mood == 'happy' and percentage >= 60:
-                recommendation = "😊 Keep up the good work!"
-                break
+        if sorted_data:
+            top_mood = sorted_data[0]['category'].lower()
+            top_percentage = sorted_data[0]['percentage']
 
-        trend_data = moods.values('created_at__date', 'mood').annotate(total=Count('id')).order_by('created_at__date')
+            if top_mood == "happy":
+                recommendation = (
+                    f"Happiness accounted for {top_percentage}% of your mood entries this month. "
+                    "Your records suggest that positive emotions have been a significant part of your recent experiences. "
+                    "Take time to appreciate the people, activities, and moments that contributed to these feelings. "
+                    "Recognizing these patterns can help you continue building a healthy and fulfilling lifestyle."
+                )
+
+            elif top_mood == "sad":
+                recommendation = (
+                    f"Sadness accounted for {top_percentage}% of your mood entries this month. "
+                    "Your mood records indicate that you may have been facing challenges or emotional pressures recently. "
+                    "Remember that difficult emotions are a normal part of life. Consider giving yourself time to rest, "
+                    "reflect, connect with supportive people, or engage in activities that help you feel calm and cared for."
+                )
+
+            elif top_mood == "angry":
+                recommendation = (
+                    f"Anger accounted for {top_percentage}% of your mood entries this month. "
+                    "Strong emotions can often signal stress, frustration, or situations that deserve attention. "
+                    "Try taking short breaks, practicing deep breathing, exercising, or writing down your thoughts. "
+                    "Healthy emotional expression can help transform tension into positive action."
+                )
+
+            elif top_mood == "neutral":
+                recommendation = (
+                    f"Neutral moods accounted for {top_percentage}% of your mood entries this month. "
+                    "Periods of emotional stability can be valuable opportunities for reflection and personal growth. "
+                    "Consider exploring a new hobby, learning a new skill, or setting small goals to create meaningful experiences."
+                )
+
+        trend_data = defaultdict(
+            lambda: {"happy": 0, "sad": 0, "angry": 0, "neutral": 0 })
+            
+        for mood in moods:
+            day = mood.entry_date
+            category = (mood.category or "").lower()
+            if category in trend_data[day]:
+                trend_data[day][category] += 1
+
+        formatted_trend = []
+        for day in sorted(trend_data.keys()):
+            formatted_trend.append({
+                "date": str(day),
+                "happy": trend_data[day]["happy"],
+                "sad": trend_data[day]["sad"],
+                "angry": trend_data[day]["angry"],
+                "neutral": trend_data[day]["neutral"],
+            })
         
         dates = moods.order_by('-created_at').values_list('created_at__date', flat=True).distinct()
+
         current_streak = 0
         if dates:
             today = date.today()
@@ -450,15 +521,31 @@ def dashboard_view(request):
                     current_streak += 1
                     today = today - timedelta(days=1)
                 else: break
-        
+
+        longest_streak = 0
+        temp_streak = 1
+        date_list = sorted(set(dates))
+        if len(date_list) > 0:
+            longest_streak = 1
+            for i in range(1, len(date_list)):
+                if (date_list[i] - date_list[i - 1]).days == 1:
+                    temp_streak += 1
+                else:
+                    longest_streak = max(longest_streak, temp_streak)
+                    temp_streak = 1
+                    
+            longest_streak = max(longest_streak, temp_streak)
+
         return JsonResponse({
             'total_moods': list(mood_counts),
             'percentage_distribution': percentage_data,
             'monthly_distribution': list(monthly_distribution),
-            'trend_over_time': list(trend_data),
+            'trend_over_time': formatted_trend,
             'most_frequent_mood': frequent_mood,
             'current_streak': current_streak,
+            'longest_streak': longest_streak,
             'recommendation': recommendation,
+            'weekly_entries': list(weekly_entries),
         })
 
     user_moods = MoodEntry.objects.filter(user=request.user)
@@ -466,11 +553,27 @@ def dashboard_view(request):
     trends_query = user_moods.annotate(date_only=Cast('created_at', DateField())).values('date_only').annotate(avg_intensity=Avg('intensity')).order_by('date_only')
     trends_list = [{'created_at__date': str(i['date_only']), 'avg_intensity': float(i['avg_intensity'])} for i in trends_query]
     
+    today = datetime.today()
+    months = []
+    for i in range(11, -1, -1):
+        year = today.year
+        month = today.month - i
+        while month <= 0:
+            month += 12
+            year -= 1
+            
+        last_day = monthrange(year, month)[1]
+        months.append({"value": f"{year}-{month:02d}","label": f"01 {datetime(year, month, 1).strftime('%b %Y')} - {last_day} {datetime(year, month, 1).strftime('%b %Y')}"
+                       })
+
     return render(request, 'dashboard.html', {
         'moods': user_moods.order_by('-created_at'), 
         'mood_distribution_json': json.dumps(distribution), 
-        'mood_trends_json': json.dumps(trends_list)
+        'mood_trends_json': json.dumps(trends_list),
+        'months': months,
+        'current_month': today.strftime("%Y-%m")
     })
+
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required
@@ -490,17 +593,17 @@ def search_view(request):
             # 核心修改：改为过滤你的 category 字段，使用 iexact 忽略大小写
             results = results.filter(category__iexact=category) 
         if entry_date:
-            results = results.filter(created_at__date=entry_date)
+            results = results.filter(entry_date=entry_date)
             
         # 按时间倒序
-        results = results.order_by('-created_at')
+        results = results.order_by('-entry_date', '-created_at')
         
         data = [{
             "id": entry.id, 
             "category": entry.category, # 返回 category 供前端展示或备用
             "mood": entry.mood, 
             "diary": entry.diary_text, 
-            "date": entry.created_at.strftime('%Y-%m-%d')
+            "date": entry.entry_date.strftime('%Y-%m-%d')
         } for entry in results]
         
         return JsonResponse({"message": "Success", "results": data})
@@ -574,7 +677,7 @@ def get_music_library(request):
 @csrf_exempt
 def toggle_favorite(request, article_id):
     if not request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': '请先登录'}, status=403)
+        return JsonResponse({'status': 'error', 'message': 'Please login first.'}, status=403)
 
     if request.method == 'POST':
         article = get_object_or_404(Article, id=article_id)
@@ -593,7 +696,7 @@ def toggle_favorite(request, article_id):
             favorite.delete()
             return JsonResponse({'status': 'success', 'action': 'removed'})
             
-    return JsonResponse({'status': 'error', 'message': '无效请求'}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Error request'}, status=400)
 
 @login_required
 def diary_history_view(request):

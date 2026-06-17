@@ -25,7 +25,7 @@ urlpatterns = [
     path('api/register/', views.register_view),
     path('api/logout/', views.user_logout),
     path('api/profile/', views.profile_view),
-    path('api/change-password/', views.change_password),
+    path('change-password/', views.change_password, name='change_password'),
     path('verify-email/<str:username>/', views.verify_email, name='verify_email'),
     path('add-mood/', views.moodentry_view),
     path('today-mood/', views.today_mood),

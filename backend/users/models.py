@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 # ==========================================
 # 1. 用户资料表 (以 Model 2 为主，保留验证和性别，融合 Model 1 的生日)
@@ -44,6 +45,7 @@ class MoodEntry(models.Model):
     intensity = models.IntegerField(default=3, null=True, blank=True) # 保留默认权重 3 
     selected_music = models.ForeignKey('Music', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    entry_date = models.DateField(default=timezone.now)
 
     class Meta:
         ordering = ['-created_at'] # 融入 Model 1 的时间倒序排列，让日记历史按最新时间显示

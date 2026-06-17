@@ -166,6 +166,7 @@
         const staticUrl = "/static/emojis/";
         let selectedCategory = "";
         let selectedMoodName = "";
+        const selectedDate = "{{ selected_date|default:'' }}";
 
         function toggleNav() { document.getElementById('sideNav').classList.toggle('active'); }
 
@@ -261,6 +262,7 @@
             formData.append('intensity', document.getElementById('intensityRange').value);
             formData.append('content', document.getElementById('diaryEntry').value); // 后端通过 request.POST.get('content') 获取
             formData.append('song', document.getElementById('songInput').value);
+            formData.append('entry_date', selectedDate);
             
             selectedPhotos.forEach(file => formData.append('photos', file));
             

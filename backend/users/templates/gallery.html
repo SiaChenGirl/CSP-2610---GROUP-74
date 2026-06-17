@@ -135,7 +135,7 @@
         <div class="photo-item">
             <div class="photo-placeholder" style="background-image: url('{{ photo.image.url }}'); background-size: cover; background-position: center;">
             </div>
-            <span class="photo-date">{{ entry.created_at|date:"Y-m-d" }}</span>
+            <span class="photo-date">{{ entry.entry_date|date:"Y-m-d" }}</span>
         </div>
     {% endfor %}
 {% empty %}

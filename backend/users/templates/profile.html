@@ -219,7 +219,7 @@
     </div>
 
     <button class="btn"
-            onclick="closePasswordModal()">
+            onclick="changePassword()">
         Save Password
     </button>
 
@@ -235,28 +235,73 @@
     </script>
     <script>
         function openPasswordModal(){
-    document.getElementById('passwordModal').style.display='block';
-    document.getElementById('passwordOverlay').style.display='block';
+            document.getElementById('passwordModal').style.display='block';
+            document.getElementById('passwordOverlay').style.display='block';
+        }
+
+        function closePasswordModal(){
+            document.getElementById('passwordModal').style.display='none';
+            document.getElementById('passwordOverlay').style.display='none';
+        }
+
+        function togglePassword(id){
+            const input = 
+            document.getElementById(id);
+
+            if(input.type === 'password'){
+                input.type = 'text';
+            }
+            else{
+                input.type = 'password';
+            } 
+        }
+
+
+        async function changePassword() {
+
+            const currentPassword =
+            document.getElementById('currentPassword').value;
+            const newPassword =
+            document.getElementById('newPassword').value;
+            const confirmPassword =
+            document.getElementById('confirmPassword').value;
+            
+            if(newPassword !== confirmPassword){
+                alert("Passwords do not match!");
+                return;
+            }
+            
+            try{
+                const response = await fetch(
+                    "/change-password/",
+                    {
+                        method:"POST",
+                        headers:{
+                            "Content-Type":"application/json"
+                        },
+                        
+                        body: JSON.stringify({
+                            old_password: currentPassword,
+                            new_password: newPassword
+                        })
+                    }
+                );
+                const data = await response.json();
+                if(response.ok){
+                    alert(data.message);
+                    closePasswordModal();
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                }
+                else{
+                    alert(data.error);
+                }
+            }
+            catch(error){
+                alert("Something went wrong.");
+            }
 }
-
-function closePasswordModal(){
-    document.getElementById('passwordModal').style.display='none';
-    document.getElementById('passwordOverlay').style.display='none';
-}
-
-function togglePassword(id){
-
-    const input =
-    document.getElementById(id);
-
-    if(input.type === 'password'){
-        input.type = 'text';
-    }
-    else{
-        input.type = 'password';
-    }
-}
-
 </script>
 </body>
 </html>
