@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoodBloom | Profile</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); min-height: 100vh; color: #4a3494; }
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
@@ -33,86 +33,48 @@
         .btn-logout { background: none; border: 1px solid #ffb3b3; color: #ff6666; margin-top: 12px; padding: 10px; }
         
         /* 密码 */
-         .change-password-link{
-    color:#6a4fbf;
-    font-weight:600;
-    cursor:pointer;
-    margin-top:15px;
-    display:inline-block;
-    text-decoration:none;
-}
+        .change-password-link{
+            color:#6a4fbf; font-weight:600; cursor:pointer; margin-top:15px; display:inline-block; text-decoration:none;
+        }
+        .change-password-link:hover{ text-decoration:underline; }
+        .password-section{ display:none; margin-top:20px; padding-top:20px; border-top:1px solid #e8e0ff; }
+        .password-wrapper{ position:relative; }
+        .eye-btn{ position:absolute; right:15px; top:50%; transform:translateY(-50%); cursor:pointer; color:#888; font-size:18px; }
+        .password-overlay{ display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.35); z-index:2000; }
+        .password-modal{ display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:420px; background:white; padding:30px; border-radius:25px; box-shadow:0 15px 40px rgba(0,0,0,.15); z-index:2001; }
+        .password-modal h3{ color:#6a4fbf; margin-top:0; text-align:center; }
+        .close-modal{ position:absolute; top:15px; right:20px; font-size:28px; cursor:pointer; color:#999; }
 
-.change-password-link:hover{
-    text-decoration:underline;
-}
-
-.password-section{
-    display:none;
-    margin-top:20px;
-    padding-top:20px;
-    border-top:1px solid #e8e0ff;
-}
-
-.password-wrapper{
-    position:relative;
-}
-
-.eye-btn{
-    position:absolute;
-    right:15px;
-    top:50%;
-    transform:translateY(-50%);
-    cursor:pointer;
-    color:#888;
-    font-size:18px;
-}
-.password-overlay{
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.35);
-    z-index:2000;
-}
-
-.password-modal{
-    display:none;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-
-    width:420px;
-    background:white;
-
-    padding:30px;
-
-    border-radius:25px;
-
-    box-shadow:0 15px 40px rgba(0,0,0,.15);
-
-    z-index:2001;
-}
-
-.password-modal h3{
-    color:#6a4fbf;
-    margin-top:0;
-    text-align:center;
-}
-
-.close-modal{
-    position:absolute;
-    top:15px;
-    right:20px;
-    font-size:28px;
-    cursor:pointer;
-    color:#999;
-}
+        /* 顶部 Toast 提示框样式 */
+        .toast-notification {
+            position: fixed;
+            top: -100px; /* 默认隐藏在屏幕上方 */
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffebd6; /* 警告淡黄色 */
+            color: #b75c00; /* 警告深橘色文字 */
+            border: 1px solid #ffcc99;
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 9999;
+            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 下滑弹跳动画 */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast-notification.show {
+            top: 30px; /* 报错时滑下来 */
+        }
     </style>
 </head>
 <body>
+    <div id="toastNotification" class="toast-notification">
+        ⚠️ <span id="toastMessage">Please enter a valid date!</span>
+    </div>
+
     <div class="header-wrapper">
         <div class="logo"><img src="{% static 'logo.png' %}" alt="Logo"></div>
         <div class="title-area"><img src="{% static 'title.png' %}"><br><span style="font-family: 'Dancing Script'; font-size: 16px; color: #6a4fbf;">Mood your day, Bloom your mind.</span></div>
@@ -121,7 +83,7 @@
     <hr class="header-line">
 
     <div class="container">
-        <form method="POST" enctype="multipart/form-data">
+        <form id="profileForm" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             
             <div class="avatar-upload-box" onclick="document.getElementById('avatarInput').click()">
@@ -139,91 +101,58 @@
             <div class="field"><label>Username</label><input type="text" name="username" value="{{ user.username }}" required></div>
             <div class="field"><label>Email Address</label><input type="email" name="email" value="{{ user.email }}" required></div>
             <div class="field"><label>Birthday</label><input type="date" name="birthday" value="{{ profile.birthday|date:'Y-m-d' }}"></div>
+            
             <div class="field">
-    <label>Gender</label>
-    <select name="gender">
-        <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
-        <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
-        <option value="Private" {% if profile.gender == "Private" %}selected{% endif %}>Prefer not to say</option>
-    </select>
-</div>
- <a class="change-password-link"
-   onclick="openPasswordModal()">
-   Change Password
-</a>
+                <label>Gender</label>
+                <select name="gender">
+                    <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+                    <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+                    <option value="Private" {% if profile.gender == "Private" %}selected{% endif %}>Prefer not to say</option>
+                </select>
+            </div>
+            
+            <a class="change-password-link" onclick="openPasswordModal()">Change Password</a>
+            <button type="submit" class="btn">Save Changes</button>
+        </form>
 
-<button type="submit" class="btn">
-    Save Changes
-</button>
-
-        <form action="{% url 'logout' %}" method="post">
+        <form action="{% url 'logout' %}" method="post" style="margin-top: 10px;">
             {% csrf_token %}
             <button type="submit" class="btn btn-logout" onclick="return confirm('Log out?')">Logout</button>
         </form>
     </div>
-<div class="password-overlay"
-     id="passwordOverlay"
-     onclick="closePasswordModal()">
-</div>
 
-<div class="password-modal"
-     id="passwordModal">
+    <div class="password-overlay" id="passwordOverlay" onclick="closePasswordModal()"></div>
+    <div class="password-modal" id="passwordModal">
+        <span class="close-modal" onclick="closePasswordModal()">×</span>
+        <h3>Change Password</h3>
 
-    <span class="close-modal"
-          onclick="closePasswordModal()">
-          ×
-    </span>
-
-    <h3>Change Password</h3>
-
-    <div class="field">
-        <label>Current Password</label>
-
-        <div class="password-wrapper">
-            <input type="password"
-                   id="currentPassword">
-
-            <span class="eye-btn"
-                  onclick="togglePassword('currentPassword')">
-                  👁
-            </span>
+        <div class="field">
+            <label>Current Password</label>
+            <div class="password-wrapper">
+                <input type="password" id="currentPassword">
+                <span class="eye-btn" onclick="togglePassword('currentPassword')">👁</span>
+            </div>
         </div>
+
+        <div class="field">
+            <label>New Password</label>
+            <div class="password-wrapper">
+                <input type="password" id="newPassword">
+                <span class="eye-btn" onclick="togglePassword('newPassword')">👁</span>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Confirm Password</label>
+            <div class="password-wrapper">
+                <input type="password" id="confirmPassword">
+                <span class="eye-btn" onclick="togglePassword('confirmPassword')">👁</span>
+            </div>
+        </div>
+
+        <button class="btn" onclick="changePassword()">Save Password</button>
     </div>
 
-    <div class="field">
-        <label>New Password</label>
-
-        <div class="password-wrapper">
-            <input type="password"
-                   id="newPassword">
-
-            <span class="eye-btn"
-                  onclick="togglePassword('newPassword')">
-                  👁
-            </span>
-        </div>
-    </div>
-
-    <div class="field">
-        <label>Confirm Password</label>
-
-        <div class="password-wrapper">
-            <input type="password"
-                   id="confirmPassword">
-
-            <span class="eye-btn"
-                  onclick="togglePassword('confirmPassword')">
-                  👁
-            </span>
-        </div>
-    </div>
-
-    <button class="btn"
-            onclick="changePassword()">
-        Save Password
-    </button>
-
-</div>
     <script>
         function previewAvatar(input) {
             if (input.files && input.files[0]) {
@@ -232,8 +161,7 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
-    </script>
-    <script>
+
         function openPasswordModal(){
             document.getElementById('passwordModal').style.display='block';
             document.getElementById('passwordOverlay').style.display='block';
@@ -245,26 +173,14 @@
         }
 
         function togglePassword(id){
-            const input = 
-            document.getElementById(id);
-
-            if(input.type === 'password'){
-                input.type = 'text';
-            }
-            else{
-                input.type = 'password';
-            } 
+            const input = document.getElementById(id);
+            input.type = (input.type === 'password') ? 'text' : 'password';
         }
 
-
         async function changePassword() {
-
-            const currentPassword =
-            document.getElementById('currentPassword').value;
-            const newPassword =
-            document.getElementById('newPassword').value;
-            const confirmPassword =
-            document.getElementById('confirmPassword').value;
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
             
             if(newPassword !== confirmPassword){
                 alert("Passwords do not match!");
@@ -272,20 +188,11 @@
             }
             
             try{
-                const response = await fetch(
-                    "/change-password/",
-                    {
-                        method:"POST",
-                        headers:{
-                            "Content-Type":"application/json"
-                        },
-                        
-                        body: JSON.stringify({
-                            old_password: currentPassword,
-                            new_password: newPassword
-                        })
-                    }
-                );
+                const response = await fetch("/change-password/", {
+                    method:"POST",
+                    headers:{ "Content-Type":"application/json" },
+                    body: JSON.stringify({ old_password: currentPassword, new_password: newPassword })
+                });
                 const data = await response.json();
                 if(response.ok){
                     alert(data.message);
@@ -293,15 +200,51 @@
                     document.getElementById('currentPassword').value = '';
                     document.getElementById('newPassword').value = '';
                     document.getElementById('confirmPassword').value = '';
-                }
-                else{
+                } else {
                     alert(data.error);
                 }
-            }
-            catch(error){
+            } catch(error){
                 alert("Something went wrong.");
             }
-}
-</script>
+        }
+
+        // 修正点 2：把独立事件监听搬出来，不再嵌套在密码函数里
+        // 1. 初始化限制日历的最大可选范围为今天
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            const birthdayInput = document.querySelector('input[name="birthday"]');
+            if (birthdayInput) {
+                birthdayInput.max = today;
+            }
+        });
+
+        // 2. 拦截主表单提交并进行生日逻辑判断
+        document.getElementById('profileForm').addEventListener('submit', function(event) {
+            const birthdayInput = document.querySelector('input[name="birthday"]');
+            
+            if (birthdayInput && birthdayInput.value) {
+                const selectedDate = birthdayInput.value;
+                const today = new Date().toISOString().split('T')[0];
+                
+                if (selectedDate > today) {
+                    event.preventDefault(); // 强行拦截
+                    showToast("Please enter a valid date! Birthday cannot be in the future."); // 触发暖调提示框
+                }
+            }
+        });
+
+        // 3. 提示框控制函数
+        function showToast(message) {
+            const toast = document.getElementById('toastNotification');
+            const toastMsg = document.getElementById('toastMessage');
+            
+            toastMsg.innerText = message;
+            toast.classList.add('show'); 
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+    </script>
 </body>
 </html>

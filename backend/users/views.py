@@ -1,6 +1,8 @@
 import json
 import calendar
 from datetime import timedelta, date
+from datetime import datetime
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -17,7 +19,6 @@ from django.utils.encoding import force_bytes
 from django.urls import reverse
 from django.views.decorators.cache import cache_control
 from .models import Profile, MoodEntry, MoodPhoto, Favorite, Article, Feedback, Music
-from datetime import datetime
 from calendar import monthrange
 from collections import defaultdict
 
@@ -162,26 +163,58 @@ def profile_view(request):
     if request.method == 'POST':
         new_username = request.POST.get('username')
 
+        # 1. 校验用户名是否已存在
         if User.objects.exclude(id=user.id).filter(username=new_username).exists():
             return JsonResponse({
                 'error': 'Username already exists'
             }, status=400)
 
+        # 2. 核心拦截：校验生日是否为未来日期
+        birthday_str = request.POST.get('birthday')
+        if birthday_str:
+            try:
+                # 将前端传来的 'YYYY-MM-DD' 字符串转换为 Python 的 date 对象
+                birthday_date = date.fromisoformat(birthday_str)
+                
+                # 如果生日大于今天，直接拦截并报错
+                if birthday_date > date.today():
+                    # 兼容普通表单提交和 AJAX 提交
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({'error': 'Birthday cannot be a future date'}, status=400)
+                    
+                    messages.error(request, "Oops! Birthday cannot be a future date.")
+                    return render(request, 'profile.html', {
+                        'profile': profile, 
+                        'error': 'Birthday cannot be in the future.'
+                    })
+            except ValueError:
+                # 防止传入非法日期格式字符串
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'error': 'Invalid date format'}, status=400)
+                return render(request, 'profile.html', {'profile': profile, 'error': 'Invalid date format.'})
+
+        # 3. 校验通过，开始保存 User 基础信息
         user.username = new_username
         user.email = request.POST.get('email')
         user.save()
         
-    
+        # 4. 保存 Profile 扩展信息
         profile.gender = request.POST.get('gender')
-        profile.birthday = request.POST.get('birthday') or None
+        profile.birthday = birthday_str or None
         
-    
+        # 5. 处理头像上传
         if request.FILES.get('avatar'):
             profile.avatar = request.FILES.get('avatar')
             
         profile.save()
+        
+        # 如果是 AJAX 提交则返回成功响应，如果是普通表单则重定向
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'message': 'Profile updated successfully'})
+            
         return redirect('profile') 
         
+    # --- GET 请求逻辑 ---
     if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
         return JsonResponse({
             'username': user.username,
@@ -190,9 +223,8 @@ def profile_view(request):
             'birthday': str(profile.birthday) if profile.birthday else None,
             'avatar': profile.avatar.url if profile.avatar else None
         })
+        
     return render(request, 'profile.html', {'profile': profile})
-
-
 
 # ==========================================
 # 2. 心情记录与相册模块 (融合 views1 与 views2 的多字段录入)
