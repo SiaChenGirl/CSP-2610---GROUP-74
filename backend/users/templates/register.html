@@ -1,292 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoodBloom | Register</title>
-    {% load static %}
-    <style>
-        /* 1. LAYOUT & GRADIENT - 采用队友的新 UI 风格 */
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
-            background-attachment: fixed; 
-            min-height: 100vh; 
-            color: #4a3494;
-            display: flex;
-            flex-direction: column;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodBloom | Register</title>
+    {% load static %}
+    <style>
+        /* 1. LAYOUT & GRADIENT - 采用队友的新 UI 风格 */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
+            background-attachment: fixed; 
+            min-height: 100vh; 
+            color: #4a3494;
+            display: flex;
+            flex-direction: column;
+        }
 
-        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
-        .logo img { width: 180px; }
-        .title-area img { width: 253px; }
-        
-        .content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        
-        /* 玻璃拟态设计 */
-        .box { 
-            width: 400px; 
-            background: rgba(255, 255, 255, 0.6); 
-            backdrop-filter: blur(12px);
-            padding: 40px; 
-            border-radius: 30px; 
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            text-align: center; 
-            box-shadow: 0 8px 25px rgba(106, 79, 191, 0.1); 
-        }
+        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
+        .logo img { width: 180px; }
+        .title-area img { width: 253px; }
+        
+        .content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        
+        /* 玻璃拟态设计 */
+        .box { 
+            width: 400px; 
+            background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(12px);
+            padding: 40px; 
+            border-radius: 30px; 
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            text-align: center; 
+            box-shadow: 0 8px 25px rgba(106, 79, 191, 0.1); 
+        }
 
-        .input-group { position: relative; width: 100%; margin: 15px 0; }
-        
-        input { 
-            width: 100%; padding: 14px 15px; border-radius: 15px; 
-            border: 1px solid #e0d7ff; 
-            background: white; box-sizing: border-box; outline: none;
-            color: #4a3494;
-            font-size: 15px;
-        }
+        .input-group { position: relative; width: 100%; margin: 15px 0; }
+        
+        input { 
+            width: 100%; padding: 14px 15px; border-radius: 15px; 
+            border: 1px solid #e0d7ff; 
+            background: white; box-sizing: border-box; outline: none;
+            color: #4a3494;
+            font-size: 15px;
+        }
 
-        /* Padding right adjusted for fields with toggle icons */
-        .password-container input {
-            padding-right: 45px;
-        }
+        /* Padding right adjusted for fields with toggle icons */
+        .password-container input {
+            padding-right: 45px;
+        }
 
-        /* Eye toggle icon button design */
-        .eye-toggle {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 16px;
-            user-select: none;
-            color: #8c7dbd;
-            transition: color 0.2s;
-        }
-        .eye-toggle:hover {
-            color: #6a4fbf;
-        }
+        /* Eye toggle icon button design */
+        .eye-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 16px;
+            user-select: none;
+            color: #8c7dbd;
+            transition: color 0.2s;
+        }
+        .eye-toggle:hover {
+            color: #6a4fbf;
+        }
 
-        /* 队友新增的 Verify 按钮样式 */
-        .verify-btn {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%); 
-            background: #6a4fbf;
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 12px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .verify-btn:hover { background: #4a3494; }
+        /* 队友新增的 Verify 按钮样式 */
+        .verify-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%); 
+            background: #6a4fbf;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .verify-btn:hover { background: #4a3494; }
 
-        /* PASSWORD CHECKLIST STYLING */
-        .password-requirements {
-            text-align: left;
-            padding: 5px 10px;
-            margin: -5px 0 15px 0;
-            font-size: 12px;
-            color: #8c7dbd;
-        }
-        .requirement-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin: 4px 0;
-            transition: 0.3s ease;
-        }
-        .requirement-item.valid {
-            color: #4a3494;
-            font-weight: bold;
-        }
-        .requirement-item .status-icon {
-            font-size: 11px;
-        }
+        /* PASSWORD CHECKLIST STYLING */
+        .password-requirements {
+            text-align: left;
+            padding: 5px 10px;
+            margin: -5px 0 15px 0;
+            font-size: 12px;
+            color: #8c7dbd;
+        }
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 4px 0;
+            transition: 0.3s ease;
+        }
+        .requirement-item.valid {
+            color: #4a3494;
+            font-weight: bold;
+        }
+        .requirement-item .status-icon {
+            font-size: 11px;
+        }
 
-        .btn-main { 
-            width: 100%; padding: 15px; background: #6a4fbf; 
-            border: none; border-radius: 15px; color: white; 
-            font-weight: bold; font-size: 16px; cursor: pointer; 
-            margin-top: 15px; transition: 0.3s;
-        }
-        .btn-main:hover { background: #4a3494; transform: scale(1.02); }
+        .btn-main { 
+            width: 100%; padding: 15px; background: #6a4fbf; 
+            border: none; border-radius: 15px; color: white; 
+            font-weight: bold; font-size: 16px; cursor: pointer; 
+            margin-top: 15px; transition: 0.3s;
+        }
+        .btn-main:hover { background: #4a3494; transform: scale(1.02); }
 
-        footer { text-align: center; padding: 20px; color: #6a4fbf; font-weight: bold; opacity: 0.8; }
-    </style>
+        footer { text-align: center; padding: 20px; color: #6a4fbf; font-weight: bold; opacity: 0.8; }
+    </style>
 </head>
 <body>
-    {% csrf_token %}
+    {% csrf_token %}
 
-    <div class="header-wrapper">
-        <div class="logo"><img src="{% static 'logo.png' %}"></div>
-        <div class="title-area">
-            <img src="{% static 'title.png' %}"><br>
-            <span style="color: #6a4fbf; font-style: italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
-        </div>
-        <div style="width: 180px;"></div>
-    </div>
+    <div class="header-wrapper">
+        <div class="logo"><img src="{% static 'logo.png' %}"></div>
+        <div class="title-area">
+            <img src="{% static 'title.png' %}"><br>
+            <span style="color: #6a4fbf; font-style: italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
+        </div>
+        <div style="width: 180px;"></div>
+    </div>
 
-    <div class="divider-line" style="height:1px; background:rgba(106, 79, 191, 0.2); margin:0 50px;"></div>
+    <div class="divider-line" style="height:1px; background:rgba(106, 79, 191, 0.2); margin:0 50px;"></div>
 
-    <div class="content">
-        <div class="box">
-            <h2 style="color: #6a4fbf; margin-bottom: 25px;">Create Account</h2>
-            
-            <div class="input-group">
-                <input type="text" id="reg-username" placeholder="Username">
-            </div>
+    <div class="content">
+        <div class="box">
+            <h2 style="color: #6a4fbf; margin-bottom: 25px;">Create Account</h2>
+            
+            <div class="input-group">
+                <input type="text" id="reg-username" placeholder="Username">
+            </div>
 
-            <div class="input-group password-container">
-                <input type="password" id="reg-password" placeholder="Password" oninput="validatePasswordLive()">
-                <span class="eye-toggle" onclick="togglePasswordVisibility('reg-password', this)">👁️</span>
-            </div>
+            <div class="input-group">
+                <input type="email" id="reg-email" placeholder="Email Address">
+                <button type="button" class="verify-btn" onclick="triggerVerify()">Verify</button>
+            </div>
 
-            <div class="password-requirements">
-                <div class="requirement-item" id="req-length">
-                    <span class="status-icon">⚪</span> At least 8 characters
-                </div>
-                <div class="requirement-item" id="req-capital">
-                    <span class="status-icon">⚪</span> At least 1 capital letter
-                </div>
-                <div class="requirement-item" id="req-symbol">
-                    <span class="status-icon">⚪</span> At least 1 special character (@$!%*?&)
-                </div>
-            </div>
+            <div class="input-group password-container">
+                <input type="password" id="reg-password" placeholder="Password" oninput="validatePasswordLive()">
+                <span class="eye-toggle" onclick="togglePasswordVisibility('reg-password', this)">👁️</span>
+            </div>
 
-            <div class="input-group password-container">
-                <input type="password" id="reg-confirm-password" placeholder="Confirm Password">
-                <span class="eye-toggle" onclick="togglePasswordVisibility('reg-confirm-password', this)">👁️</span>
-            </div>
+            <div class="password-requirements">
+                <div class="requirement-item" id="req-length">
+                    <span class="status-icon">⚪</span> At least 8 characters
+                </div>
+                <div class="requirement-item" id="req-capital">
+                    <span class="status-icon">⚪</span> At least 1 capital letter
+                </div>
+                <div class="requirement-item" id="req-symbol">
+                    <span class="status-icon">⚪</span> At least 1 special character (@$!%*?&)
+                </div>
+            </div>
 
-            <button class="btn-main" onclick="handleRegister()">Sign Up</button>
-            
-            <p style="font-size: 13px; margin-top: 20px; color: #6a4fbf;">
-                Already have an account? <a href="{% url 'login' %}" style="color: #4a3494; font-weight: bold; text-decoration: none;">Login</a>
-            </p>
-        </div>
-    </div>
+            <div class="input-group password-container">
+                <input type="password" id="reg-confirm-password" placeholder="Confirm Password">
+                <span class="eye-toggle" onclick="togglePasswordVisibility('reg-confirm-password', this)">👁️</span>
+            </div>
 
-    <footer>
-        © 2026 MoodBloom | Mood Your Day, Bloom Your Mind.
-    </footer>
+            <button class="btn-main" onclick="handleRegister()">Sign Up</button>
+            
+            <p style="font-size: 13px; margin-top: 20px; color: #6a4fbf;">
+                Already have an account? <a href="{% url 'login' %}" style="color: #4a3494; font-weight: bold; text-decoration: none;">Login</a>
+            </p>
+        </div>
+    </div>
 
-    <script>
-        // Password visibility toggler framework function
-        function togglePasswordVisibility(fieldId, toggleEl) {
-            const passwordField = document.getElementById(fieldId);
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                toggleEl.innerText = "🙈"; // Switch icon to monkey covering eyes when visible
-            } else {
-                passwordField.type = "password";
-                toggleEl.innerText = "👁️";  // Switch back to eye icon when hidden
-            }
-        }
+    <footer>
+        © 2026 MoodBloom | Mood Your Day, Bloom Your Mind.
+    </footer>
 
-        // 实时检查密码规则变化
-        function validatePasswordLive() {
-            const password = document.getElementById('reg-password').value;
+    <script>
+        // Password visibility toggler framework function
+        function togglePasswordVisibility(fieldId, toggleEl) {
+            const passwordField = document.getElementById(fieldId);
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleEl.innerText = "🙈"; // Switch icon to monkey covering eyes when visible
+            } else {
+                passwordField.type = "password";
+                toggleEl.innerText = "👁️";  // Switch back to eye icon when hidden
+            }
+        }
 
-            // 规则定义
-            const hasLength = password.length >= 8;
-            const hasCapital = /[A-Z]/.test(password);
-            const hasSymbol = /[`~!@#$%^&*()_+\-=\[\]{};':",./<>?|\\ ]/.test(password);
+        // 实时检查密码规则变化
+        function validatePasswordLive() {
+            const password = document.getElementById('reg-password').value;
 
-            // 更新长度提示样式
-            updateRuleUI('req-length', hasLength);
-            // 更新大写字母提示样式
-            updateRuleUI('req-capital', hasCapital);
-            // 更新特殊符号提示样式
-            updateRuleUI('req-symbol', hasSymbol);
-        }
+            // 规则定义
+            const hasLength = password.length >= 8;
+            const hasCapital = /[A-Z]/.test(password);
+            const hasSymbol = /[`~!@#$%^&*()_+\-=\[\]{};':",./<>?|\\ ]/.test(password);
 
-        // 辅助样式控制单元
-        function updateRuleUI(elementId, isValid) {
-            const target = document.getElementById(elementId);
-            if (isValid) {
-                target.classList.add('valid');
-                target.querySelector('.status-icon').innerText = '🔮'; // 契合 MoodBloom 主题色调的小图标
-            } else {
-                target.classList.remove('valid');
-                target.querySelector('.status-icon').innerText = '⚪';
-            }
-        }
+            // 更新长度提示样式
+            updateRuleUI('req-length', hasLength);
+            // 更新大写字母提示样式
+            updateRuleUI('req-capital', hasCapital);
+            // 更新特殊符号提示样式
+            updateRuleUI('req-symbol', hasSymbol);
+        }
 
-        // 1. 触发邮箱验证逻辑
-        function triggerVerify() {
-            const email = document.getElementById('reg-email').value;
-            if(!email) {
-                alert("Please enter an email address first!");
-                return;
-            }
-            alert("Verification email has been sent to: " + email);
-        }
+        // 辅助样式控制单元
+        function updateRuleUI(elementId, isValid) {
+            const target = document.getElementById(elementId);
+            if (isValid) {
+                target.classList.add('valid');
+                target.querySelector('.status-icon').innerText = '🔮'; // 契合 MoodBloom 主题色调的小图标
+            } else {
+                target.classList.remove('valid');
+                target.querySelector('.status-icon').innerText = '⚪';
+            }
+        }
 
-        // 2. 注册逻辑
-        async function handleRegister() {
-            const username = document.getElementById('reg-username').value;
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            const confirmPassword = document.getElementById('reg-confirm-password').value;
+        // 1. 触发邮箱验证逻辑
+        function triggerVerify() {
+            const email = document.getElementById('reg-email').value;
+            if(!email) {
+                alert("Please enter an email address first!");
+                return;
+            }
+            alert("Verification email has been sent to: " + email);
+        }
 
-            // 基础空值校验
-            if(!username || !password || !email) {
-                alert("Please fill in all fields.");
-                return;
-            }
+        // 2. 注册逻辑
+        async function handleRegister() {
+            const username = document.getElementById('reg-username').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
 
-            // 安全强度校验拦截机制
-            const hasLength = password.length >= 8;
-            const hasCapital = /[A-Z]/.test(password);
-            const hasSymbol = /[`~!@#$%^&*()_+\-=\[\]{};':",./<>?|\\ ]/.test(password);
+            // 基础空值校验
+            if(!username || !password || !email) {
+                alert("Please fill in all fields.");
+                return;
+            }
 
-            if (!hasLength || !hasCapital || !hasSymbol) {
-                alert("Your password does not meet the safety requirements!\n\nIt must contain:\n• At least 8 characters\n• At least 1 capital letter\n• At least 1 special character");
-                return;
-            }
+            // 安全强度校验拦截机制
+            const hasLength = password.length >= 8;
+            const hasCapital = /[A-Z]/.test(password);
+            const hasSymbol = /[`~!@#$%^&*()_+\-=\[\]{};':",./<>?|\\ ]/.test(password);
 
-            // 一致性校验
-            if(password !== confirmPassword) {
-                alert("Passwords do not match!");
-                return;
-            }
+            if (!hasLength || !hasCapital || !hasSymbol) {
+                alert("Your password does not meet the safety requirements!\n\nIt must contain:\n• At least 8 characters\n• At least 1 capital letter\n• At least 1 special character");
+                return;
+            }
 
-            // 获取 CSRF Token
-            const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
-            const csrftoken = tokenElement ? tokenElement.value : '';
+            // 一致性校验
+            if(password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
 
-            try {
-                const response = await fetch('/register/', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrftoken
-                    },
-                    body: JSON.stringify({ 
-                        username: username, 
-                        email: email, 
-                        password: password,
-                        gender: 'Others' 
-                    })
-                });
+            // 获取 CSRF Token
+            const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+            const csrftoken = tokenElement ? tokenElement.value : '';
 
-                const data = await response.json();
-                if (data.message) {
-                    alert("Success: " + data.message);
-                    window.location.href = '/login/'; // 注册成功跳回登录
-                } else {
-                    alert("Error: " + data.error);
-                }
-            } catch (error) {
-                console.error("Registration error:", error);
-                alert("Connection failed!");
-            }
-        }
-    </script>
+            try {
+                const response = await fetch('/register/', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ 
+                        username: username, 
+                        email: email, 
+                        password: password,
+                        gender: 'Others' 
+                    })
+                });
+
+                const data = await response.json();
+                if (data.message) {
+                    alert("Success: " + data.message);
+                    window.location.href = '/login/'; // 注册成功跳回登录
+                } else {
+                    alert("Error: " + data.error);
+                }
+            } catch (error) {
+                console.error("Registration error:", error);
+                alert("Connection failed!");
+            }
+        }
+    </script>
 </body>
 </html>
