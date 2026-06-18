@@ -173,10 +173,14 @@
         <div class="title-area"><img src="title.png" alt="Dashboard Title"></div>
         <div class="header-controls">
             <select class="month-range-picker" id="monthPicker" onchange="updateMonthRange()">
-                <option value="April">1st April - 30th April 2026</option>
-                <option value="May" selected>1st May - 31st May 2026</option>
-                <option value="June">1st June - 30th June 2026</option>
-                <option value="July">1st July - 31st July 2026</option>
+                {% for month in months %}
+                    <option
+                        value="{{ month.value }}"
+                        {% if month.value == current_month %}selected{% endif %}
+                    >
+                        {{ month.label }}
+                    </option>
+                {% endfor %}
             </select>
             <div class="menu-icon" onclick="toggleNav()">☰</div>
         </div>
@@ -192,15 +196,15 @@
                     <div class="summary-icon-box" style="background: #eef7ff; color: #007aff;">💜</div>
                     <div class="summary-info">
                         <p>Total Entries</p>
-                        <h3 id="totalEntriesVal">50</h3>
+                        <h3 id="totalEntriesVal">0</h3>
                         <span id="currentPeriodLabel">May 2026</span>
                     </div>
                 </div>
                 <div class="summary-card">
-                    <div class="summary-icon-box" style="background: #fff9e6; color: #ffcc00;">😊</div>
+                    <div id="mostFrequentEmoji" class="summary-icon-box" style="background: #fff9e6; color: #ffcc00;">😊</div>
                     <div class="summary-info">
                         <p>Most Frequent</p>
-                        <h3 id="mostFrequentMoodTitle">Happy ↑</h3>
+                        <h3 id="mostFrequentMoodTitle">No Data</h3>
                         <span id="mostFrequentMoodSub">42% of total</span>
                     </div>
                 </div>
@@ -208,7 +212,7 @@
                     <div class="summary-icon-box" style="background: #e3fcef; color: #34c759;">📅</div>
                     <div class="summary-info">
                         <p>Current Streak</p>
-                        <h3>7 Days</h3>
+                        <h3 id="currentStreak">0 Days</h3>
                         <span>Keep it up!</span>
                     </div>
                 </div>
@@ -216,8 +220,8 @@
                     <div class="summary-icon-box" style="background: #ffebeb; color: #ff3b30;">⭐</div>
                     <div class="summary-info">
                         <p>Longest Streak</p>
-                        <h3>21 Days</h3>
-                        <span>Achieved Apr 15</span>
+                        <h3 id="longestStreak">0 Days</h3>
+                        <span>Personal Best</span>
                     </div>
                 </div>
             </div>
@@ -226,11 +230,7 @@
                 <div class="chart-box">
                     <div class="chart-header">
                         <h4>Mood Trend Over Time</h4>
-                        <select class="view-toggle-btn" id="timeScaleSelector" onchange="changeTimeScale()">
-                            <option value="day">By Day</option>
-                            <option value="week" selected>By Week</option>
-                            <option value="month">By Month</option>
-                        </select>
+                        <div class="view-toggle-btn">By Week</div>
                     </div>
                     <div style="flex:1; min-height:0; position:relative;"><canvas id="trendLineChart"></canvas></div>
                 </div>
@@ -265,7 +265,7 @@
                 
                 <div class="chart-box">
                     <div class="chart-header">
-                        <h4>Aggregate Mood Flow</h4>
+                        <h4>Weekly Mood Entries</h4>
                     </div>
                     <div style="flex:1; min-height:0; position:relative;"><canvas id="weeklyAreaChart"></canvas></div>
                 </div>
@@ -274,7 +274,7 @@
                     <div class="rec-title-row">Recommendation for Emotion</div>
                     <div class="rec-body-content">
                         <div class="rec-mood-header" id="recMoodHeader">😊 Happy</div>
-                        <p class="rec-text" id="recMoodText">Loading personalized guidance layout...</p>
+                        <p class="rec-text" id="recommendationText">Loading ...</p>
                     </div>
                 </div>
             </div>
@@ -306,14 +306,16 @@
 
         window.onload = function() {
             initCharts();
-            changeTimeScale(); 
+            loadDashboardData();
+            // changeTimeScale();
         };
 
         function initCharts() {
             trendChart = new Chart(document.getElementById('trendLineChart').getContext('2d'), {
                 type: 'line',
                 data: { labels: [], datasets: [] },
-                options: { ...chartOptionsBase, plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 8, font: { size: 10 } } } }, scales: { y: { display: true }, x: { grid: { display: false } } } }
+                options: { ...chartOptionsBase, plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 8, font: { size: 10 } } } }, 
+                scales: { y: { display: true, beginAtZero: true, ticks:{stepSize:1, precision:0} }, x: { grid: { display: false } } } }
             });
 
             distributionChart = new Chart(document.getElementById('distributionPieChart').getContext('2d'), {
@@ -331,13 +333,13 @@
                     labels: ['Happy', 'Sad', 'Angry', 'Neutral'],
                     datasets: [{ data: [], backgroundColor: [moodColors.happy, moodColors.sad, moodColors.angry, moodColors.neutral], borderRadius: 5, barThickness: 12 }]
                 },
-                options: { ...chartOptionsBase, scales: { y: { beginAtZero: true, ticks: { stepSize: 25 } }, x: { grid: { display: false }, ticks: { font: { size: 9 } } } } }
+                options: { ...chartOptionsBase, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision:0 } }, x: { grid: { display: false }, ticks: { font: { size: 9 } } } } }
             });
 
             flowChart = new Chart(document.getElementById('weeklyAreaChart').getContext('2d'), {
                 type: 'line',
                 data: { labels: [], datasets: [] },
-                options: { ...chartOptionsBase, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
+                options: { ...chartOptionsBase, scales: { y: { beginAtZero: true, ticks:{ stepSize: 1, precision:0 } }, x: { grid: { display: false } } } }
             });
         }
 
@@ -423,10 +425,159 @@
         }
 
         function updateMonthRange() {
-            const selectedMonth = document.getElementById('monthPicker').value;
-            document.getElementById('currentPeriodLabel').innerText = selectedMonth + " 2026";
-            changeTimeScale();
+            console.log("Dropdown Changed");
+            loadDashboardData();
         }
+
+        async function loadDashboardData(){
+            const selectedMonth = 
+                document.getElementById("monthPicker").value;
+
+            const [year, month] = selectedMonth.split("-");
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+            
+            document.getElementById("currentPeriodLabel").innerText =
+            `${monthNames[parseInt(month) - 1]} ${year}`;
+                
+            const response = await fetch(
+                `{% url 'dashboard' %}?format=json&month=${selectedMonth}`
+            );
+
+            const data = await response.json();
+            console.log(data);
+            console.log(data.trend_over_time);
+            console.log(data.weekly_entries);
+
+            document.getElementById("currentStreak").innerText =
+                data.current_streak + " Day";
+            document.getElementById("longestStreak").innerText =
+                data.longest_streak + " Days";
+
+
+            document.getElementById("mostFrequentMoodTitle").innerText =
+                data.most_frequent_mood.category;
+            const topMood = (data.most_frequent_mood.category || "").toLowerCase();
+            const moodInfo = {
+                happy: { emoji: "😊", title: "Happy"},
+                sad: { emoji: "😢", title: "Sad"},
+                angry: { emoji: "😠", title: "Angry"}, 
+                neutral: { emoji: "😐", title: "Neutral"}
+            };
+            if(moodInfo[topMood]){
+                document.getElementById("mostFrequentEmoji").innerText =
+                    moodInfo[topMood].emoji;
+                document.getElementById("mostFrequentMoodTitle").innerText =
+                    moodInfo[topMood].title;
+                }
+            else{
+                document.getElementById("mostFrequentEmoji").innerText = "❔";
+                document.getElementById("mostFrequentMoodTitle").innerText = "No Data";
+            }
+            const topMoodData =
+                data.percentage_distribution.find(
+                    item => item.category.toLowerCase() === topMood
+                );
+            if(topMoodData){
+                document.getElementById("mostFrequentMoodSub").innerText =
+                    `${topMoodData.percentage}% of total`;
+                }
+            else{
+                document.getElementById("mostFrequentMoodSub").innerText =
+                "0% of total";
+            }
+            if(moodInfo[topMood]){
+                document.getElementById("recMoodHeader").innerText =
+                    `${moodInfo[topMood].emoji} ${moodInfo[topMood].title}`;
+                }
+            else{
+                document.getElementById("recMoodHeader").innerText =
+                    "❔ No Data";
+            }
+
+            const totalEntries = 
+                data.total_moods.reduce((sum, item) => sum + item.total, 0);
+            document.getElementById("totalEntriesVal").innerText =
+                totalEntries;
+            document.getElementById("pieTotalLabel").innerText =
+                totalEntries;
+
+            document.getElementById("recommendationText").innerText =
+            data.recommendation;
+
+
+            const moodMap = {};
+            data.percentage_distribution.forEach(item => {
+                moodMap[item.category.toLowerCase()] =
+                    item.percentage;
+            });
+            const pieLabels = ["Happy", "Sad", "Angry", "Neutral"];
+            const pieValues = [ moodMap.happy || 0, moodMap.sad || 0, moodMap.angry || 0, moodMap.neutral || 0 ];
+            document.getElementById("pct-happy").innerText =`Happy ${moodMap.happy || 0}%`;
+            document.getElementById("pct-sad").innerText =`Sad ${moodMap.sad || 0}%`;
+            document.getElementById("pct-angry").innerText =`Angry ${moodMap.angry || 0}%`;
+            document.getElementById("pct-neutral").innerText =`Neutral ${moodMap.neutral || 0}%`;
+
+            distributionChart.data.labels = pieLabels;
+            distributionChart.data.datasets[0].data = pieValues;
+            distributionChart.update();
+
+
+            const countMap = {};
+            data.total_moods.forEach(item => {
+                countMap[item.category.toLowerCase()] =
+                    item.total;
+            });
+            const barLabels = [ "Happy", "Sad", "Angry", "Neutral"];
+            const barValues = [countMap.happy || 0, countMap.sad || 0, countMap.angry || 0, countMap.neutral || 0 ];
+            
+            frequencyChart.data.labels = barLabels;
+            frequencyChart.data.datasets[0].data = barValues;
+            frequencyChart.update();
+            
+
+            const trendLabels = data.trend_over_time.map(item => item.date);
+            const happyData = data.trend_over_time.map(item => item.happy);
+            const sadData = data.trend_over_time.map(item => item.sad);
+            const angryData = data.trend_over_time.map(item => item.angry);
+            const neutralData = data.trend_over_time.map(item => item.neutral);
+            
+            trendChart.data.labels = trendLabels;
+            trendChart.data.datasets = [
+                {label: 'Happy', data: happyData, borderColor: '#ffcc00', tension: 0.4, pointRadius: 3, fill: false },
+                {label: 'Sad', data: sadData, borderColor: '#007aff', tension: 0.4, pointRadius: 3, fill: false},
+                {label: 'Angry', data: angryData, borderColor: '#ff3b30', tension: 0.4, pointRadius: 3, fill: false},
+                {label: 'Neutral', data: neutralData, borderColor: '#34c759', tension: 0.4, pointRadius: 3, fill: false}
+            ];
+            trendChart.update();
+            
+
+            const selectedMonthName =
+                monthNames[parseInt(month) - 1];
+            const weekLabels =
+                data.weekly_entries.map(
+                    item => `${selectedMonthName} ${item.label}`
+                );
+            const weekValues = data.weekly_entries.map(item => item.total);
+            flowChart.data.labels = weekLabels;
+            flowChart.data.datasets = [{
+                label: "Entries",
+                data: weekValues,
+                borderColor: "#9370DB",
+                backgroundColor: "rgba(147,112,219,0.15)",
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4
+            }];
+            flowChart.update();
+
+
+
+
+
+        }
+
+
+
     </script>
 </body>
 </html>

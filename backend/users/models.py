@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 # ==========================================
 # 1. 用户资料表 (以 Model 2 为主，保留验证和性别，融合 Model 1 的生日)
@@ -37,20 +38,50 @@ class Music(models.Model):
 # 2. 心情记录表 (以 Model 2 MoodEntry 为主结构，完美融合 Model 1 的歌单和分类逻辑)
 # ==========================================
 class MoodEntry(models.Model):
+    # 1. 在类内部的最上方，新增定义 Category 的四个可选项
+    CATEGORY_CHOICES = [
+        ('sad', 'Sad'),
+        ('neutral', 'Neutral'),
+        ('happy', 'Happy'),
+        ('angry', 'Angry'),
+    ]
+
+    # 2. 新增定义所有 Mood 的具体可选项
+    MOOD_CHOICES = [
+        # Sad 类别
+        ('sad', 'Sad'), ('sick', 'Sick'), ('cringe', 'Cringe'), 
+        ('tired', 'Tired'), ('exhausted', 'Exhausted'), ('guilty', 'Guilty'), ('afraid', 'Afraid'),
+        
+        # Neutral 类别
+        ('neutral', 'Neutral'), ('shy', 'Shy'), ('sleepy', 'Sleepy'), ('curious', 'Curious'),
+        
+        # Happy 类别
+        ('happy', 'Happy'), ('kiss', 'Kiss'), ('yeah', 'Yeah'), ('fighting', 'Fighting'), 
+        ('good', 'Good'), ('lovely', 'Lovely'), ('admire', 'Admire'), ('warm', 'Warm'), 
+        ('energetic', 'Energetic'), ('motivated', 'Motivated'),
+        
+        # Angry 类别
+        ('angry', 'Angry'), ('shock', 'Shock'), ('trick', 'Trick'), ('awkward', 'Awkward'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    mood = models.CharField(max_length=20)                         # Model 2 核心心情字段 (对应 Model 1 mood_name)
-    category = models.CharField(max_length=20, null=True, blank=True) # 融入 Model 1 的分类，方便前端过滤
-    diary_text = models.TextField(blank=True, null=True)           # Model 2 核心日记字段 (对应 Model 1 content)
-    intensity = models.IntegerField(default=3, null=True, blank=True) # 保留默认权重 3 
+    
+    # 3. 【修改这两行】把原本的字段加上 choices 属性，顺便把 mood 的 max_length 改大到 50
+    mood = models.CharField(max_length=50, choices=MOOD_CHOICES)                          
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, null=True, blank=True) 
+    
+    # 4. 下面的其余旧字段原封不动保留
+    diary_text = models.TextField(blank=True, null=True)           
+    intensity = models.IntegerField(default=3, null=True, blank=True) 
     selected_music = models.ForeignKey('Music', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    entry_date = models.DateField(default=timezone.now)
 
     class Meta:
-        ordering = ['-created_at'] # 融入 Model 1 的时间倒序排列，让日记历史按最新时间显示
+        ordering = ['-created_at'] 
 
     def __str__(self):
-        return f"{self.user.username} - {self.mood}"
-
+        return f"{self.user.username} - {self.mood} ({self.category})"
 
 # ==========================================
 # 3. 心情照片表 (完全保留 Model 2 的相册扩展功能)
@@ -65,27 +96,24 @@ class MoodPhoto(models.Model):
 # 4. 心理健康资源表 (以 Model 2 结构为主，无缝融合 Model 1 的分类、简介和外部跳转链接)
 # ==========================================
 class Article(models.Model):
+    # 这里的 Key 是内部逻辑用的，Value 是 Admin 后台显示的文字
     CATEGORY_CHOICES = [
-        ('Sleep', 'Better Sleep'),
-        ('Stress', 'Stress Relief'),
-        ('Self-Love', 'Self-Love'),
-        ('Focus', 'Deep Focus'),
-        ('Anxiety', 'Anxiety'),
-        ('Exercise', 'Exercise'),
-        ('Hydration', 'Hydration'),
-        ('Social', 'Social'),
-        ('Gratitude', 'Gratitude'),
+        ('basics', 'Mental Health Basics'),
+        ('motivation', 'Motivation & Positive Mindset'),
+        ('relationships', 'Relationships & Social Well-Being'),
+        ('stress', 'Stress & Anxiety Management'),
+        ('selfcare', 'Self-Care & Daily Habits'),
     ]
+    
     title = models.CharField(max_length=200)
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='Sleep') # 融入分类，完美对接你前端的动态 API 抓取
-    summary = models.CharField(max_length=500, blank=True)           # 融入 Model 1 简介
-    content = models.TextField(blank=True, null=True)               # 保留 Model 2 内容字段
-    external_url = models.URLField(max_length=500, null=True, blank=True) # 融入 Model 1 外部跳转链接，对接 Read More →
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='basics')
+    summary = models.CharField(max_length=500, blank=True)
+    content = models.TextField(blank=True, null=True)
+    external_url = models.URLField(max_length=500, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"[{self.category}] {self.title}"
-
+        return f"[{self.get_category_display()}] {self.title}"
 
 # ==========================================
 # 5. 文章收藏表 (完全保留 Model 2 收藏夹功能)

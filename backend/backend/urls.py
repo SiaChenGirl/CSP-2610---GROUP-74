@@ -19,11 +19,16 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from users import views 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # 只要这一个 include 即可！不要在下面粘贴 users.urls 的内容
     path('', include('users.urls')), 
+
+    path('check-session/', views.check_session, name='check_session'),
+    
+    path('diaryhistory/', views.diary_history_view, name='diaryhistory'), 
 ]
 
 if settings.DEBUG:

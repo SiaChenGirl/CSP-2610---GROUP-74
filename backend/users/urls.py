@@ -23,10 +23,9 @@ urlpatterns = [
     # 2. 核心后端 API 接口
     # ==========================================
     path('api/register/', views.register_view),
-    path('login/', views.login_view, name='login_page'),
     path('api/logout/', views.user_logout),
     path('api/profile/', views.profile_view),
-    path('api/change-password/', views.change_password),
+    path('change-password/', views.change_password, name='change_password'),
     path('verify-email/<str:username>/', views.verify_email, name='verify_email'),
     path('add-mood/', views.moodentry_view),
     path('today-mood/', views.today_mood),
@@ -39,7 +38,8 @@ urlpatterns = [
     path('api/feedback/', views.feedback_view),
     path('api/dashboard-status/', views.dashboard_view),
     path('api/music-library/', views.get_music_library),
-
+    path('api/articles/favorite/<int:article_id>/', views.toggle_favorite, name='toggle_favorite'),
+   path('search/', views.search_view, name='search'),
     # ==========================================
     # 3. 密码重置专用路由 (核心修复区)
     # ==========================================
@@ -51,4 +51,7 @@ urlpatterns = [
     
     # reset.html 提交保存密码的接口
     path('reset-save/', views.handle_password_save, name='password_reset_save'),
+
+    # ... 在 api/favorite/ 下方补上：
+    path('remove-favorite/<int:article_id>/', views.remove_favorite, name='remove_favorite'),
 ]

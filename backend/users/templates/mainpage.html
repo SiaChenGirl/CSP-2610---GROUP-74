@@ -8,7 +8,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600&display=swap" rel="stylesheet">
     <style>
         /* 1. 基础布局 - 统一队友的渐变风格 */
-       .profile-card{
+      body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+
+    background-image:url("{% static 'background_main.png' %}");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+
+    min-height:100vh;
+}
+ .profile-card{
     position:fixed;
     top:25px;
     left:25px;
@@ -210,7 +222,7 @@
 
     <div class="header-wrapper">
         <div class="title-area">
-            <img src="{% static 'title.png' %}"><br>
+            <img src="{% static 'moodbloom.png.png' %}"><br>
             <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
         </div>
         <div class="menu-icon" onclick="toggleNav()">☰</div>
@@ -230,8 +242,8 @@
         <div class="circle-nav">
             <div class="nav-btn active" title="Calendar Home" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
             <div class="nav-btn" title="Search & Explore" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
-            <div class="nav-btn" title="Mental Health Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/book.png' %}"></div>
-            <div class="nav-btn" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/stats.png' %}"></div>
+            <div class="nav-btn" title="Mental Health Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/article.png' %}"></div>
+            <div class="nav-btn" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/dashboard.png' %}"></div>
             <div class="nav-btn" title="Photo Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
         </div>
     </div>
@@ -336,8 +348,9 @@
             document.getElementById('overlay').style.display='none';
         }
 
+        // 找到 mainpage.html 里的这块代码并修改：
         function goHistory() { 
-            location.href = `{% url 'search' %}?date=${formattedDateForBackend}`; 
+             location.href = `{% url 'diaryhistory' %}?date=${formattedDateForBackend}`; 
         }
         
         function goEntry() { 
@@ -345,6 +358,18 @@
         }
 
         startup();
+        // 检查用户是否保持登录状态的监控
+    setInterval(() => {
+        fetch("{% url 'check_session' %}") // 我们稍后在后端定义这个小接口
+        .then(response => response.json())
+        .then(data => {
+            if (!data.is_authenticated) {
+                // 如果后端发现没有 session，立即跳转
+                window.location.href = "{% url 'login' %}";
+            }
+        });
+    }, 5000); // 每 5 秒检查一次
+    
     </script>
 </body>
 </html>
