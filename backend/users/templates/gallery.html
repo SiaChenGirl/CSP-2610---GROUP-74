@@ -107,20 +107,33 @@
 </head>
 <body>
 
+</a>
     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
-        <div style="margin-top: 40px;">
-            <a href="{% url 'profile' %}">Profile</a>
-            <a href="{% url 'feedback' %}">Feedback</a>
-            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
-        </div>
+        <div style="margin-top:40px;">
+
+    <a href="{% url 'feedback' %}">
+       💬 Feedback
+    </a>
+
+    <a href="{% url 'logout' %}"
+       style="color:#6a4fbf; margin-top:50px; border:none;">
+       🚪 Logout
+    </a>
+
+
+    <a href="{% url 'delete_account' %}"
+       style="color:#e57373;">
+       🗑 Delete Account
+    </a>
+
+</div>
     </div>
 
     <div class="header-wrapper">
         <div class="logo" onclick="location.href='{% url 'mainpage' %}'" style="cursor: pointer;"><img src="logo.png"></div>
         <div class="title-area">
-            <img src="title.png"><br>
-            <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood your day, Bloom your mind.</span>
+            <img src="moodbloom.png"><br>
         </div>
         <div class="menu-icon" onclick="toggleNav()">☰</div>
     </div>

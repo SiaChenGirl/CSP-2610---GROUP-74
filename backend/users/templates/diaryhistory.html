@@ -18,6 +18,86 @@
             display: flex;
             flex-direction: column;
         }
+        .profile-card{
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    background:rgba(255,255,255,.9);
+    padding:12px 20px;
+    border-radius:25px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    text-decoration:none;
+    color:#4a3494;
+}
+.profile-avatar{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+
+    background:#ffe7a6;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:28px;
+}
+
+.profile-name{
+    font-weight:600;
+    font-size:16px;
+}
+
+.profile-text{
+    font-size:13px;
+    color:#7a5fc7;
+}
+.menu-icon{
+    font-size:32px;
+    cursor:pointer;
+    color:#6a4fbf;
+    width:180px;
+    text-align:right;
+}
+.side-nav{
+    position:fixed;
+    top:0;
+    right:-300px;
+    width:280px;
+    height:100%;
+    background:#fff;
+    box-shadow:-10px 0 30px rgba(0,0,0,.05);
+    border-left:1px solid #eee;
+    z-index:1000;
+    transition:.4s;
+    padding:50px 30px;
+    box-sizing:border-box;
+}
+
+.side-nav.active{
+    right:0;
+}
+
+.side-nav a{
+    display:block;
+    padding:18px 0;
+    color:#4a3494;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:18px;
+}
+
+.close-nav{
+    font-size:40px;
+    cursor:pointer;
+    position:absolute;
+    top:15px;
+    right:25px;
+    color:#6a4fbf;
+}
 
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
         .logo img { width: 180px; cursor: pointer; }
@@ -201,14 +281,54 @@
 <body>
     {% csrf_token %}
 
-    <div class="header-wrapper">
-        <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'logo.png' %}" alt="Logo"></div>
-        <div class="title-area">
-            <img src="{% static 'title.png' %}" alt="Title"><br>
-            <span style="color: #6a4fbf; font-style: italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
+   <div class="header-wrapper">
+
+    <a href="{% url 'profile' %}" class="profile-card">
+
+        <div class="profile-avatar">
+            😊
         </div>
-        <div class="hamburger-menu" onclick="location.href='{% url 'mainpage' %}'">主页 ↩</div>
+
+        <div>
+            <div class="profile-name">
+                Hi, {{ user.username }}!
+            </div>
+
+            <div class="profile-text">
+                Let's have a great day!
+            </div>
+        </div>
+
+    </a>
+
+    <div class="title-area">
+        <img src="{% static 'moodbloom.png' %}">
     </div>
+
+    <div class="menu-icon" onclick="toggleNav()">☰</div>
+
+</div>
+<div class="side-nav" id="sideNav">
+    <span class="close-nav" onclick="toggleNav()">&times;</span>
+
+    <div style="margin-top:40px;">
+
+    <a href="{% url 'feedback' %}">
+        💬 Feedback
+    </a>
+
+   <a href="{% url 'logout' %}">
+        🚪 Logout
+    </a>
+
+    <a href="{% url 'delete_account' %}"
+       style="color:#e57373;margin-top:50px;border:none;">
+        🗑 Delete Account
+    </a>
+
+</div>
+</div>
+    
 
     <div class="divider-line" style="height:1px; background:rgba(106, 79, 191, 0.2); margin:0 50px;"></div>
 
@@ -266,34 +386,31 @@
 
     <script>
         // 核心改动：完美的将 Django 数据库里的内容无缝注入到你原本的数据数组里
-        const singleDayEntries = [
-            {% if entries %}
-                {% for entry in entries %}
-                {
-                    id: "{{ entry.id }}", 
-                    date: "{{ date_str }}", 
-                    emoji: "{{ entry.emoji|default:'😊' }}", 
-                    mood: "{{ entry.mood|default:'Happy' }}",
-                    text: `{{ entry.diary_text|escapejs }}`,
-                    // 如果数据库有图就显示图，没有就用你的本地静态默认图
-                    photo: "{% if entry.photo %}{{ entry.photo.url }}{% else %}{% static 'default_diary.jpg' %}{% endif %}",
-                    track: "{{ entry.track|default:'Gentle Breeze' }}"
-                }{% if not forloop.last %},{% endif %}
-                {% endfor %}
-            {% else %}
-                // 如果当天完全没有日记，默认塞入一条提示，保持你的卡片样式不崩塌
-                {
-                    id: 0,
-                    date: "{{ date_str }}",
-                    emoji: "🌸",
-                    mood: "No Entry",
-                    text: "No blossoming memories found for this day. Click Edit to create one!",
-                    photo: "{% static 'default_diary.jpg' %}",
-                    track: "Silence"
-                }
-            {% endif %}
-        ];
-
+        const singleDayEntries = JSON.parse(`[
+{% if entries %}
+    {% for entry in entries %}
+    {
+        "id": "{{ entry.id }}",
+        "date": "{{ date_str }}",
+        "emoji": "{{ entry.emoji|default:'😊' }}",
+        "mood": "{{ entry.mood|default:'Happy' }}",
+        "text": "{{ entry.diary_text|escapejs }}",
+        "photo": "{% if entry.photo %}{{ entry.photo.url }}{% else %}{% static 'default_diary.jpg' %}{% endif %}",
+        "track": "{{ entry.track|default:'Gentle Breeze' }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+{% else %}
+    {
+        "id": 0,
+        "date": "{{ date_str }}",
+        "emoji": "🌸",
+        "mood": "No Entry",
+        "text": "No blossoming memories found for this day. Click Edit to create one!",
+        "photo": "{% static 'default_diary.jpg' %}",
+        "track": "Silence"
+    }
+{% endif %}
+]`);
         let currentEntryIndex = 0;
 
         function updateCardUI() {
@@ -339,6 +456,10 @@
         window.onload = function() {
             updateCardUI();
         };
+     function toggleNav(){
+    console.log("clicked");
+    document.getElementById("sideNav").classList.toggle("active");
+}
     </script>
 </body>
 </html>
