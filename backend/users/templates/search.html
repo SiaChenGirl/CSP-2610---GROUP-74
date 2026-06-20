@@ -6,11 +6,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoodBloom | Search Memories</title>
     <style>
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%); background-attachment: fixed; min-height: 100vh; color: #4a3494; overflow-x: hidden; }
+        body{
+    margin:0;
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+
+    background:
+    linear-gradient(
+        rgba(255,255,255,.55),
+        rgba(255,255,255,.55)
+    ),
+    url("{% static 'background_main.png' %}");
+
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+
+    min-height:100vh;
+}
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
         .logo img { width: 180px; }
-        .title-area img { width: 253px; }
+        .title-area img { width: 320px; }
         .menu-icon { font-size: 35px; cursor: pointer; color: #6a4fbf; width: 180px; text-align: right; }
+        .user-profile{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-decoration:none;
+    color:#6a4fbf;
+    font-weight:700;
+    font-size:20px;
+    width:220px;
+}
+
+.user-profile img{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    border:3px solid #d8ccff;
+}
+        .user-profile:hover{ transform:scale(1.03);}
         .side-nav { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); box-shadow: -10px 0 30px rgba(106, 79, 191, 0.2); z-index: 1000; transition: 0.4s; padding: 50px 30px; box-sizing: border-box; }
         .side-nav.active { right: 0; }
         .side-nav a { display: block; padding: 18px 0; color: #4a3494; text-decoration: none; font-weight: bold; border-bottom: 1px solid #f0f0f0; }
@@ -21,7 +55,17 @@
         .filter-pill { background: white; padding: 15px 25px; border-radius: 30px; font-weight: bold; color: #6a4fbf; cursor: pointer; text-align: center; box-shadow: 0 4px 15px rgba(106, 79, 191, 0.1); transition: 0.3s; border: 2px solid transparent; }
         .filter-pill:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(106, 79, 191, 0.15); }
         .filter-pill.active { border-color: #6a4fbf; background: #f8f6ff; }
-        .results-container { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(15px); border-radius: 40px; padding: 40px; flex: 1; min-height: 500px; box-shadow: 0 10px 30px rgba(106, 79, 191, 0.05); border: 1px solid white; text-align: center; }
+        .results-container{
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(20px);
+    border-radius:40px;
+    padding:40px;
+    flex:1;
+    min-height:550px;
+    box-shadow:0 12px 35px rgba(106,79,191,.12);
+    border:1px solid rgba(255,255,255,.9);
+    text-align:center;
+}
         .inline-tool { display: none; margin-bottom: 30px; animation: fadeIn 0.5s; }
         .calendar-input { padding: 15px; border-radius: 15px; border: 2px solid #e8e0ff; color: #4a3494; font-weight: bold; outline: none; background: white; }
         .keyword-input { width: 100%; padding: 18px 30px; border-radius: 50px; border: 2px solid #e8e0ff; outline: none; font-size: 16px; box-sizing: border-box; color: #4a3494; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
@@ -31,29 +75,99 @@
         .quick-nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; background: rgba(255, 255, 255, 0.8); padding: 10px 30px; border-radius: 50px; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         .quick-item { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; }
         .quick-item img { width: 22px; opacity: 0.6; }
-        .quick-item:hover { background: #f0ebff; }
+        .quick-item:hover { background: #f0ebff; } 
         .quick-item.active { background: #6a4fbf; }
         .quick-item.active img { filter: brightness(0) invert(1); opacity: 1; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+       .circle-nav{
+    position:fixed;
+    right:30px;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    z-index:999;
+}
+
+.nav-btn{
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:0 6px 20px rgba(106,79,191,.15);
+    transition:.3s;
+}
+
+.nav-btn img{
+    width:28px;
+    height:28px;
+    object-fit:contain;
+}
+
+.nav-btn:hover{
+    transform:scale(1.08);
+}
+
+.nav-btn.active{
+    background:#6a4fbf;
+}
+
+.nav-btn.active img{
+    filter:brightness(0) invert(1);
+}
+
+.nav-btn:hover{
+    transform:scale(1.1);
+}
+
+.active-circle{
+    background:#6a4fbf;
+    color:white;
+}
+ @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         footer { margin-top: 50px; color: #b39ddb; font-size: 13px; padding-bottom: 100px; }
     </style>
 </head>
 <body>
     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
-        <div style="margin-top: 40px;">
-            <a href="{% url 'mainpage' %}">Home</a>
-            <a href="{% url 'profile' %}">My Profile</a>
-            <a href="{% url 'feedback' %}">Feedback</a>
-            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
-        </div>
+        <div style="margin-top:40px;">
+
+
+    <a href="{% url 'feedback' %}">
+        💬 Feedback
+    </a>
+
+   <a href="{% url 'logout' %}">
+        🚪 Logout
+    </a>
+
+    <a href="{% url 'delete_account' %}"
+       style="color:#e57373;margin-top:50px;border:none;">
+        🗑 Delete Account
+    </a>
+
+</div>
     </div>
 
-    <div class="header-wrapper">
-        <div class="logo"><img src="{% static 'logo.png' %}"></div>
-        <div class="title-area"><img src="{% static 'title.png' %}"></div>
-        <div class="menu-icon" onclick="toggleNav()">☰</div>
+      <div class="header-wrapper">
+
+    <a href="{% url 'profile' %}" class="user-profile">
+        <img src="{% static 'icons/user.png' %}">
+        <span>Hi, {{ user.username }}</span>
+    </a>
+
+    <div class="title-area">
+        <img src="{% static 'moodbloom.png' %}">
     </div>
+
+    <div class="menu-icon" onclick="toggleNav()">☰</div>
+
+</div>
     <div class="divider-line"></div>
 
     <div class="search-main">
@@ -86,12 +200,45 @@
         </div>
     </div>
 
-    <div class="quick-nav">
-        <div class="quick-item active"><img src="{% static 'icons/search.png' %}"></div>
-        <div class="quick-item" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/book.png' %}"></div>
-        <div class="quick-item" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/stats.png' %}"></div>
-        <div class="quick-item" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
+   <div class="circle-nav">
+
+    <div class="nav-btn"
+         title="Calendar Home"
+         onclick="location.href='{% url 'mainpage' %}'">
+        <img src="{% static 'icons/calendar.png' %}">
     </div>
+
+    <div class="nav-btn active"
+         title="Search & Explore"
+         onclick="location.href='{% url 'search' %}'">
+        <img src="{% static 'icons/search.png' %}">
+    </div>
+
+    <div class="nav-btn"
+         title="Dashboard"
+         onclick="location.href='{% url 'dashboard' %}'">
+        <img src="{% static 'icons/plus.png' %}">
+    </div>
+
+    <div class="nav-btn"
+         title="Mental Health Articles"
+         onclick="location.href='{% url 'article' %}'">
+        <img src="{% static 'icons/article.png' %}">
+    </div>
+
+    <div class="nav-btn"
+         title="Photo Gallery"
+         onclick="location.href='{% url 'gallery' %}'">
+        <img src="{% static 'icons/camera.png' %}">
+    </div>
+
+</div>
+    <div class="nav-btn"
+         onclick="location.href='{% url 'profile' %}'">
+        👤
+    </div>
+
+</div>
 
     <script>
         function toggleNav() { document.getElementById('sideNav').classList.toggle('active'); }

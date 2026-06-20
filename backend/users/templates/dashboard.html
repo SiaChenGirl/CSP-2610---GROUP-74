@@ -158,19 +158,30 @@
     </style>
 </head>
 <body>
-
-    <div class="side-nav" id="sideNav">
+ <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
-        <div style="margin-top: 40px;">
-            <a href="{% url 'profile' %}">Profile</a>
-            <a href="{% url 'feedback' %}">Feedback</a>
-            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 40px; border: none;">Logout</a>
-        </div>
+        <div style="margin-top:40px;">
+
+
+    <a href="{% url 'feedback' %}">
+        💬 Feedback
+    </a>
+
+   <a href="{% url 'logout' %}">
+        🚪 Logout
+    </a>
+
+    <a href="{% url 'delete_account' %}"
+       style="color:#e57373;margin-top:50px;border:none;">
+        🗑 Delete Account
+    </a>
+
+</div>
     </div>
 
     <div class="header-mini">
         <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="logo.png" alt="MoodBloom Logo"></div>
-        <div class="title-area"><img src="title.png" alt="Dashboard Title"></div>
+        <div class="title-area"><img src="moodbloom.png" alt="Dashboard Title"></div>
         <div class="header-controls">
             <select class="month-range-picker" id="monthPicker" onchange="updateMonthRange()">
                 {% for month in months %}

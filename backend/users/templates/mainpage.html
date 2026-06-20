@@ -20,7 +20,7 @@
 
     min-height:100vh;
 }
- .profile-card{
+.profile-card{
     position:fixed;
     top:25px;
     left:25px;
@@ -38,6 +38,14 @@
     box-shadow:0 5px 15px rgba(0,0,0,.08);
 
     z-index:999;
+
+    text-decoration:none;
+    color:inherit;
+    cursor:pointer;
+}
+
+.profile-card:hover{
+    transform:scale(1.03);
 }
 
 .profile-avatar{
@@ -193,7 +201,7 @@
 </head>
 <body>
 
-    <div class="profile-card">
+    <a href="{% url 'profile' %}" class="profile-card">
 
     <div class="profile-avatar">
         😊
@@ -201,7 +209,7 @@
 
     <div>
         <div class="profile-name">
-            Hi, User!
+            Hi, {{ user.username }}!
         </div>
 
         <div class="profile-text">
@@ -209,20 +217,32 @@
         </div>
     </div>
 
-</div>
-
+</a>
     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
-        <div style="margin-top: 40px;">
-            <a href="{% url 'profile' %}">Profile</a>
-            <a href="{% url 'feedback' %}">Feedback</a>
-            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
-        </div>
+        <div style="margin-top:40px;">
+
+    <a href="{% url 'feedback' %}">
+       💬 Feedback
+    </a>
+
+    <a href="{% url 'logout' %}"
+       style="color:#6a4fbf; margin-top:50px; border:none;">
+       🚪 Logout
+    </a>
+
+
+    <a href="{% url 'delete_account' %}"
+       style="color:#e57373;">
+       🗑 Delete Account
+    </a>
+
+</div>
     </div>
 
     <div class="header-wrapper">
         <div class="title-area">
-            <img src="{% static 'moodbloom.png.png' %}"><br>
+            <img src="{% static 'moodbloom.png' %}"><br>
             <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
         </div>
         <div class="menu-icon" onclick="toggleNav()">☰</div>
