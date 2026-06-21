@@ -20,24 +20,55 @@
         }
 
         /* --- SIDE NAVIGATION --- */
-        .side-nav {
-            position: fixed; 
-            top: 0; 
-            right: -300px; 
-            width: 280px; 
-            height: 100%;
-            background: #ffffff; 
-            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05); 
-            border-left: 1px solid #f2eeff;
-            z-index: 1000;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            padding: 50px 30px; 
-            box-sizing: border-box;
-        }
-        .side-nav.active { right: 0; }
-        .side-nav a { display: block; padding: 15px 0; color: #4a3494; text-decoration: none; font-weight: bold; font-size: 16px; border-bottom: 1px solid #fcfbff; }
-        .close-nav { font-size: 35px; cursor: pointer; position: absolute; top: 15px; right: 25px; color: #6a4fbf; }
+       .side-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    height: 100%;
+    background: #fff;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.08);
+    z-index: 9999;
+    padding: 50px 30px;
+    box-sizing: border-box;
 
+    transform: translateX(100%);
+    transition: transform 0.4s ease;
+}
+#sideNav{
+    background: #ffffff !important;
+}
+
+.side-nav.active {
+    transform: translateX(0);
+}
+.side-nav.active {
+    right: 0;
+}
+
+.side-nav a {
+    display: block;
+    padding: 15px 0;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.side-nav a:hover {
+    color: #6a4fbf;
+    padding-left: 8px;
+}
+
+.close-nav {
+    font-size: 35px;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    color: #333;
+}
         /* --- HEADER CONTROL BAR --- */
         .header-mini {
             display: flex;
@@ -190,10 +221,7 @@
         🚪 Logout
     </a>
 
-    <a href="{% url 'delete_account' %}"
-       style="color:#e57373;margin-top:50px;border:none;">
-        🗑 Delete Account
-    </a>
+
 
 </div>
     </div>
@@ -310,12 +338,12 @@
             </div>
         </div>
 
-        <div class="circle-actions">
-            <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="icons/search.png"></div>
-            <div class="action-btn" title="Calendar" onclick="location.href='{% url 'mainpage' %}'"><img src="icons/calendar.png"></div>
-            <div class="action-btn" title="Article" onclick="location.href='{% url 'article' %}'"><img src="icons/book.png"></div>
-            <div class="action-btn active" title="Stats" onclick="location.href='{% url 'dashboard' %}'"><img src="icons/stats.png"></div>
-            <div class="action-btn" title="Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="icons/camera.png"></div>
+         <div class="circle-nav">
+            <div class="nav-btn active" title="Calendar Home" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
+            <div class="nav-btn" title="Search & Explore" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
+            <div class="nav-btn" title="Mental Health Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/article.png' %}"></div>
+            <div class="nav-btn" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/dashboard.png' %}"></div>
+            <div class="nav-btn" title="Photo Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
         </div>
     </div>
     <footer>© 2026 MoodBloom | Mood Your Day, Bloom Your Mind.</footer>

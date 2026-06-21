@@ -7,13 +7,22 @@
     <title>MoodBloom | Feedback</title>
     <style>
         /* 1. 基础样式 */
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); 
-            min-height: 100vh; 
-            color: #4a3494;
-        }
+        /* 1. 基础样式 */
+body { 
+    margin: 0; 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    /* --- UPDATED BACKGROUND START --- */
+    background-image: url("{% static 'background.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* --- UPDATED BACKGROUND END --- */
+    min-height: 100vh; 
+    color: #4a3494;
+    display: flex; /* Keeping this to ensure footer stays at bottom */
+    flex-direction: column;
+}
         .profile-card{
     position:absolute;
     top:25px;
@@ -119,13 +128,6 @@
     color:#b39ddb;
 }
 
-.header-line{
-    margin-top:95px;
-    border:0;
-    height:1px;
-    background:rgba(106,79,191,.2);
-}
-
         /* 2. 头部导航 */
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
         .logo img { width: 110px; } 
@@ -133,7 +135,12 @@
         .back-link { text-decoration: none; color: #6a4fbf; font-weight: bold; font-size: 16px; transition: 0.3s; }
         .back-link:hover { opacity: 0.7; }
         .header-line { border: 0; height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 40px 30px 40px; }
+        .logo{
+    text-align:center;
+    margin-bottom:20px;
+}
 
+.logo img { width: 180px; cursor: pointer; }
         /* 3. 反馈卡片容器 */
         .container { 
             max-width: 500px; 
@@ -182,7 +189,8 @@
         }
         .btn:hover { background: #5a3ea3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(106, 79, 191, 0.2); }
         
-        footer { text-align: center; margin-top: 30px; color: #b39ddb; font-size: 13px; font-weight: bold; }
+        footer { text-align: center; padding: 25px 0 40px; color: #6a4fbf; font-weight: bold; font-size: 14px; width: 100%; margin-top: auto; }
+
     </style>
 </head>
 <body>
@@ -222,17 +230,16 @@
             🚪 Logout
         </a>
 
-        <a href="{% url 'delete_account' %}"
-           style="color:#e57373;margin-top:50px;border:none;">
-            🗑 Delete Account
-        </a>
+        
 
     </div>
 
 </div>
 
 <hr class="header-line">
-
+    <div class="logo">
+    <img src="{% static 'moodbloom.png' %}" alt="MoodBloom Logo">
+</div>
     <div class="container">
         <h2 style="color:#6a4fbf; margin-top: 0;">Feedback</h2>
         <p style="color: #b39ddb; font-size: 14px;">We'd love to hear your thoughts!</p>

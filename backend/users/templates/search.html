@@ -15,12 +15,12 @@
         rgba(255,255,255,.55),
         rgba(255,255,255,.55)
     ),
-    url("{% static 'background_main.png' %}");
+    url("{% static 'background_search.png' %}");
 
     background-size:cover;
     background-position:center;
     background-attachment:fixed;
-
+    position: relative;
     min-height:100vh;
 }
 .profile-card{
@@ -123,7 +123,7 @@
         .quick-item.active { background: #6a4fbf; }
         .quick-item.active img { filter: brightness(0) invert(1); opacity: 1; }
        .circle-nav{
-    position:fixed;
+    position:absolute;
     right:30px;
     top:50%;
     transform:translateY(-50%);
@@ -274,16 +274,17 @@
     </div>
 
     <div class="nav-btn"
-         title="Dashboard"
-         onclick="location.href='{% url 'dashboard' %}'">
-        <img src="{% static 'icons/plus.png' %}">
-    </div>
-
-    <div class="nav-btn"
          title="Mental Health Articles"
          onclick="location.href='{% url 'article' %}'">
         <img src="{% static 'icons/article.png' %}">
     </div>
+    
+    <div class="nav-btn"
+         title="Statistics Dashboard"
+         onclick="location.href='{% url 'dashboard' %}'">
+        <img src="{% static 'icons/dashboard.png' %}">
+    </div>
+
 
     <div class="nav-btn"
          title="Photo Gallery"

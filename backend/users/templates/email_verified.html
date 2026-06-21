@@ -1,21 +1,22 @@
 {% load static %}
 
 <style>
-    body {
-        margin: 0;
-        font-family: 'Segoe UI', sans-serif;
-        background: linear-gradient(
-            180deg,
-            #FFFFFF 0%,
-            #F5F2FF 40%,
-            #DED4FF 100%
-        );
-        background-attachment: fixed;
-        min-height: 100vh;
-        color: #4a3494;
-        display: flex;
-        flex-direction: column;
-    }
+   /* 1. 基础样式 */
+body { 
+    margin: 0; 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    /* --- UPDATED BACKGROUND START --- */
+    background-image: url("{% static 'background.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* --- UPDATED BACKGROUND END --- */
+    min-height: 100vh; 
+    color: #4a3494;
+    display: flex; /* Keeping this to ensure footer stays at bottom */
+    flex-direction: column;
+}
 
     .header-wrapper {
         display: flex;
@@ -97,7 +98,7 @@
     </div>
 
     <div class="title-area">
-        <img src="{% static 'title.png' %}">
+        <img src="{% static 'moodbloom.png' %}">
         <br>
         <span style="color:#6a4fbf;font-style:italic;font-size:14px;">
             Mood Your Day, Bloom Your Mind.

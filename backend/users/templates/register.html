@@ -7,16 +7,22 @@
     {% load static %}
     <style>
         /* 1. LAYOUT & GRADIENT - 采用队友的新 UI 风格 */
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
-            background-attachment: fixed; 
-            min-height: 100vh; 
-            color: #4a3494;
-            display: flex;
-            flex-direction: column;
-        }
+        /* 1. 基础样式 */
+body { 
+    margin: 0; 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    /* --- UPDATED BACKGROUND START --- */
+    background-image: url("{% static 'background.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* --- UPDATED BACKGROUND END --- */
+    min-height: 100vh; 
+    color: #4a3494;
+    display: flex; /* Keeping this to ensure footer stays at bottom */
+    flex-direction: column;
+}
 
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
         .logo img { width: 180px; }
@@ -126,7 +132,6 @@
         <div class="logo"><img src="{% static 'logo.png' %}"></div>
         <div class="title-area">
             <img src="{% static 'moodbloom.png' %}"><br>
-            <span style="color: #6a4fbf; font-style: italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
         </div>
         <div style="width: 180px;"></div>
     </div>
