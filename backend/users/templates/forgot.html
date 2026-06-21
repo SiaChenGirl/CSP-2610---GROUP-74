@@ -7,15 +7,22 @@
     <title>MoodBloom | Forgot Password</title>
     <style>
         /* 1. 基础主题：保持与其他页面一致的 135deg 渐变 */
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            color: #4a3494;
-        }
+       /* 1. 基础样式 */
+body { 
+    margin: 0; 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    /* --- UPDATED BACKGROUND START --- */
+    background-image: url("{% static 'background.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* --- UPDATED BACKGROUND END --- */
+    min-height: 100vh; 
+    color: #4a3494;
+    display: flex; /* Keeping this to ensure footer stays at bottom */
+    flex-direction: column;
+}
 
         /* 2. 头部样式 */
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }

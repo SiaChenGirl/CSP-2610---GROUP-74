@@ -1,19 +1,71 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>MoodBloom | Gallery</title>
     <style>
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
-            background-attachment: fixed; 
-            min-height: 100vh; 
-            color: #4a3494;
-            overflow-x: hidden;
-        }
+       /* 1. 基础样式 */
+body { 
+    margin: 0; 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    /* --- UPDATED BACKGROUND START --- */
+    background-image: url("{% static 'background_search.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* --- UPDATED BACKGROUND END --- */
+    min-height: 100vh; 
+    color: #4a3494;
+    display: flex; /* Keeping this to ensure footer stays at bottom */
+    flex-direction: column;
+}
 
+.profile-card{
+    position:fixed;
+    top:25px;
+    left:25px;
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    background:rgba(255,255,255,.9);
+    padding:12px 20px;
+    border-radius:25px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    text-decoration:none;
+    color:#4a3494;
+
+    z-index:999;
+}
+
+.profile-avatar{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+
+    background:#ffe7a6;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:28px;
+}
+
+.profile-name{
+    font-weight:600;
+    font-size:16px;
+}
+
+.profile-text{
+    font-size:13px;
+    color:#7a5fc7;
+}
         /* --- WHITE NAVIGATION MENU --- */
         .side-nav {
             position: fixed; 
@@ -59,18 +111,24 @@
         }
 
         /* --- HEADER STYLING --- */
-        .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
-        .logo img { width: 180px; }
-        .title-area { text-align: center; }
-        .title-area img { width: 230px; }
-        
-        .menu-icon { 
-            font-size: 35px; 
-            cursor: pointer; 
-            color: #6a4fbf; 
-            width: 180px; 
-            text-align: right; 
-        }
+.header-wrapper{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 50px;
+}
+
+.menu-icon{
+    width:220px;
+    text-align:right;
+    font-size:35px;
+    cursor:pointer;
+    color:#6a4fbf;
+}
+
+.title-area img{
+    width:230px;
+}
 
         .divider-line { height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 50px 30px 50px; }
 
@@ -90,41 +148,123 @@
         .photo-date { font-size: 12px; font-weight: bold; color: #6a4fbf; }
 
         /* --- ACTIONS --- */
-        .circle-actions { display: flex; flex-direction: column; gap: 20px; }
-        .action-btn { 
-            width: 65px; height: 65px; background: white; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; 
-            transition: 0.3s;
-        }
-        .action-btn:hover { transform: scale(1.1); }
-        .action-btn img { width: 28px; opacity: 0.7; }
-        .active-circle { background: #b39ddb; } 
-        .active-circle img { filter: brightness(0) invert(1); opacity: 1; }
-        
+       .circle-nav{
+    position:absolute;
+    right:30px;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    z-index:999;
+}
+
+.nav-btn {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.25s;
+    background: transparent;   /* remove white circle */
+    border: none;
+    box-shadow: none;          /* remove shadow box */
+    padding: 0;
+}
+
+.nav-btn img {
+    width: 42px;   /* control PNG size here */
+    height: 42px;
+    object-fit: contain;
+    transition: 0.25s;
+}
+
+.nav-btn:hover {
+    transform: scale(1.12);
+}
+
+.nav-btn.active img {
+    filter: brightness(0) saturate(100%) invert(28%) sepia(43%) saturate(742%) hue-rotate(221deg);
+}
+
+.nav-btn.active{
+    background:#6a4fbf;
+}
+
+
+.active-circle{
+    background:#6a4fbf;
+    color:white;
+}
         footer { text-align: center; padding: 40px 0; color: #6a4fbf; font-weight: bold; }
     </style>
 </head>
 <body>
 
+</a>
     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
-        <div style="margin-top: 40px;">
-            <a href="{% url 'profile' %}">Profile</a>
-            <a href="{% url 'feedback' %}">Feedback</a>
-            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
-        </div>
+        <div style="margin-top:40px;">
+
+    <a href="{% url 'feedback' %}">
+       💬 Feedback
+    </a>
+
+    <a href="{% url 'logout' %}"
+       style="color:#6a4fbf; margin-top:50px; border:none;">
+       🚪 Logout
+    </a>
+
+
+   
+
+</div>
     </div>
 
     <div class="header-wrapper">
-        <div class="logo" onclick="location.href='{% url 'mainpage' %}'" style="cursor: pointer;"><img src="logo.png"></div>
-        <div class="title-area">
-            <img src="title.png"><br>
-            <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood your day, Bloom your mind.</span>
+
+    <a href="{% url 'profile' %}" class="profile-card">
+
+        {% if user.profile.avatar %}
+            <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="profile-avatar" style="object-fit: cover; border: none;">
+        {% else %}
+            <div class="profile-avatar">
+                😊
+            </div>
+        {% endif %}
+
+        <div>
+            <div class="profile-name">
+                Hi, {{ user.username }}!
+            </div>
+
+            <div class="profile-text">
+                Let's have a great day!
+            </div>
         </div>
-        <div class="menu-icon" onclick="toggleNav()">☰</div>
+
+    </a>
+
+        <div>
+            <div class="profile-name">
+                Hi, {{ user.username }}!
+            </div>
+
+            <div class="profile-text">
+                Let's have a great day!
+            </div>
+        </div>
+
+    </a>
+    <div style="width:220px;"></div>
+    <div class="title-area">
+        <img src="{% static 'moodbloom.png' %}" style="display:block; margin:0 auto;">
     </div>
 
+    <div class="menu-icon" onclick="toggleNav()">☰</div>
+
+</div>
     <div class="divider-line"></div>
 
     <div class="gallery-container">
@@ -144,11 +284,12 @@
 </div>
         </div>
 
-        <div class="circle-actions">
-            <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="icons/search.png"></div>
-            <div class="action-btn" title="History" onclick="location.href='{% url 'article' %}'"><img src="icons/book.png"></div>
-            <div class="action-btn" title="Stats" onclick="location.href='{% url 'dashboard' %}'"><img src="icons/stats.png"></div>
-            <div class="action-btn active-circle" title="Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="icons/camera.png"></div>
+        <div class="circle-nav">
+            <div class="nav-btn" title="Calendar Home" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
+            <div class="nav-btn" title="Search & Explore" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
+            <div class="nav-btn" title="Mental Health Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/article.png' %}"></div>
+            <div class="nav-btn" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/dashboard.png' %}"></div>
+            <div class="nav-btn active" title="Photo Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
         </div>
     </div>
 

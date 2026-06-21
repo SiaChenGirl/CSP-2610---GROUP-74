@@ -7,13 +7,126 @@
     <title>MoodBloom | Feedback</title>
     <style>
         /* 1. 基础样式 */
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            background: linear-gradient(135deg, #fdfbfb 0%, #e8e0ff 100%); 
-            min-height: 100vh; 
-            color: #4a3494;
-        }
+        /* 1. 基础样式 */
+body { 
+    margin: 0; 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    /* --- UPDATED BACKGROUND START --- */
+    background-image: url("{% static 'background.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* --- UPDATED BACKGROUND END --- */
+    min-height: 100vh; 
+    color: #4a3494;
+    display: flex; /* Keeping this to ensure footer stays at bottom */
+    flex-direction: column;
+}
+        .profile-card{
+    position:absolute;
+    top:25px;
+    left:25px;
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    background:rgba(255,255,255,.9);
+    padding:12px 20px;
+    border-radius:25px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    text-decoration:none;
+    color:#4a3494;
+
+    z-index:999;
+}
+
+.profile-avatar{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    background:#ffe7a6;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:26px;
+}
+
+.profile-name{
+    font-weight:600;
+    font-size:16px;
+}
+
+.profile-text{
+    font-size:13px;
+    color:#7a5fc7;
+}
+
+.menu-icon{
+    position:absolute;
+    top:25px;
+    right:25px;
+
+    font-size:34px;
+    color:#6a4fbf;
+    cursor:pointer;
+
+    z-index:999;
+}
+
+.side-nav{
+    position:fixed;
+    top:0;
+    right:-300px;
+
+    width:280px;
+    height:100%;
+
+    background:white;
+    box-shadow:-10px 0 30px rgba(0,0,0,.08);
+
+    transition:.4s;
+    z-index:2000;
+
+    padding:50px 30px;
+    box-sizing:border-box;
+}
+
+.side-nav.active{
+    right:0;
+}
+
+.close-nav{
+    position:absolute;
+    top:15px;
+    right:25px;
+
+    font-size:40px;
+    cursor:pointer;
+    color:#6a4fbf;
+}
+
+.side-nav a{
+    display:block;
+    padding:18px 0;
+
+    color:#4a3494;
+    text-decoration:none;
+
+    font-weight:bold;
+    font-size:18px;
+
+    border-bottom:1px solid #f3f3f3;
+}
+
+.side-nav a:hover{
+    color:#b39ddb;
+}
 
         /* 2. 头部导航 */
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
@@ -22,7 +135,12 @@
         .back-link { text-decoration: none; color: #6a4fbf; font-weight: bold; font-size: 16px; transition: 0.3s; }
         .back-link:hover { opacity: 0.7; }
         .header-line { border: 0; height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 40px 30px 40px; }
+        .logo{
+    text-align:center;
+    margin-bottom:20px;
+}
 
+.logo img { width: 180px; cursor: pointer; }
         /* 3. 反馈卡片容器 */
         .container { 
             max-width: 500px; 
@@ -71,19 +189,57 @@
         }
         .btn:hover { background: #5a3ea3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(106, 79, 191, 0.2); }
         
-        footer { text-align: center; margin-top: 30px; color: #b39ddb; font-size: 13px; font-weight: bold; }
+        footer { text-align: center; padding: 25px 0 40px; color: #6a4fbf; font-weight: bold; font-size: 14px; width: 100%; margin-top: auto; }
+
     </style>
 </head>
 <body>
-    <div class="header-wrapper">
-        <div class="logo"><img src="{% static 'logo.png' %}" alt="Logo"></div>
-        <div class="title-img"><img src="{% static 'title.png' %}" alt="Title"></div>
-        <div class="menu">
-            <a href="{% url 'mainpage' %}" class="back-link">Back</a>
+    
+   
+    <a href="{% url 'mainpage' %}" class="profile-card">
+
+    <div class="profile-avatar">
+        🏠
+    </div>
+
+    <div>
+        <div class="profile-name">
+            Mainpage
+        </div>
+
+        <div class="profile-text">
+            Return to calendar
         </div>
     </div>
-    <hr class="header-line">
 
+</a>
+
+<div class="menu-icon" onclick="toggleNav()">☰</div>
+
+<div class="side-nav" id="sideNav">
+
+    <span class="close-nav" onclick="toggleNav()">&times;</span>
+
+    <div style="margin-top:40px;">
+
+        <a href="{% url 'feedback' %}">
+            💬 Feedback
+        </a>
+
+        <a href="{% url 'logout' %}">
+            🚪 Logout
+        </a>
+
+        
+
+    </div>
+
+</div>
+
+<hr class="header-line">
+    <div class="logo">
+    <img src="{% static 'moodbloom.png' %}" alt="MoodBloom Logo">
+</div>
     <div class="container">
         <h2 style="color:#6a4fbf; margin-top: 0;">Feedback</h2>
         <p style="color: #b39ddb; font-size: 14px;">We'd love to hear your thoughts!</p>
@@ -107,6 +263,9 @@
     <footer>© 2026 MoodBloom | Mood your day, Bloom your mind.</footer>
 
     <script>
+        function toggleNav() {
+    document.getElementById('sideNav').classList.toggle('active');
+}
         let selectedRating = 0;
 
         // 处理评分视觉效果

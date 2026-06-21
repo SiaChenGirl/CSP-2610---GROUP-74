@@ -7,16 +7,67 @@
     <title>MoodBloom | Articles</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600&display=swap" rel="stylesheet">
     <style>
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
-            background-attachment: fixed; 
-            min-height: 100vh; 
-            overflow-y: auto; 
-            color: #4a3494;
-        }
+        body{
+    margin:0;
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
 
+    background:
+    linear-gradient(
+        rgba(255,255,255,.55),
+        rgba(255,255,255,.55)
+    ),
+    url("{% static 'background_search.png' %}");
+
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+    position: relative;
+    min-height:100vh;
+}
+         .profile-card{
+    position:fixed;
+    top:25px;
+    left:25px;
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    background:rgba(255,255,255,.9);
+    padding:12px 20px;
+    border-radius:25px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    text-decoration:none;
+    color:#4a3494;
+
+    z-index:999;
+}
+
+.profile-avatar{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+
+    background:#ffe7a6;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:28px;
+}
+
+.profile-name{
+    font-weight:600;
+    font-size:16px;
+}
+
+.profile-text{
+    font-size:13px;
+    color:#7a5fc7;
+}
         /* --- WHITE NAVIGATION DRAWER --- */
         .side-nav {
             position: fixed; 
@@ -43,7 +94,7 @@
         /* --- FIXED HEADER ORIGINAL BRAND STYLING --- */
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
         .logo img { width: 180px; }
-        .title-area { text-align: center; }
+        .title-area { flex: 1; text-align: center; }
         .title-area img { width: 230px; }
         .menu-icon { font-size: 35px; cursor: pointer; color: #6a4fbf; width: 180px; text-align: right; }
         .divider-line { height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 50px 25px 50px; }
@@ -125,48 +176,100 @@
         .star-jump-icon { font-size: 38px; color: #ffcc00; }
 
         /* --- FIVE VERTICAL FLOATING ACTION NAV ICONS --- */
-        .circle-actions { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            justify-content: center;
-            position: sticky; 
-            top: 20px; 
-        }
-        .action-btn { 
-            width: 52px; height: 52px; background: white; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s;
-        }
-        .action-btn:hover { transform: scale(1.08); }
-        .action-btn img { width: 22px; opacity: 0.7; }
-        .action-btn.active { background: #b39ddb; } 
-        .action-btn.active img { filter: brightness(0) invert(1); opacity: 1; }
+       .circle-nav { display: flex; flex-direction: column; gap: 18px; }
+        .nav-btn {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.25s;
+    background: transparent;   /* remove white circle */
+    border: none;
+    box-shadow: none;          /* remove shadow box */
+    padding: 0;
+}
+
+.nav-btn img {
+    width: 42px;   /* control PNG size here */
+    height: 42px;
+    object-fit: contain;
+    transition: 0.25s;
+}
+
+.nav-btn:hover {
+    transform: scale(1.12);
+}
+
+.nav-btn.active img {
+    filter: brightness(0) saturate(100%) invert(28%) sepia(43%) saturate(742%) hue-rotate(221deg);
+}
+        .nav-btn.active { background: #b39ddb; }
 
         footer { text-align: center; padding: 25px 0 40px; color: #6a4fbf; font-weight: bold; font-size: 14px; clear: both; }
     </style>
 </head>
 <body>
 
-    <div class="side-nav" id="sideNav">
+     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
-        <div style="margin-top: 40px;">
-            <a href="{% url 'profile' %}">Profile</a>
-            <a href="{% url 'feedback' %}">Feedback</a>
-            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
-        </div>
+        <div style="margin-top:40px;">
+
+
+    <a href="{% url 'feedback' %}">
+        💬 Feedback
+    </a>
+
+   <a href="{% url 'logout' %}">
+        🚪 Logout
+    </a>
+
+</div>
     </div>
 
-    <div class="header-wrapper">
-        <div class="logo" onclick="location.href='{% url 'mainpage' %}'" style="cursor: pointer;"><img src="{% static 'logo.png' %}"></div>
-        <div class="title-area">
-            <img src="{% static 'title.png' %}"><br>
-            <span class="slogan" style="color: #6a4fbf; font-style: italic; font-family: 'Dancing Script', cursive; font-size: 18px;">
-                Mood your day, Bloom your mind.
-            </span>
+   <div class="header-wrapper">
+
+    <a href="{% url 'profile' %}" class="profile-card">
+
+        {% if user.profile.avatar %}
+            <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="profile-avatar" style="object-fit: cover; border: none;">
+        {% else %}
+            <div class="profile-avatar">
+                😊
+            </div>
+        {% endif %}
+
+        <div>
+            <div class="profile-name">
+                Hi, {{ user.username }}!
+            </div>
+
+            <div class="profile-text">
+                Let's have a great day!
+            </div>
         </div>
-        <div class="menu-icon" onclick="toggleNav()">☰</div>
+
+    </a>
+        <div>
+            <div class="profile-name">
+                Hi, {{ user.username }}!
+            </div>
+
+            <div class="profile-text">
+                Let's have a great day!
+            </div>
+        </div>
+
+    </a>
+
+    <div class="title-area">
+        <img src="{% static 'moodbloom.png' %}">
     </div>
+
+    <div class="menu-icon" onclick="toggleNav()">☰</div>
+
+</div>
 
     <div class="divider-line"></div>
 
@@ -219,16 +322,16 @@
             </div>
         </div>
 
-        <div class="circle-actions">
-            <div class="action-btn" title="Calendar" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
-            <div class="action-btn" title="Search" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
-            <div class="action-btn active" title="Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/book.png' %}"></div>
-            <div class="action-btn" title="Stats" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/stats.png' %}"></div>
-            <div class="action-btn" title="Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
+         <div class="circle-nav">
+            <div class="nav-btn" title="Calendar Home" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
+            <div class="nav-btn" title="Search & Explore" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
+            <div class="nav-btn article" title="Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/article.png' %}"></div>
+            <div class="nav-btn" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/dashboard.png' %}"></div>
+            <div class="nav-btn" title="Photo Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
         </div>
     </div>
 
-    <footer>© 2026 MoodBloom | Mood your day, Bloom your mind.</footer>
+    <footer>© 2026 MoodBloom | Mood Your Day, Bloom Your Mind.</footer>
 
     <script>
         function toggleNav() { 

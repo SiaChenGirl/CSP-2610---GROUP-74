@@ -8,16 +8,62 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=500&display=swap" rel="stylesheet">
     <style>
         /* 1. Overall Theme Layout */
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 40%, #DED4FF 100%);
-            background-attachment: fixed; 
-            min-height: 100vh; 
-            color: #4a3494;
-            display: flex;
-            flex-direction: column;
-        }
+       body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    background-image:url("{% static 'entry_background.png' %}");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+
+    min-height:100vh;
+    color:#4a3494;
+}
+.profile-card{
+    position:fixed;
+    top:25px;
+    left:25px;
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    background:rgba(255,255,255,.85);
+    padding:12px 20px;
+    border-radius:25px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    text-decoration:none;
+    color:#4a3494;
+
+    z-index:999;
+}
+
+.profile-avatar{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+
+    background:#ffe7a6;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:28px;
+}
+
+.profile-name{
+    font-weight:600;
+}
+
+.profile-text{
+    font-size:13px;
+    color:#7a5fc7;
+}
 
         /* 2. Top Header Navigation */
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
@@ -50,14 +96,30 @@
         .emotion-drawer { display: none; background: #f8f6ff; padding: 15px; border-radius: 20px; margin: 15px 0; }
         .emotion-drawer.open { display: block; }
         .sub-item span { display: block; font-size: 11px; margin-top: 5px; font-weight: bold; color: #6a4fbf; text-transform: capitalize; }
+         .intensity-container{
+    display:flex;
+    justify-content:space-between;
+    margin:15px 0;
+}
 
+.heart{
+    font-size:28px;
+    cursor:pointer;
+    opacity:.3;
+    transition:.2s;
+}
+
+.heart.active{
+    opacity:1;
+    transform:scale(1.15);
+}
         /* Media Elements & Audio Track Dropdowns */
         .search-container { position: relative; }
         .song-search { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; background: white; outline: none; box-sizing: border-box; }
         .song-results { position: absolute; top: 45px; left: 0; width: 100%; background: white; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-height: 120px; overflow-y: auto; display: none; z-index: 10; }
         .song-results div { padding: 10px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #f9f9f9; }
 
-        .photo-slots { display: flex; gap: 10px; }
+        .photo-slots { display: flex; flex-wrap:wrap; gap: 10px; }
         .slot { flex: 1; aspect-ratio: 1/1; border: 2px dashed #e8e0ff; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; background: white; color: #b39ddb; }
 
         /* Modal Popups */
@@ -72,36 +134,79 @@
     </style>
 </head>
 <body>
+    <a href="{% url 'profile' %}" class="profile-card">
 
-    <div class="side-nav" id="sideNav">
-        <span class="close-nav" onclick="toggleNav()">&times;</span>
-        <div style="margin-top: 40px;">
-            <a href="{% url 'profile' %}">Profile</a>
-            <a href="{% url 'feedback' %}">Feedback</a>
-            <a href="{% url 'login' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
+    <div class="profile-avatar">
+        😊
+    </div>
+
+    <div>
+        <div class="profile-name">
+            Hi, {{ user.username }}!
+        </div>
+
+        <div class="profile-text">
+            Let's have a great day!
         </div>
     </div>
 
-    <div class="header-wrapper">
-        <div class="logo" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'logo.png' %}"></div>
-        <div class="title-img"><img src="{% static 'title.png' %}"></div>
-        <div class="menu-icon" onclick="toggleNav()">☰</div>
+</a>
+
+    <div class="side-nav" id="sideNav">
+        <span class="close-nav" onclick="toggleNav()">&times;</span>
+       <div style="margin-top:40px;">
+
+    <a href="{% url 'feedback' %}"
+       style="color:#6a4fbf;">
+        💬 Feedback
+    </a>
+
+     <a href="{% url 'logout' %}"
+       style="color:#6a4fbf;">
+        🚪Logout
+    </a>
+
+   
+
+</div>
     </div>
+
+    <div class="header-wrapper">
+
+    <div style="width:220px;"></div>
+
+    <div class="title-img">
+        <img src="{% static 'moodbloom.png' %}">
+    </div>
+
+    <div class="menu-icon" onclick="toggleNav()">☰</div>
+
+</div>
 
     <div class="header-line"></div>
 
     <div class="main-container">
         <div class="box diary-section">
-            <div style="font-size: 14px; color: #aaa;">{% now "F j, Y" %}</div>
-            <h2>My Daily Bloom</h2>
-            <div id="moodMessage" style="font-style: italic; color: #9a81c7; margin: 10px 0;">Select an emotion to start your bloom...</div>
-            <textarea id="diaryEntry" placeholder="Write your thoughts here..."></textarea>
-        </div>
+           <div style="
+font-size:14px;
+font-weight:600;
+color:#8b75c7;
+margin-bottom:10px;
+">
+📅 {% now "F j, Y" %}
+</div>
+            <h2>How are you feeling today?</h2>
 
-        <div class="tools-section" style="flex: 1;">
-            <div class="box">
-                <h3>Emotion Hub</h3>
-                <div class="emotion-hubs">
+            <p style="
+            color:#9a81c7;
+            font-size:14px;
+            margin-top:5px;
+            ">
+
+Choose the emotion that best describes your mood.
+</p>
+            <div id="moodMessage" style="font-style: italic; color: #9a81c7; margin: 10px 0;">Select an emotion to start your bloom...</div>
+            <div class="emotion-hubs">
                     <div class="hub-item" onclick="openDrawer('sad', this)"><img src="{% static 'emojis/sad.png' %}" title="Sad"></div>
                     <div class="hub-item" onclick="openDrawer('neutral', this)"><img src="{% static 'emojis/neutral.png' %}" title="Neutral"></div>
                     <div class="hub-item" onclick="openDrawer('happy', this)"><img src="{% static 'emojis/happy.png' %}" title="Happy"></div>
@@ -112,31 +217,73 @@
                     <div id="drawerContent" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>
                 </div>
 
-                <h3 style="margin-top:15px;">Intensity</h3>
-                <input type="range" id="intensityRange" min="1" max="5" value="3" style="width:100%; accent-color:#6a4fbf;">
-            </div>
+                <h3 style="margin-top:15px;">How strong is this feeling?</h3>
 
-            <div class="box">
-                <h3>Memories</h3>
-                <div class="photo-slots">
-                    <div id="previewContainer" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
-                    <div class="slot" onclick="openPhotoModal()">+</div>
-                    <div class="slot"></div><div class="slot"></div>
-                </div>
-            </div>
+<div class="intensity-container">
 
-            <div class="box">
-                <h3>Mood Song 🎧</h3>
-                <div class="search-container">
-                    <input type="text" class="song-search" id="songInput" placeholder="Artist or Song..." onkeyup="filterSongs()">
-                    <div class="song-results" id="results">
-                        <div onclick="selectSong('Espresso - Sabrina Carpenter')">Espresso - Sabrina Carpenter</div>
-                        <div onclick="selectSong('Cruel Summer - Taylor Swift')">Cruel Summer - Taylor Swift</div>
-                        <div onclick="selectSong('Yellow - Coldplay')">Yellow - Coldplay</div>
-                    </div>
-                </div>
-            </div>
+    <span class="heart" onclick="setIntensity(1)">💜</span>
+    <span class="heart" onclick="setIntensity(2)">💜</span>
+    <span class="heart" onclick="setIntensity(3)">💜</span>
+    <span class="heart" onclick="setIntensity(4)">💜</span>
+    <span class="heart" onclick="setIntensity(5)">💜</span>
+    <span class="heart" onclick="setIntensity(6)">💜</span>
+    <span class="heart" onclick="setIntensity(7)">💜</span>
+    <span class="heart" onclick="setIntensity(8)">💜</span>
+    <span class="heart" onclick="setIntensity(9)">💜</span>
+    <span class="heart" onclick="setIntensity(10)">💜</span>
+
+</div>
+
+<input type="hidden" id="intensityRange" value="5">
+                <textarea id="diaryEntry" placeholder="Write your thoughts here..."></textarea>
         </div>
+
+        <div class="tools-section" style="flex: 1;">
+
+    <!-- Mood Song Player -->
+    <div class="box">
+        <h3>Mood Song 🎧</h3>
+
+        <div id="songTitle" style="font-weight:bold; color:#6a4fbf;">
+            No song selected
+        </div>
+        <div id="songArtist" style="font-size:12px; color:#9a81c7; margin-bottom:10px;">
+            -
+        </div>
+
+        <audio id="audioPlayer"></audio>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button onclick="togglePlay()" style="padding:8px 12px; border:none; border-radius:10px; background:#6a4fbf; color:white; cursor:pointer;">
+                ▶ / ⏸
+            </button>
+
+            <input type="range" id="progressBar" value="0" style="flex:1;">
+        </div>
+
+        <div style="display:flex; justify-content:space-between; font-size:12px; color:#7a5fc7; margin-top:5px;">
+            <span id="currentTime">0:00</span>
+            <span id="duration">0:00</span>
+        </div>
+
+        <select id="songSelect" onchange="loadSong()" style="width:100%; padding:10px; border-radius:10px; margin-top:10px;">
+            <option value="">Select Song</option>
+            <option value="song1.mp3|Song One|Singer A">Song One - Singer A</option>
+            <option value="song2.mp3|Song Two|Singer B">Song Two - Singer B</option>
+            <option value="song3.mp3|Song Three|Singer C">Song Three - Singer C</option>
+        </select>
+    </div>
+
+    <!-- Memories -->
+    <div class="box">
+        <h3>Memories</h3>
+
+        <div id="previewContainer" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px;"></div>
+
+        <div class="slot" onclick="openPhotoModal()">+</div>
+    </div>
+
+</div>
     </div>
 
     <button class="save-btn" onclick="saveEntry()">Save Entry</button>
@@ -162,6 +309,22 @@
     </div>
 
     <script>
+        function setIntensity(value){
+
+    document.getElementById('intensityRange').value = value;
+
+    const hearts = document.querySelectorAll('.heart');
+
+    hearts.forEach((heart,index)=>{
+        if(index < value){
+            heart.classList.add('active');
+        }else{
+            heart.classList.remove('active');
+        }
+    });
+}
+
+setIntensity(5);
         let selectedPhotos = []; 
         const staticUrl = "/static/emojis/";
         let selectedCategory = "";
@@ -172,19 +335,18 @@
 
         const pngMap = {
             'happy': [
-                {f:'happy.png', n:'Happy'}, {f:'kiss.png', n:'Kiss'}, {f:'yeah.png', n:'Yeah'}, {f:'fighting.png', n:'Fighting'},
+                {f:'happy.png', n:'Happy'}, {f:'kiss.png', n:'Kiss'}, {f:'energetic.png', n:'Energetic'}, {f:'motivated.png', n:'Motivated'},
                 {f:'good.png', n:'Good'}, {f:'lovely.png', n:'Lovely'}, {f:'admire.png', n:'Admire'}, {f:'warm.png', n:'Warm'},
-                {f:'energetic.png', n:'Energetic'}, {f:'motivated.png', n:'Motivated'}
             ],
             'neutral': [
                 {f:'neutral.png', n:'Neutral'}, {f:'shy.png', n:'Shy'}, {f:'sleepy.png', n:'Sleepy'}, {f:'curious.png', n:'Curious'}
             ],
             'sad': [
-                {f:'sad.png', n:'Sad'}, {f:'sick.png', n:'Sick'}, {f:'cringe.png', n:'Cringe'}, {f:'tired.png', n:'Tired'},
+                {f:'sad.png', n:'Sad'}, {f:'sick.png', n:'Sick'},
                 {f:'exhausted.png', n:'Exhausted'}, {f:'guilty.png', n:'Guilty'}, {f:'afraid.png', n:'Afraid'}
             ],
             'angry': [
-                {f:'angry.png', n:'Angry'}, {f:'shock.png', n:'Shock'}, {f:'trick.png', n:'Trick'}, {f:'awkward.png', n:'Awkward'}
+                {f:'angry.png', n:'Angry'}, {f:'shock.png', n:'Shock'}, {f:'mischievous.png', n:'Mischievous'}, {f:'awkward.png', n:'Awkward'}
             ]
         };
 
@@ -210,16 +372,6 @@
                 };
                 content.appendChild(div);
             });
-        }
-
-        function filterSongs() { 
-            let input = document.getElementById('songInput').value.toLowerCase();
-            document.getElementById('results').style.display = input ? 'block' : 'none';
-        }
-        
-        function selectSong(name) { 
-            document.getElementById('songInput').value = name;
-            document.getElementById('results').style.display = 'none';
         }
         
         function openPhotoModal() { document.getElementById('photoModal').style.display = 'flex'; }
@@ -250,6 +402,9 @@
         }
 
         function saveEntry() {
+
+            alert("Save button clicked!");
+
             if (!selectedCategory || !selectedMoodName) {
                 alert("Please select your mood first! 🌸");
                 return;
@@ -257,32 +412,34 @@
 
             const formData = new FormData();
             // 注意：这里统一使用你的后端视图里期待的字段名
+            formData.append('mood_name', selectedMoodName);
             formData.append('category', selectedCategory);
-            formData.append('mood_name', selectedMoodName); // 后端通过 request.POST.get('mood_name') 获取
+            formData.append('mood', selectedMoodName); 
             formData.append('intensity', document.getElementById('intensityRange').value);
             formData.append('content', document.getElementById('diaryEntry').value); // 后端通过 request.POST.get('content') 获取
-            formData.append('song', document.getElementById('songInput').value);
+            formData.append('song', document.getElementById('songSelect').value);
             formData.append('entry_date', selectedDate);
             
             selectedPhotos.forEach(file => formData.append('photos', file));
             
-            // 安全且完整的 fetch 请求
+          // 安全且完整的 fetch 请求
             fetch("{% url 'moodentry' %}", {
                 method: "POST",
                 headers: { 
-                    "X-CSRFToken": "{{ csrf_token }}" // 必须保留：防止 Django 触发安全反爬虫/跨站拦截
+                    "X-CSRFToken": "{{ csrf_token }}"
                 },
                 body: formData,
-                credentials: 'include' // 显式包含：强制要求浏览器发送该请求时携带用户的登录 Session ID
+                credentials: 'include'
             })
             .then(res => {
-                if (!res.ok) {
-                    throw new Error("Server temporary error.");
-                }
-                return res.json();
+                console.log("HTTP Status:", res.status);
+                return res.json(); // ✨ 修正：确保将后端的返回转换为标准的 JSON 对象
             })
             .then(result => {
-                if (result.status === "success") {
+                console.log("Backend Response:", result); // 用于方便你在 Console 调试查看后端传回的数据
+                
+                // ✨ 修正：直接在拥有 JSON 对象的链条里进行逻辑判断
+                if (result.status === "success" || result.success === true) {
                     alert("Your mood has been bloomed! 🌸");
                     window.location.href = "{% url 'mainpage' %}";
                 } else {
@@ -290,10 +447,62 @@
                 }
             })
             .catch(err => {
-                console.error(err);
+                console.error("Fetch Error:", err);
                 alert("An error occurred while saving. Please ensure you are logged in.");
             });
         }
+        const audio = document.getElementById("audioPlayer");
+const progressBar = document.getElementById("progressBar");
+
+/* LOAD SONG */
+function loadSong() {
+    const value = document.getElementById("songSelect").value;
+    if (!value) return;
+
+    const [file, title, artist] = value.split("|");
+
+    audio.src = "/static/songs/" + file;
+
+    document.getElementById("songTitle").innerText = title;
+    document.getElementById("songArtist").innerText = artist;
+
+    audio.play();
+}
+
+/* PLAY / PAUSE */
+function togglePlay() {
+    if (audio.paused) {
+        audio.play();
+    } else {
+        audio.pause();
+    }
+}
+
+/* UPDATE PROGRESS BAR */
+audio.addEventListener("timeupdate", () => {
+    if (!audio.duration) return;
+
+    progressBar.max = audio.duration;
+    progressBar.value = audio.currentTime;
+
+    document.getElementById("currentTime").innerText = formatTime(audio.currentTime);
+    document.getElementById("duration").innerText = formatTime(audio.duration);
+});
+
+/* SEEK */
+progressBar.addEventListener("input", () => {
+    audio.currentTime = progressBar.value;
+});
+
+/* FORMAT TIME */
+function formatTime(sec) {
+    if (!sec || isNaN(sec)) return "0:00";
+
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+
+    return m + ":" + (s < 10 ? "0" + s : s);
+}
     </script>
 </body>
 </html>

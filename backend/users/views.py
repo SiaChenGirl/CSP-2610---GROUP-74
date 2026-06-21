@@ -233,13 +233,17 @@ def profile_view(request):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required
 def mainpage_view(request):
-    # 获取当前用户的日记记录
+    # 1. 🌟 新增：获取当前登录用户的 Profile 扩展信息（用于主页左上角头像）
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    
+    # 2. 📝 保留（你原本的代码）：获取当前用户的日记记录
     entries = MoodEntry.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'mainpage.html', {'entries': entries})
-
-def check_session(request):
-    return JsonResponse({'is_authenticated': request.user.is_authenticated})
-
+    
+    # 3. 🚀 融合返回：把 profile 和 entries 一起打包丢给前端
+    return render(request, 'mainpage.html', {
+        'profile': profile,
+        'entries': entries
+    })
 
 @csrf_exempt
 @login_required(login_url='login') # 关键：确保未登录用户无法访问此接口，直接重定向到登录页
@@ -248,48 +252,66 @@ def moodentry_view(request):
         # 打印调试信息到终端，看看是谁在提交
         print(f"--- DEBUG: Current User Submitting Mood is: {request.user} ---")
         
-        # 1. 双重安全检查：如果用户没登录，绝对不允许提交
+        # 1. 双重安全检查
         if not request.user.is_authenticated:
             return JsonResponse({'status': 'error', 'message': 'Session expired. Please log in again.'}, status=403)
 
-        mood = request.POST.get('mood') or request.POST.get('mood_name')
+        # 🌸 核心对齐：前端 FormData 传的是 'mood_name'，这里优先获取 'mood_name'
+        mood = request.POST.get('mood_name') or request.POST.get('mood')
         if not mood:
-            return JsonResponse({'error': 'Mood is required'}, status=400)
+            return JsonResponse({'status': 'error', 'message': 'Mood is required'}, status=400)
             
-        diary = request.POST.get('diary_text') or request.POST.get('content')
+        # 🌸 核心对齐：前端传的是 'content'，这里优先获取 'content' 存入模型的 diary_text 字段
+        diary = request.POST.get('content') or request.POST.get('diary_text') or ""
         category = request.POST.get('category')
-        intensity = request.POST.get('intensity', 3)
-        music_id = request.POST.get('music_id')
-        entry_date = request.POST.get('entry_date')
-
+        intensity = request.POST.get('intensity', 5) # 默认值跟前端 initial 保持一致 (5)
+        
+        # 🎵 歌曲处理：前端歌曲传的是整个 option 的 value（如 "song1.mp3|Song One|Singer A"）
+        # 这里如果你使用的是特定的 Music Model 关联，需要特殊处理，这里先按你原本的逻辑获取
+        music_id = request.POST.get('music_id') or request.POST.get('song') 
         selected_music = None
-        if music_id:
+        if music_id and music_id.isdigit(): # 确保是 ID 时才查询
             try:
                 selected_music = Music.objects.get(id=music_id)
             except Music.DoesNotExist:
                 pass
 
-        # 2. 核心修复：强制将当前的 request.user 写入数据库
+        # 📅 日期安全转换：防止空字符串导致 Django 报错
+        entry_date_str = request.POST.get('entry_date')
+        if entry_date_str and entry_date_str.strip() != "":
+            try:
+                # 尝试将前端的各种字符串格式转为标准的 date 对象
+                if "GMT" in entry_date_str or "T" in entry_date_str:
+                    # 如果带时间戳，只截取前面的日期
+                    entry_date = date.fromisoformat(entry_date_str.split('T')[0])
+                else:
+                    entry_date = date.fromisoformat(entry_date_str)
+            except ValueError:
+                entry_date = now().date() # 格式解析失败则降级为今天
+        else:
+            entry_date = now().date() # 前端没传或者传空，直接使用今天
+
+        # 2. 写入数据库
         entry = MoodEntry.objects.create(
-            user=request.user,  # 确保这里绝对是当前登录的 user 对象
-            mood=mood, 
-            category=category, 
-            diary_text=diary, 
-            intensity=intensity, 
+            user=request.user,  
+            mood=mood,           # 完美保存心情名称 (例如: Happy, Kiss, Sick)
+            category=category,   # 完美保存心情大类 (例如: happy, sad)
+            diary_text=diary,    # 完美保存日记文本
+            intensity=int(intensity), 
             selected_music=selected_music,
             entry_date=entry_date
         )
         
-        # 3. 处理照片
+        # 3. 处理相册照片
         if request.FILES.getlist('photos'):
             for file in request.FILES.getlist('photos'):
                 MoodPhoto.objects.create(mood_entry=entry, image=file)
                 
         return JsonResponse({'status': 'success', 'message': 'Mood entry saved successfully!'})
     
-    selected_date = request.GET.get("date")
+    # --- GET 请求逻辑 ---
+    selected_date = request.GET.get("date") or ""
     return render(request, 'moodentry.html', { "selected_date": selected_date })
-
 
 
 
@@ -759,3 +781,4 @@ def diary_history_view(request):
     }
     
     return render(request, 'diaryhistory.html', context)
+

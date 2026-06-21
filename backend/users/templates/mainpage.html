@@ -2,13 +2,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <button onclick="location.href='{% url 'dashboard' %}'" class="view-toggle-btn">
+    📊 View Stats Dashboard
+    </button>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoodBloom | Main Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600&display=swap" rel="stylesheet">
     <style>
         /* 1. 基础布局 - 统一队友的渐变风格 */
-       .profile-card{
+      body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+
+    background-image:url("{% static 'background_main.png' %}");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+
+    min-height:100vh;
+}
+.profile-card{
     position:fixed;
     top:25px;
     left:25px;
@@ -26,6 +41,14 @@
     box-shadow:0 5px 15px rgba(0,0,0,.08);
 
     z-index:999;
+
+    text-decoration:none;
+    color:inherit;
+    cursor:pointer;
+}
+
+.profile-card:hover{
+    transform:scale(1.03);
 }
 
 .profile-avatar{
@@ -161,15 +184,35 @@
 
         /* 侧边五圈功能按钮 */
         .circle-nav { display: flex; flex-direction: column; gap: 18px; }
-        .nav-btn { 
-            width: 75px; height: 75px; background: white; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; transition: 0.3s; 
-        }
-        .nav-btn:hover { transform: scale(1.1); background: #fcfaff; }
-        .nav-btn img { width: 28px; opacity: 0.7; }
+        .nav-btn {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.25s;
+    background: transparent;   /* remove white circle */
+    border: none;
+    box-shadow: none;          /* remove shadow box */
+    padding: 0;
+}
+
+.nav-btn img {
+    width: 42px;   /* control PNG size here */
+    height: 42px;
+    object-fit: contain;
+    transition: 0.25s;
+}
+
+.nav-btn:hover {
+    transform: scale(1.12);
+}
+
+.nav-btn.active img {
+    filter: brightness(0) saturate(100%) invert(28%) sepia(43%) saturate(742%) hue-rotate(221deg);
+}
         .nav-btn.active { background: #b39ddb; }
-        .nav-btn.active img { filter: brightness(0) invert(1); opacity: 1; }
 
         /* 弹窗样式 (Modal) */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 2000; backdrop-filter: blur(3px); }
@@ -181,15 +224,19 @@
 </head>
 <body>
 
-    <div class="profile-card">
+    <a href="{% url 'profile' %}" class="profile-card">
 
-    <div class="profile-avatar">
+   <div class="profile-avatar" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
+    {% if profile.avatar %}
+        <img src="{{ profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+    {% else %}
         😊
-    </div>
+    {% endif %}
+</div>
 
     <div>
         <div class="profile-name">
-            Hi, User!
+            Hi, {{ user.username }}!
         </div>
 
         <div class="profile-text">
@@ -197,21 +244,29 @@
         </div>
     </div>
 
-</div>
-
+</a>
     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
-        <div style="margin-top: 40px;">
-            <a href="{% url 'profile' %}">Profile</a>
-            <a href="{% url 'feedback' %}">Feedback</a>
-            <a href="{% url 'logout' %}" style="color: #e57373; margin-top: 50px; border: none;">Logout</a>
-        </div>
+        <div style="margin-top:40px;">
+
+    <a href="{% url 'feedback' %}">
+       💬 Feedback
+    </a>
+
+    <a href="{% url 'logout' %}"
+       style="color:#6a4fbf; margin-top:50px; border:none;">
+       🚪 Logout
+    </a>
+
+
+   
+
+</div>
     </div>
 
     <div class="header-wrapper">
         <div class="title-area">
-            <img src="{% static 'title.png' %}"><br>
-            <span style="color:#6a4fbf; font-style:italic; font-size: 14px;">Mood Your Day, Bloom Your Mind.</span>
+            <img src="{% static 'moodbloom.png' %}"><br>
         </div>
         <div class="menu-icon" onclick="toggleNav()">☰</div>
     </div>
@@ -230,8 +285,8 @@
         <div class="circle-nav">
             <div class="nav-btn active" title="Calendar Home" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
             <div class="nav-btn" title="Search & Explore" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
-            <div class="nav-btn" title="Mental Health Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/book.png' %}"></div>
-            <div class="nav-btn" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/stats.png' %}"></div>
+            <div class="nav-btn" title="Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/article.png' %}"></div>
+            <div class="nav-btn" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/dashboard.png' %}"></div>
             <div class="nav-btn" title="Photo Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
         </div>
     </div>
