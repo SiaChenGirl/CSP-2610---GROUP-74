@@ -168,23 +168,47 @@
         .star-jump-icon { font-size: 38px; color: #ffcc00; }
 
         /* --- FIVE VERTICAL FLOATING ACTION NAV ICONS --- */
-        .circle-actions { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            justify-content: center;
-            position: sticky; 
-            top: 20px; 
-        }
-        .action-btn { 
-            width: 52px; height: 52px; background: white; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s;
-        }
-        .action-btn:hover { transform: scale(1.08); }
-        .action-btn img { width: 22px; opacity: 0.7; }
-        .action-btn.active { background: #b39ddb; } 
-        .action-btn.active img { filter: brightness(0) invert(1); opacity: 1; }
+       .circle-nav {
+    position: fixed;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 999;
+}
+
+.nav-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.nav-btn img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+.nav-btn:hover {
+    transform: scale(1.08);
+}
+
+.nav-btn.active {
+    background: #b39ddb;
+}
+
+.nav-btn.active img {
+    filter: brightness(0) invert(1);
+}
 
         footer { text-align: center; padding: 25px 0 40px; color: #6a4fbf; font-weight: bold; font-size: 14px; clear: both; }
     </style>

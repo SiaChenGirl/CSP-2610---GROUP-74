@@ -387,7 +387,7 @@
 {% if entries %}
     {% for entry in entries %}
     {
-        "id": "{{ entry.id }}",
+        "id": {{ entry.id }},
         "date": "{{ date_str }}",
         "emoji": "{{ entry.emoji|default:'😊' }}",
         "mood": "{{ entry.mood|default:'Happy' }}",

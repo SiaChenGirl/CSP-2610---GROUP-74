@@ -402,6 +402,9 @@ setIntensity(5);
         }
 
         function saveEntry() {
+
+            alert("Save button clicked!");
+
             if (!selectedCategory || !selectedMoodName) {
                 alert("Please select your mood first! 🌸");
                 return;
@@ -413,7 +416,7 @@ setIntensity(5);
             formData.append('mood_name', selectedMoodName); // 后端通过 request.POST.get('mood_name') 获取
             formData.append('intensity', document.getElementById('intensityRange').value);
             formData.append('content', document.getElementById('diaryEntry').value); // 后端通过 request.POST.get('content') 获取
-            formData.append('song', document.getElementById('songInput').value);
+            formData.append('song', document.getElementById('songSelect').value);
             formData.append('entry_date', selectedDate);
             
             selectedPhotos.forEach(file => formData.append('photos', file));
@@ -427,12 +430,13 @@ setIntensity(5);
                 body: formData,
                 credentials: 'include' // 显式包含：强制要求浏览器发送该请求时携带用户的登录 Session ID
             })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error("Server temporary error.");
-                }
-                return res.json();
-            })
+           .then(res => {
+    console.log("Status:", res.status);
+    return res.text();
+})
+.then(data => {
+    console.log(data);
+})
             .then(result => {
                 if (result.status === "success") {
                     alert("Your mood has been bloomed! 🌸");
@@ -451,7 +455,7 @@ const progressBar = document.getElementById("progressBar");
 
 /* LOAD SONG */
 function loadSong() {
-    const value = document.getElementById("songInput").value;
+    const value = document.getElementById("songSelect").value;
     if (!value) return;
 
     const [file, title, artist] = value.split("|");
