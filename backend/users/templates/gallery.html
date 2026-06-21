@@ -9,7 +9,7 @@ body {
     margin: 0; 
     font-family: 'Segoe UI', Arial, sans-serif; 
     /* --- UPDATED BACKGROUND START --- */
-    background-image: url("{% static 'background.png' %}");
+    background-image: url("{% static 'background_search.png' %}");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -147,18 +147,55 @@ body {
         .photo-date { font-size: 12px; font-weight: bold; color: #6a4fbf; }
 
         /* --- ACTIONS --- */
-        .circle-actions { display: flex; flex-direction: column; gap: 20px; }
-        .action-btn { 
-            width: 65px; height: 65px; background: white; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; 
-            transition: 0.3s;
-        }
-        .action-btn:hover { transform: scale(1.1); }
-        .action-btn img { width: 28px; opacity: 0.7; }
-        .active-circle { background: #b39ddb; } 
-        .active-circle img { filter: brightness(0) invert(1); opacity: 1; }
-        
+       .circle-nav{
+    position:absolute;
+    right:30px;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    z-index:999;
+}
+
+.nav-btn {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.25s;
+    background: transparent;   /* remove white circle */
+    border: none;
+    box-shadow: none;          /* remove shadow box */
+    padding: 0;
+}
+
+.nav-btn img {
+    width: 42px;   /* control PNG size here */
+    height: 42px;
+    object-fit: contain;
+    transition: 0.25s;
+}
+
+.nav-btn:hover {
+    transform: scale(1.12);
+}
+
+.nav-btn.active img {
+    filter: brightness(0) saturate(100%) invert(28%) sepia(43%) saturate(742%) hue-rotate(221deg);
+}
+
+.nav-btn.active{
+    background:#6a4fbf;
+}
+
+
+.active-circle{
+    background:#6a4fbf;
+    color:white;
+}
         footer { text-align: center; padding: 40px 0; color: #6a4fbf; font-weight: bold; }
     </style>
 </head>
