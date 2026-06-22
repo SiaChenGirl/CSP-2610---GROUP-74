@@ -171,7 +171,9 @@
             gap: 15px;
         }
         .mood-emoji {
-            font-size: 40px;
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
         }
         .mood-text {
             font-size: 18px;
@@ -318,9 +320,9 @@
         💬 Feedback
     </a>
 
-   <a href="{% url 'logout' %}">
-        🚪 Logout
-    </a>
+<a href="{% url 'logout' %}">
+    🚪 Logout
+</a>
 
   
 
@@ -342,7 +344,7 @@
             </div>
 
             <div class="mood-section">
-                <span class="mood-emoji" id="mood-emoji">😊</span>
+                <img  id="mood-emoji"  class="mood-emoji"  src=""  alt="Mood" >
                 <span class="mood-text" id="mood-text">Happy</span>
             </div>
 
@@ -362,12 +364,9 @@
                         <span class="track-name" id="track-title">Gentle Breeze</span>
                     </div>
                 </div>
-                <div class="player-controls">
-                    <span class="control-btn">⏮</span>
-                    <span class="control-btn">⏸</span>
-                    <span class="control-btn">⏭</span>
-                </div>
+                <audio id="historyAudio" controls style="width:100%; margin-top:10px;"></audio>
             </div>
+            
 
             <div class="action-block">
                 <button type="button" class="btn-edit" onclick="navigateToEditPage()">
@@ -393,8 +392,9 @@
         "emoji": "{{ entry.emoji|default:'😊' }}",
         "mood": "{{ entry.mood|default:'Happy' }}",
         "text": "{{ entry.diary_text|escapejs }}",
-        "photo": "{% if entry.photo %}{{ entry.photo.url }}{% else %}{% static 'default_diary.jpg' %}{% endif %}",
-        "track": "{{ entry.track|default:'Gentle Breeze' }}"
+        "photo": "{% if entry.photos.first %}{{ entry.photos.first.image.url }}{% else %}{% static 'default_diary.jpg' %}{% endif %}",
+        "track": "{% if entry.selected_music %}{{ entry.selected_music.title }}{% else %}No Song{% endif %}",
+        "track_url": "{% if entry.selected_music %}{{ entry.selected_music.audio_file.url }}{% endif %}"
     }{% if not forloop.last %},{% endif %}
     {% endfor %}
 {% else %}
@@ -409,6 +409,38 @@
     }
 {% endif %}
 ]`);
+
+        const moodImageMap = {
+            "Happy": "happy.png",
+            "Kiss": "kiss.png",
+            "Yeah": "happy.png",
+            "Fighting": "motivated.png",
+            "Good": "good.png",
+            "Lovely": "lovely.png",
+            "Admire": "admire.png",
+            "Warm": "warm.png",
+            "Energetic": "energetic.png",
+            "Motivated": "motivated.png",
+
+            "Sad": "sad.png",
+            "Sick": "sick.png",
+            "Cringe": "awkward.png",
+            "Tired": "sleepy.png",
+            "Exhausted": "exhausted.png",
+            "Guilty": "guilty.png",
+            "Afraid": "afraid.png",
+
+            "Neutral": "neutral.png",
+            "Shy": "shy.png",
+            "Sleepy": "sleepy.png",
+            "Curious": "curious.png",
+
+            "Angry": "angry.png",
+            "Shock": "shock.png",
+            "Trick": "mischievous.png",
+            "Awkward": "awkward.png"
+        };
+
         let currentEntryIndex = 0;
 
         function updateCardUI() {
@@ -417,11 +449,29 @@
             const currentEntry = singleDayEntries[currentEntryIndex];
             
             document.getElementById('date-label').innerText = currentEntry.date;
-            document.getElementById('mood-emoji').innerText = currentEntry.emoji;
             document.getElementById('mood-text').innerText = currentEntry.mood;
+
+            const moodImageFile = moodImageMap[currentEntry.mood];
+            if (moodImageFile) {document.getElementById('mood-emoji').src = `/static/emojis/${moodImageFile}`;}
+
             document.getElementById('diary-text-content').innerText = currentEntry.text;
-            document.getElementById('diary-photo-img').src = currentEntry.photo;
+
+            const photoBox = document.getElementById('photo-box');
+            const photoImg = document.getElementById('diary-photo-img');
+            if (
+                currentEntry.photo && 
+                !currentEntry.photo.includes('default_diary.jpg')
+            ) {
+                photoBox.style.display = 'flex';
+                photoImg.src = currentEntry.photo;
+            } else {
+                photoBox.style.display = 'none';
+            }
+
             document.getElementById('track-title').innerText = currentEntry.track;
+
+            const historyAudio = document.getElementById('historyAudio');
+            historyAudio.src = currentEntry.track_url || "";
 
             // 如果只有一条数据（或者是空提示），禁用翻页按钮
             if (singleDayEntries.length <= 1 || currentEntry.id === 0) {

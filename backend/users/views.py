@@ -311,7 +311,8 @@ def moodentry_view(request):
     
     # --- GET 请求逻辑 ---
     selected_date = request.GET.get("date") or ""
-    return render(request, 'moodentry.html', { "selected_date": selected_date })
+    songs = Music.objects.all()
+    return render(request, 'moodentry.html', { "selected_date": selected_date, "songs": songs, })
 
 
 
@@ -772,7 +773,7 @@ def diary_history_view(request):
     # 3. 从数据库中查询该登录用户在这一天的所有日记
     # 这里的 user 和 date 字段请根据你具体的 Model 字段名进行调整
     # entries = DiaryEntry.objects.filter(user=request.user, date=date_param).order_by('created_at')
-    entries = [] # 👈 记得把这里替换成上面真实的数据库查询语句！
+    entries = MoodEntry.objects.filter(user=request.user, entry_date=date_param ).order_by('created_at')
 
     context = {
         'entries': entries,
@@ -782,3 +783,20 @@ def diary_history_view(request):
     
     return render(request, 'diaryhistory.html', context)
 
+@login_required
+def editentry_view(request):
+    entry_id = request.GET.get('id')
+
+    entry = MoodEntry.objects.filter(
+        id=entry_id,
+        user=request.user
+    ).first()
+
+    if not entry:
+        return redirect('diaryhistory')
+
+    context = {
+        'entry': entry
+    }
+
+    return render(request, 'editentry.html', context)

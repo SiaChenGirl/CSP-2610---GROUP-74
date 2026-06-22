@@ -12,6 +12,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('profile/', views.profile_view, name='profile'),
     path('moodentry/', views.moodentry_view, name='moodentry'),
+    path('edit-entry/', views.editentry_view, name='editentry'),
     path('article/', views.article_view, name='article'),
     path('article/paragraph/', views.paragraph_view, name='paragraph'),
     path('article/favourite/', views.favourite_page_view, name='favourite'),

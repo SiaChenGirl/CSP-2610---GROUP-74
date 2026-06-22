@@ -161,10 +161,9 @@
         💬 Feedback
     </a>
 
-     <a href="{% url 'logout' %}"
-       style="color:#6a4fbf;">
-        🚪Logout
-    </a>
+<a href="{% url 'logout' %}">
+    🚪 Logout
+</a>
 
    
 
@@ -268,9 +267,15 @@ Choose the emotion that best describes your mood.
 
         <select id="songSelect" onchange="loadSong()" style="width:100%; padding:10px; border-radius:10px; margin-top:10px;">
             <option value="">Select Song</option>
-            <option value="song1.mp3|Song One|Singer A">Song One - Singer A</option>
-            <option value="song2.mp3|Song Two|Singer B">Song Two - Singer B</option>
-            <option value="song3.mp3|Song Three|Singer C">Song Three - Singer C</option>
+            {% for song in songs %}
+                <option
+                    value="{{ song.audio_file.url }}|{{ song.title }}"
+                    data-id="{{ song.id }}"
+                    data-category="{{ song.mood_category }}"
+                >
+                    {{ song.title }}
+                </option>
+            {% endfor %}
         </select>
     </div>
 
@@ -352,6 +357,7 @@ setIntensity(5);
 
         function openDrawer(category, element) {
             selectedCategory = category;
+            filterSongs(category);
             document.querySelectorAll('.hub-item').forEach(item => item.classList.remove('active'));
             element.classList.add('active');
             
@@ -411,13 +417,14 @@ setIntensity(5);
             }
 
             const formData = new FormData();
+            const selectedOption = document.getElementById('songSelect').selectedOptions[0];
             // 注意：这里统一使用你的后端视图里期待的字段名
             formData.append('mood_name', selectedMoodName);
             formData.append('category', selectedCategory);
             formData.append('mood', selectedMoodName); 
             formData.append('intensity', document.getElementById('intensityRange').value);
             formData.append('content', document.getElementById('diaryEntry').value); // 后端通过 request.POST.get('content') 获取
-            formData.append('song', document.getElementById('songSelect').value);
+            formData.append('music_id', selectedOption.dataset.id);
             formData.append('entry_date', selectedDate);
             
             selectedPhotos.forEach(file => formData.append('photos', file));
@@ -459,12 +466,12 @@ function loadSong() {
     const value = document.getElementById("songSelect").value;
     if (!value) return;
 
-    const [file, title, artist] = value.split("|");
+    const [file, title] = value.split("|");
 
-    audio.src = "/static/songs/" + file;
+    audio.src = file;
 
     document.getElementById("songTitle").innerText = title;
-    document.getElementById("songArtist").innerText = artist;
+    document.getElementById("songArtist").innerText = "MoodBloom Music";
 
     audio.play();
 }
@@ -503,6 +510,34 @@ function formatTime(sec) {
 
     return m + ":" + (s < 10 ? "0" + s : s);
 }
+
+
+function filterSongs(category) {
+
+    const select = document.getElementById("songSelect");
+
+    for (let option of select.options) {
+
+        if (option.value === "") {
+            option.hidden = false;
+            continue;
+        }
+
+        const songCategory = option.dataset.category;
+
+        option.hidden = songCategory !== category;
+    }
+
+    select.value = "";
+
+    document.getElementById("songTitle").innerText =
+        "Select a recommended song";
+
+    document.getElementById("songArtist").innerText = "-";
+}
+
+
+
     </script>
 </body>
 </html>

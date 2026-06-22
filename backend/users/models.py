@@ -21,10 +21,10 @@ class Profile(models.Model):
 class Music(models.Model):
 
     MOOD_CHOICES = [
-        ('Happy', 'Happy'),
-        ('Sad', 'Sad'),
-        ('Neutral', 'Neutral'),
-        ('Angry', 'Angry'),
+        ('sad', 'Sad'),
+        ('neutral', 'Neutral'),
+        ('happy', 'Happy'),
+        ('angry', 'Angry'),
     ]
 
     title = models.CharField(max_length=100)

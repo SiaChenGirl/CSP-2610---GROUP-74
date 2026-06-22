@@ -226,10 +226,9 @@
             💬 Feedback
         </a>
 
-        <a href="{% url 'logout' %}"
-           style="color:#6a4fbf;">
-            🚪 Logout
-        </a>
+<a href="{% url 'logout' %}">
+    🚪 Logout
+</a>
 
 
     </div>
@@ -273,7 +272,7 @@
 
         <form action="{% url 'logout' %}" method="post" style="margin-top: 10px;">
             {% csrf_token %}
-            <button type="submit" class="btn btn-logout" onclick="return confirm('Log out?')">Logout</button>
+            <button type="submit" class="btn btn-logout" onclick="return confirm('Are you sure you want to log out?')">Logout</button>
         </form>
     </div>
 
@@ -418,19 +417,35 @@ if(!hasLength || !hasCapital || !hasSymbol){
         });
 
         // 2. 拦截主表单提交并进行生日逻辑判断
-        document.getElementById('profileForm').addEventListener('submit', function(event) {
-            const birthdayInput = document.querySelector('input[name="birthday"]');
-            
-            if (birthdayInput && birthdayInput.value) {
-                const selectedDate = birthdayInput.value;
-                const today = new Date().toISOString().split('T')[0];
-                
-                if (selectedDate > today) {
-                    event.preventDefault(); // 强行拦截
-                    showToast("Please enter a valid date! Birthday cannot be in the future."); // 触发暖调提示框
-                }
+        document.getElementById('profileForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+        const birthdayInput = document.querySelector('input[name="birthday"]');
+
+        if (birthdayInput && birthdayInput.value) {
+            const selectedDate = birthdayInput.value;
+            const today = new Date().toISOString().split('T')[0];
+            if (selectedDate > today) {
+                showToast("Please enter a valid date!");
+                return;
             }
+        }
+        
+        const formData = new FormData(this);
+        try{
+            const response = await fetch("", { method: "POST", body: formData, headers:{ "X-Requested-With":"XMLHttpRequest"}
         });
+            
+            const data = await response.json();
+            if(response.ok){
+                showToast(data.message);
+            }else{
+                showToast(data.error);
+            }
+        }catch(error){
+            showToast("Something went wrong.");
+        }
+    });
 
         // 3. 提示框控制函数
         function showToast(message) {

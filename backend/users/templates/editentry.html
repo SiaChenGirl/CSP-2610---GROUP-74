@@ -283,9 +283,13 @@
         💬 Feedback
     </a>
 
-   <a href="{% url 'logout' %}">
-        🚪 Logout
-    </a>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit"
+                    onclick="return confirm('Are you sure you want to log out?')">
+                🚪 Logout
+            </button>
+        </form>
 
     
 
