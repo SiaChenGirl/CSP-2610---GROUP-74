@@ -74,20 +74,14 @@
     top:30px;
     right:30px;
 
-    width:55px;
-    height:55px;
+    width:auto;
+    height:auto;
 
-    background:white;
-    border-radius:50%;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    background:transparent;
+    box-shadow:none;
+    border-radius:0;
 
     font-size:30px;
-
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-
     color:#6a4fbf;
     cursor:pointer;
 
@@ -303,6 +297,17 @@
                 <span class="eye-btn" onclick="togglePassword('newPassword')">👁️</span>
             </div>
         </div>
+        <div class="password-requirements" id="pwRules">
+    <div class="requirement-item" id="pw-length">
+        <span class="status-icon">⚪</span> At least 8 characters
+    </div>
+    <div class="requirement-item" id="pw-capital">
+        <span class="status-icon">⚪</span> At least 1 capital letter
+    </div>
+    <div class="requirement-item" id="pw-symbol">
+        <span class="status-icon">⚪</span> At least 1 special character (@$!%*?&)
+    </div>
+</div>
 
         <div class="field">
             <label>Confirm Password</label>
@@ -315,6 +320,32 @@
         <button class="btn" onclick="changePassword()">Save Password</button>
     </div>
     <script>
+        document.getElementById('newPassword').addEventListener('input', validateNewPassword);
+
+function validateNewPassword(){
+    const password = document.getElementById('newPassword').value;
+
+    const hasLength = password.length >= 8;
+    const hasCapital = /[A-Z]/.test(password);
+    const hasSymbol = /[`~!@#$%^&*()_+\-=\[\]{};':",./<>?|\\]/.test(password);
+
+    updatePWUI('pw-length', hasLength);
+    updatePWUI('pw-capital', hasCapital);
+    updatePWUI('pw-symbol', hasSymbol);
+}
+
+function updatePWUI(id, valid){
+    const el = document.getElementById(id);
+    if(!el) return;
+
+    if(valid){
+        el.classList.add('valid');
+        el.querySelector('.status-icon').innerText = '🔮';
+    } else {
+        el.classList.remove('valid');
+        el.querySelector('.status-icon').innerText = '⚪';
+    }
+} 
         function previewAvatar(input) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
@@ -342,7 +373,14 @@
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            
+            const hasLength = newPassword.length >= 8;
+const hasCapital = /[A-Z]/.test(newPassword);
+const hasSymbol = /[`~!@#$%^&*()_+\-=\[\]{};':",./<>?|\\]/.test(newPassword);
+
+if(!hasLength || !hasCapital || !hasSymbol){
+    alert("Password does not meet requirements!");
+    return;
+}
             if(newPassword !== confirmPassword){
                 alert("Passwords do not match!");
                 return;

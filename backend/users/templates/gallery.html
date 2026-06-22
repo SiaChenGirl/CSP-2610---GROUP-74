@@ -113,21 +113,29 @@ body {
         /* --- HEADER STYLING --- */
 .header-wrapper{
     display:flex;
-    justify-content:space-between;
+    justify-content:center;
     align-items:center;
     padding:20px 50px;
+    position:relative;
 }
 
 .menu-icon{
-    width:220px;
-    text-align:right;
-    font-size:35px;
-    cursor:pointer;
+    position:fixed;
+    top:30px;
+    right:30px;
+
+    font-size:38px;
     color:#6a4fbf;
+
+    cursor:pointer;
+    z-index:999;
+
+    background:transparent;
+    border:none;
 }
 
 .title-area img{
-    width:230px;
+    width:420px;
 }
 
         .divider-line { height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 50px 30px 50px; }
@@ -149,10 +157,9 @@ body {
 
         /* --- ACTIONS --- */
        .circle-nav{
-    position:absolute;
-    right:30px;
-    top:50%;
-    transform:translateY(-50%);
+      display:flex;
+    flex-direction:column;
+    gap:24px;
     display:flex;
     flex-direction:column;
     gap:15px;
@@ -160,36 +167,35 @@ body {
 }
 
 .nav-btn {
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.25s;
-    background: transparent;   /* remove white circle */
-    border: none;
-    box-shadow: none;          /* remove shadow box */
-    padding: 0;
+    width: 85px;
+    height: 85px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+    transition:0.25s;
+
+    background:transparent;
+    border:none;
+    box-shadow:none;
+    padding:0;
 }
 
 .nav-btn img {
-    width: 42px;   /* control PNG size here */
-    height: 42px;
-    object-fit: contain;
-    transition: 0.25s;
+    width:70px;
+    height:70px;
+    object-fit:contain;
+    transition:0.25s;
 }
 
 .nav-btn:hover {
     transform: scale(1.12);
 }
 
-.nav-btn.active img {
-    filter: brightness(0) saturate(100%) invert(28%) sepia(43%) saturate(742%) hue-rotate(221deg);
-}
-
 .nav-btn.active{
-    background:#6a4fbf;
+    background:transparent;
 }
 
 
@@ -245,19 +251,6 @@ body {
         </div>
 
     </a>
-
-        <div>
-            <div class="profile-name">
-                Hi, {{ user.username }}!
-            </div>
-
-            <div class="profile-text">
-                Let's have a great day!
-            </div>
-        </div>
-
-    </a>
-    <div style="width:220px;"></div>
     <div class="title-area">
         <img src="{% static 'moodbloom.png' %}" style="display:block; margin:0 auto;">
     </div>

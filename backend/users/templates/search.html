@@ -68,14 +68,13 @@
     color:#7a5fc7;
 }
 
-       .header-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 50px;
-    position: relative;
+       .header-wrapper{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px 50px;
+    position:relative;
 }
-
 .title-area {
     text-align: center;
 }
@@ -84,21 +83,19 @@
     width: 420px;
 }
      .logo img { width: 180px; }
-     .menu-icon {
-    position: fixed;
-    top: 30px;
-    right: 30px;
+    .menu-icon{
+    position:fixed;
+    top:30px;
+    right:30px;
 
-    font-size: 38px;
-    color: #6a4fbf;
+    font-size:38px;
+    color:#6a4fbf;
 
-    cursor: pointer;
-    z-index: 999;
+    cursor:pointer;
+    z-index:999;
 
-    background: transparent;
-    border: none;
-    box-shadow: none;
-
+    background:transparent;
+    border:none;
 }
     .user-profile{
     display:flex;
@@ -127,14 +124,9 @@
     display:flex;
     align-items:flex-start;
     justify-content:center;
-
-    gap:50px;
-
-    width:100%;
-    max-width:1400px;
-
-    margin:40px auto;
-}        .filter-section { display: flex; flex-direction: column; gap: 15px; width: 180px; }
+    gap:40px;
+}
+   .filter-section { display: flex; flex-direction: column; gap: 15px; width: 180px; }
         .filter-pill { background: white; padding: 15px 25px; border-radius: 30px; font-weight: bold; color: #6a4fbf; cursor: pointer; text-align: center; box-shadow: 0 4px 15px rgba(106, 79, 191, 0.1); transition: 0.3s; border: 2px solid transparent; }
         .filter-pill:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(106, 79, 191, 0.15); }
         .filter-pill.active { border-color: #6a4fbf; background: #f8f6ff; }
@@ -169,12 +161,10 @@
 .circle-nav{
     display:flex;
     flex-direction:column;
-
     gap:24px;
 
     margin-top:20px;
-
-    flex-shrink:0;
+    margin-left:30px;
 }
 
 .nav-btn {
@@ -296,7 +286,24 @@ footer {
                 <h3 style="color:#6a4fbf; font-family: 'Dancing Script', cursive; font-size: 28px;">When did it happen?</h3>
                 <input type="date" class="calendar-input" onchange="performSearch('date', this.value)">
             </div>
-            <div class="circle-nav">
+
+         <div class="inline-tool" id="keywordBox">
+                <h3 style="color:#6a4fbf; margin-bottom: 20px;">Search by thoughts...</h3>
+                <input type="text" class="keyword-input" placeholder="Type a keyword..." onkeyup="debounceSearch('key', this.value)">
+            </div>
+            
+            <div class="mood-options" id="moodGrid">
+                <img src="{% static 'emojis/happy.png' %}" onclick="performSearch('category', 'happy')" title="Happy">
+                <img src="{% static 'emojis/sad.png' %}" onclick="performSearch('category', 'sad')" title="Sad">
+                <img src="{% static 'emojis/neutral.png' %}" onclick="performSearch('category', 'neutral')" title="Neutral">
+                <img src="{% static 'emojis/angry.png' %}" onclick="performSearch('category', 'angry')" title="Angry">
+            </div>
+            <div id="defaultMsg" style="color:#b39ddb; margin-top:120px; font-size: 16px; font-style: italic;">
+                "Your memories are blooming. Select a filter to find them."
+            </div>
+            <div id="resultsList" style="margin-top:30px; text-align: left; padding: 0 20px;"></div>
+        </div>
+         <div class="circle-nav">
 
     <div class="nav-btn"
          title="Calendar Home"
@@ -328,25 +335,7 @@ footer {
          onclick="location.href='{% url 'gallery' %}'">
         <img src="{% static 'icons/camera.png' %}">
     </div>
-
-</div>
-
-            <div class="inline-tool" id="keywordBox">
-                <h3 style="color:#6a4fbf; margin-bottom: 20px;">Search by thoughts...</h3>
-                <input type="text" class="keyword-input" placeholder="Type a keyword..." onkeyup="debounceSearch('key', this.value)">
-            </div>
-            
-            <div class="mood-options" id="moodGrid">
-                <img src="{% static 'emojis/happy.png' %}" onclick="performSearch('category', 'happy')" title="Happy">
-                <img src="{% static 'emojis/sad.png' %}" onclick="performSearch('category', 'sad')" title="Sad">
-                <img src="{% static 'emojis/neutral.png' %}" onclick="performSearch('category', 'neutral')" title="Neutral">
-                <img src="{% static 'emojis/angry.png' %}" onclick="performSearch('category', 'angry')" title="Angry">
-            </div>
-            <div id="defaultMsg" style="color:#b39ddb; margin-top:120px; font-size: 16px; font-style: italic;">
-                "Your memories are blooming. Select a filter to find them."
-            </div>
-            <div id="resultsList" style="margin-top:30px; text-align: left; padding: 0 20px;"></div>
-        </div>
+    </div>
     </div>
 
    

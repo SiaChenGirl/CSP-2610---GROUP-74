@@ -95,19 +95,34 @@
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
         .logo img { width: 180px; }
         .title-area { flex: 1; text-align: center; }
-        .title-area img { width: 230px; }
-        .menu-icon { font-size: 35px; cursor: pointer; color: #6a4fbf; width: 180px; text-align: right; }
-        .divider-line { height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 50px 25px 50px; }
+        .title-area img { width: 420px; }
+.menu-icon{
+    position: fixed;
+    top: 30px;
+    right: 30px;
+
+    font-size: 38px;
+    color: #6a4fbf;
+
+    cursor: pointer;
+    z-index: 999;
+
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}        .divider-line { height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 50px 25px 50px; }
 
         /* --- MAIN WORKSPACE CONTAINER --- */
         .article-main-container {
-            display: flex;
-            gap: 35px; 
-            padding: 0 50px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-            align-items: flex-start;
-        }
+    display:flex;
+    justify-content:center;
+    gap:40px;
+
+    width:100%;
+    max-width:1400px;
+
+    margin:30px auto;
+}
 
         .main-panel {
             flex: 1;
@@ -116,12 +131,12 @@
         }
 
         /* --- 3 COLUMNS SCROLLABLE GRID WORKFLOW --- */
-        .article-grid-layout {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            margin-bottom: 15px;
-        }
+       .article-grid-layout {
+    display:grid;
+    grid-template-columns: repeat(3, 250px);
+    gap:25px;
+    justify-content:center;
+}
 
         .category-block {
             background: white;
@@ -176,24 +191,33 @@
         .star-jump-icon { font-size: 38px; color: #ffcc00; }
 
         /* --- FIVE VERTICAL FLOATING ACTION NAV ICONS --- */
-       .circle-nav { display: flex; flex-direction: column; gap: 18px; }
-        .nav-btn {
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.25s;
-    background: transparent;   /* remove white circle */
-    border: none;
-    box-shadow: none;          /* remove shadow box */
-    padding: 0;
+.circle-nav{
+    display:flex;
+    flex-direction:column;
+
+    gap:24px;
+
+    margin-top:20px;
+    margin-left:30px;
+}        
+.nav-btn {
+    width: 85px;
+    height: 85px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:0.25s;
+    background:transparent;
+    border:none;
+    box-shadow:none;
+    padding:0;
 }
 
+
 .nav-btn img {
-    width: 42px;   /* control PNG size here */
-    height: 42px;
+    width: 70px;
+    height: 70px;
     object-fit: contain;
     transition: 0.25s;
 }
@@ -251,17 +275,7 @@
         </div>
 
     </a>
-        <div>
-            <div class="profile-name">
-                Hi, {{ user.username }}!
-            </div>
 
-            <div class="profile-text">
-                Let's have a great day!
-            </div>
-        </div>
-
-    </a>
 
     <div class="title-area">
         <img src="{% static 'moodbloom.png' %}">
