@@ -8,20 +8,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
     <style>
         /* 1. Overall Theme Layout */
-       body { 
-        margin: 0; 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        /* Remove the purple gradients and use background.png */
-        background-image: url("{% static 'editentry_background.png' %}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        min-height: 100vh; 
-        color: #4a3494;
-        display: flex;
-        flex-direction: column;
-    }
+       body {
+         display: flex;
+    justify-content: center;
+    padding-top: 120px;
+    padding-bottom: 50px;
+    margin: 0;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center; /* Center horizontally */
+    background-image: url("{% static 'editentry_background.png' %}");
+    background-size: cover;
+    background-position: center;
+}
+
     .profile-card{
     position:fixed;
     top:25px;
@@ -89,7 +89,7 @@
     }
     
     /* Keep your existing .box and other styles below... */
-        .title-img img { width: 253px; }
+        .title-img img { width: 420px; }
         /* Side Menu Drawer */
         .side-nav { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05); z-index: 1000; transition: 0.4s; padding: 50px 30px; box-sizing: border-box; }
         .side-nav.active { right: 0; }
@@ -98,18 +98,31 @@
         .close-nav { font-size: 40px; cursor: pointer; position: absolute; top: 15px; right: 25px; color: #b39ddb; }
 
         /* 3. Core Structural Columns */
-        .main-container{
-    display:flex;
-    justify-content:center;
-    padding:20px;
+      .main-container {
+    width: 100%;
+    max-width: 600px; /* Constrain the area */
+    display: flex;
+    justify-content: center;
+    padding-top: 100px; /* Add space below your fixed header */
+    padding-bottom: 50px;
 }
 
 .entry-card{
-    width:900px;
-    background:rgba(255,255,255,.92);
-    border-radius:35px;
+    width:500px;
+     max-width: 90vw;
+    margin: 0 auto;
+    background:rgba(255,255,255,.95);
+    border-radius:30px;
     padding:35px;
-    box-shadow:0 15px 40px rgba(106,79,191,.15);
+    box-shadow:0 10px 30px rgba(106,79,191,.12);
+    margin-top:20px;
+
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+.emotion-drawer{
+    width:100%;
 }
 
 .date-row{
@@ -120,7 +133,7 @@
 }
 
 .date-display{
-    font-size:38px;
+    font-size:24px;
     font-weight:700;
     color:#6a4fbf;
 }
@@ -138,20 +151,29 @@
 
 .mood-section{
     display:flex;
-    align-items:center;
-    gap:25px;
-    margin-bottom:25px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 }
 
+
 .main-mood{
-    width:110px;
-    height:110px;
+    width:60px;
+    height:60px;
 }
 
 #moodName{
-    font-size:42px;
+    font-size:26px;
     font-weight:700;
     color:#6a4fbf;
+}
+
+.mood-header{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap:15px;
+    width:100%;
 }
 
 #entryTime{
@@ -160,14 +182,24 @@
 }
 
 .diary-box textarea{
-    width:100%;
-    min-height:180px;
+    width: calc(100% - 24px);
+    min-height: 100px;
+
     border:none;
     background:#faf8ff;
-    border-radius:20px;
-    padding:25px;
-    font-size:22px;
-    font-family:'Dancing Script',cursive;
+    border-radius:18px;
+
+    padding:14px;
+
+    font-size:18px;
+    font-family:"Times New Roman", Times, serif;
+
+    outline:none;
+    resize:none;
+
+    box-sizing:border-box;
+    margin:0 auto;
+    display:block;
 }
 
 .section-title{
@@ -179,7 +211,9 @@
 
 .photo-gallery{
     display:flex;
+    flex-wrap:wrap;
     gap:15px;
+    justify-content:flex-start;
 }
 
 .photo-item,
@@ -204,6 +238,34 @@
     font-size:45px;
     color:#b39ddb;
     cursor:pointer;
+}
+
+.photo-wrapper{
+    position:relative;
+    display:inline-block;
+}
+
+.delete-photo{
+    position:absolute;
+    top:-8px;
+    left:-8px;
+
+    width:24px;
+    height:24px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#ff6b81;
+    color:white;
+
+    cursor:pointer;
+    font-size:14px;
+    font-weight:bold;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
 .song-card{
@@ -237,34 +299,177 @@
 
 .edit-btn{
     width:100%;
-    margin-top:30px;
-    padding:18px;
+    height:55px;
+    margin-top:20px;
+    font-size:18px;
+    font-weight:700;
     border:none;
-    border-radius:50px;
+    border-radius:18px;
+    cursor:pointer;
+    transition:3s;
     background:linear-gradient(
         90deg,
         #6a4fbf,
         #9d7cff
     );
     color:white;
-    font-size:18px;
-    font-weight:700;
     cursor:pointer;
+        box-sizing:border-box;
+
 }
 
 .delete-btn{
     width:100%;
-    margin-top:15px;
-    padding:18px;
-    border:none;
-    border-radius:50px;
-    background:#ff7f8c;
-    color:white;
+    height:55px;
+    margin-top:20px;
     font-size:18px;
     font-weight:700;
+    border:none;
+    border-radius:18px;
+    cursor:pointer;
+    transition:3s;
+    background:#ff7f8c;
+    color:white;
+    cursor:pointer;
+        box-sizing:border-box;
+
+}
+.edit-btn:hover,
+.delete-btn:hover{
+    transform:translateY(-2px);
+}
+.modal{
+    display:none;
+
+    position:fixed;
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,.45);
+
+    z-index:5000;
+}
+
+.modal-content{
+    background:white;
+
+    width:450px;
+
+    margin:100px auto;
+
+    padding:25px;
+
+    border-radius:25px;
+
+    text-align:center;
+}
+
+.close-modal{
+    float:right;
+    font-size:30px;
     cursor:pointer;
 }
 
+.mood-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:20px;
+}
+
+.mood-option{
+    background:#f5f1ff;
+    padding:12px;
+    border-radius:15px;
+    cursor:pointer;
+}
+
+.mood-option:hover{
+    background:#e7dcff;
+}
+.change-btn{
+    margin-top:8px;
+    padding:8px 16px;
+
+    border:none;
+    border-radius:15px;
+
+    background:#efe9ff;
+    color:#6a4fbf;
+
+    font-size:14px;
+    font-weight:600;
+
+    cursor:pointer;
+}
+
+.change-btn:hover{
+    background:#e1d8ff;
+}
+
+.song-option{
+    padding:12px;
+    margin-bottom:8px;
+
+    border-radius:12px;
+
+    background:#f5f1ff;
+
+    cursor:pointer;
+}
+
+.song-option:hover{
+    background:#e7dcff;
+}
+.close-song{
+    float:right;
+    font-size:30px;
+    cursor:pointer;
+}
+
+.emotion-hubs{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+}
+
+.hub-item{
+    text-align:center;
+    cursor:pointer;
+}
+
+.hub-item img{
+    width:55px;
+}
+
+.sub-item{
+    cursor:pointer;
+    text-align:center;
+    padding:8px;
+    border-radius:12px;
+}
+
+.sub-item:hover{
+    background:#f5f1ff;
+}
+
+.sub-item img{
+    width:45px;
+}
+
+.sub-item span{
+    display:block;
+    font-size:11px;
+    margin-top:5px;
+    color:#6a4fbf;
+}
+
+.sub-item.selected{
+    background:#e7dcff;
+}
         /* Media Elements */
         .search-container { position: relative; }
         .photo-slots { display: flex; gap: 10px; }
@@ -342,20 +547,53 @@
 
     <div class="mood-section">
 
-        <img
-            id="currentMood"
-            src="{% static 'emojis/happy.png' %}"
-            class="main-mood">
+        <div class="mood-header">
+        <img id="currentMood"
+             src="{% static 'emojis/happy.png' %}"
+             class="main-mood">
 
         <div>
+            <div id="moodName">Happy</div>
+            <div id="entryTime">🕒 7:45 PM</div>
+        </div>
 
-            <div id="moodName">
-                Happy
-            </div>
+        <button id="changeMoodBtn" class="change-btn">
+            🎭 Change Mood
+        </button>
+    </div>
 
-            <div id="entryTime">
-                🕒 7:45 PM
-            </div>
+<div class="emotion-drawer" id="moodDrawer" style="display:none; margin-top:15px;">
+
+    <div class="emotion-hubs">
+
+        <div class="hub-item" onclick="openDrawer('sad', this)">
+            <img src="{% static 'emojis/sad.png' %}" width="50">
+        </div>
+
+        <div class="hub-item" onclick="openDrawer('neutral', this)">
+            <img src="{% static 'emojis/neutral.png' %}" width="50">
+        </div>
+
+        <div class="hub-item" onclick="openDrawer('happy', this)">
+            <img src="{% static 'emojis/happy.png' %}" width="50">
+        </div>
+
+        <div class="hub-item" onclick="openDrawer('angry', this)">
+            <img src="{% static 'emojis/angry.png' %}" width="50">
+        </div>
+
+    </div>
+
+    <div id="drawerContent"
+         style="
+         display:grid;
+         grid-template-columns:repeat(4,1fr);
+         gap:10px;
+         margin-top:15px;
+         ">
+    </div>
+
+</div>
 
         </div>
 
@@ -382,9 +620,21 @@
 
 <div class="photo-gallery" id="photoGallery">
 
-    {% for photo in photos %}
-    <img class="photo-item" src="{{ photo.url }}">
-    {% endfor %}
+   {% for photo in photos %}
+<div class="photo-wrapper">
+
+    <img
+        class="photo-item"
+        src="{{ photo.url }}">
+
+    <button
+        class="delete-photo"
+        onclick="this.parentElement.remove()">
+        ⨂
+    </button>
+
+</div>
+{% endfor %}
 
     <div
         class="photo-add"
@@ -422,6 +672,10 @@
 
     </div>
 
+      <button id="changeSongBtn" class="change-btn">
+    🎵 Change Song
+</button>
+
     <button
         class="edit-btn"
         id="editButton">
@@ -436,12 +690,119 @@
 
 </div>  
     </div>
+   
+
+<div id="songModal" class="modal">
+
+    <div class="modal-content">
+
+        <span class="close-song">&times;</span>
+
+        <h2>Select Song</h2>
+
+        <div id="songList">
+
+            <div class="song-option">Song 1</div>
+            <div class="song-option">Song 2</div>
+            <div class="song-option">Song 3</div>
+            <div class="song-option">Song 4</div>
+            <div class="song-option">Song 5</div>
+            <div class="song-option">Song 6</div>
+            <div class="song-option">Song 7</div>
+            <div class="song-option">Song 8</div>
+            <div class="song-option">Song 9</div>
+            <div class="song-option">Song 10</div>
+
+        </div>
+
+    </div>
+
+</div>
 
     <footer>© 2026 MoodBloom | Mood your day, Bloom your mind.</footer>
 
     <script>
+        const songModal =
+document.getElementById("songModal");
+
+document
+.getElementById("changeSongBtn")
+.onclick = () => {
+    songModal.style.display = "block";
+};
+
+document
+.querySelector(".close-song")
+.onclick = () => {
+    songModal.style.display = "none";
+};
+
+document
+.querySelectorAll(".song-option")
+.forEach(song=>{
+
+    song.onclick=function(){
 
         document
+        .getElementById("songTitle")
+        .innerText =
+        this.innerText;
+
+        songModal.style.display =
+        "none";
+    };
+
+});
+
+document.getElementById("changeMoodBtn").onclick = function(){
+
+    const drawer =
+    document.getElementById("moodDrawer");
+
+    drawer.style.display =
+        drawer.style.display === "none"
+        ? "block"
+        : "none";
+};
+
+function openDrawer(category, element){
+
+    document
+    .querySelectorAll('.hub-item')
+    .forEach(item=>item.classList.remove('active'));
+
+    element.classList.add('active');
+
+    const content =
+    document.getElementById('drawerContent');
+
+    content.innerHTML = '';
+
+    pngMap[category].forEach(item=>{
+
+        let div =
+        document.createElement('div');
+
+        div.className =
+        'sub-item';
+
+        div.innerHTML =
+        `<img src="/static/emojis/${item.f}">
+         <span>${item.n}</span>`;
+
+        div.onclick = ()=>{
+    selectedMoodName = item.n;
+
+    document.getElementById("moodName").innerText = item.n;
+    document.getElementById("currentMood").src = `/static/emojis/${item.f}`;
+
+    div.classList.add('selected');
+};
+
+        content.appendChild(div);
+    });
+}
+
 
     document.getElementById("prevEntry")
 .addEventListener("click", function(){
@@ -465,11 +826,26 @@ document.getElementById("nextEntry")
         const reader = new FileReader();
 
         reader.onload = function (e) {
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            img.className = "photo-item";
+           
+            const wrapper = document.createElement("div");
+wrapper.className = "photo-wrapper";
 
-            gallery.insertBefore(img, addButton);
+const img = document.createElement("img");
+img.src = e.target.result;
+img.className = "photo-item";
+
+const deleteBtn = document.createElement("button");
+deleteBtn.className = "delete-photo";
+deleteBtn.innerHTML = "⨂";
+
+deleteBtn.onclick = function(){
+    wrapper.remove();
+};
+
+wrapper.appendChild(img);
+wrapper.appendChild(deleteBtn);
+
+gallery.insertBefore(wrapper, addButton);
         };
 
         reader.readAsDataURL(file);
@@ -488,14 +864,15 @@ document
 
     if(!editing){
 
-        diary.removeAttribute("readonly");
+    diary.removeAttribute("readonly");
+    diary.disabled = false;
+    diary.readOnly = false;
+    diary.focus();
 
-        this.innerHTML =
-        "💾 Save Entry";
-
-        editing = true;
-
-    }else{
+    this.innerHTML = "💾 Save Entry";
+    editing = true;
+}
+    else{
 
         updateEntry();
 
@@ -550,7 +927,42 @@ document
             });
         }
 
-        // INITIALIZE EDIT MODE: Use this to load existing data
+        const pngMap = {
+    happy:[
+        {f:'happy.png',n:'Happy'},
+        {f:'kiss.png',n:'Kiss'},
+        {f:'energetic.png',n:'Energetic'},
+        {f:'motivated.png',n:'Motivated'},
+        {f:'good.png',n:'Good'},
+        {f:'lovely.png',n:'Lovely'},
+        {f:'admire.png',n:'Admire'},
+        {f:'warm.png',n:'Warm'}
+    ],
+
+    neutral:[
+        {f:'neutral.png',n:'Neutral'},
+        {f:'shy.png',n:'Shy'},
+        {f:'sleepy.png',n:'Sleepy'},
+        {f:'curious.png',n:'Curious'}
+    ],
+
+    sad:[
+        {f:'sad.png',n:'Sad'},
+        {f:'sick.png',n:'Sick'},
+        {f:'exhausted.png',n:'Exhausted'},
+        {f:'guilty.png',n:'Guilty'},
+        {f:'afraid.png',n:'Afraid'}
+    ],
+
+    angry:[
+        {f:'angry.png',n:'Angry'},
+        {f:'shock.png',n:'Shock'},
+        {f:'mischievous.png',n:'Mischievous'},
+        {f:'awkward.png',n:'Awkward'}
+    ]
+};
+
+  // INITIALIZE EDIT MODE: Use this to load existing data
         window.onload = function() {
             const params = new URLSearchParams(window.location.search);
             if(params.get('date')) document.getElementById('entryDate').innerText = params.get('date');
@@ -559,6 +971,14 @@ document
             // via template tags: {{ existing_entry.category }}
             // For now, this is ready to accept the data!
         };
+
+       window.onclick = function(event){
+    const drawer = document.getElementById("moodDrawer");
+
+    if (!event.target.closest('.emotion-hubs') && !event.target.closest('#changeMoodBtn')) {
+        drawer.style.display = "none";
+    }
+}
     </script>
 </body>
 </html>

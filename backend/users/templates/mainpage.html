@@ -2,8 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    📊 View Stats Dashboard
-    </button>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoodBloom | Main Hub</title>
@@ -211,7 +209,7 @@
 </head>
 <body>
 
-    <a href="{% url 'profile' %}" class="profile-card">
+    <a href="{% url 'profile' %}" class="profile-card"></a>
 
    <div class="profile-avatar" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
     {% if profile.avatar %}
@@ -231,7 +229,6 @@
         </div>
     </div>
 
-</a>
     <div class="side-nav" id="sideNav">
         <span class="close-nav" onclick="toggleNav()">&times;</span>
         <div style="margin-top:40px;">
@@ -240,9 +237,10 @@
        💬 Feedback
     </a>
 
-<a href="{% url 'logout' %}">
-    🚪 Logout
-</a>
+    <a href="{% url 'logout' %}"
+       style="color:#6a4fbf; margin-top:50px; border:none;">
+       🚪 Logout
+    </a>
 
 
    
