@@ -99,7 +99,7 @@
 
         /* 3. Core Structural Columns */
       .main-container {
-    width: 100%;
+    width: 1000%;
     max-width: 600px; /* Constrain the area */
     display: flex;
     justify-content: center;
@@ -108,7 +108,7 @@
 }
 
 .entry-card{
-    width:500px;
+    width:850px;
      max-width: 90vw;
     margin: 0 auto;
     background:rgba(255,255,255,.95);
@@ -494,6 +494,11 @@
                     onclick="return confirm('Are you sure you want to log out?')">
                 🚪 Logout
             </button>
+
+          <a href="{% url 'logout' %}"
+       style="color:#e57373;margin-top:50px;border:none;">
+        🗑️ Delete Account
+    </a>   
         </form>
 
     

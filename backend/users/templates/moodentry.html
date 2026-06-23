@@ -12,7 +12,7 @@
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
-    background-image:url("{% static 'entry_background.png' %}");
+    background-image:url("{% static 'background_search.png' %}");
     background-size:cover;
     background-position:center;
     background-repeat:no-repeat;
@@ -165,6 +165,11 @@
     🚪 Logout
 </a>
 
+ <a href="{% url 'logout' %}"
+       style="color:#e57373;margin-top:50px;border:none;">
+        🗑️ Delete Account
+    </a>
+
    
 
 </div>
@@ -231,6 +236,13 @@ Choose the emotion that best describes your mood.
     <span class="heart" onclick="setIntensity(9)">💜</span>
     <span class="heart" onclick="setIntensity(10)">💜</span>
 
+</div>
+<div id="intensityLabel"
+     style="text-align:center;
+            color:#6a4fbf;
+            font-weight:600;
+            margin-bottom:10px;">
+    Intensity: 5/10
 </div>
 
 <input type="hidden" id="intensityRange" value="5">
@@ -314,9 +326,12 @@ Choose the emotion that best describes your mood.
     </div>
 
     <script>
+    
         function setIntensity(value){
 
     document.getElementById('intensityRange').value = value;
+      document.getElementById("intensityLabel").innerText =
+    `Intensity: ${value}/10`;
 
     const hearts = document.querySelectorAll('.heart');
 

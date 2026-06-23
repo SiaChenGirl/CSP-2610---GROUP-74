@@ -129,7 +129,7 @@
 .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
         .logo img { width: 110px; } 
         .title-area { text-align: center; }
-        .title-area img { width: 200px; }
+        .title-area img { width: 420px; }
         .back-link { font-weight: bold; color: #6a4fbf; text-decoration: none; font-size: 16px; width: 110px; text-align: right; }
         .header-line { border: 0; height: 1px; background: rgba(106, 79, 191, 0.2); margin: 0 40px 20px 40px; }
         .container { max-width: 500px; margin: 20px auto 50px; background: white; padding: 40px; border-radius: 40px; box-shadow: 0 10px 30px rgba(106, 79, 191, 0.1); text-align: center; }
@@ -230,6 +230,11 @@
            style="color:#6a4fbf;">
             🚪 Logout
         </a>
+
+         <a href="{% url 'logout' %}"
+       style="color:#e57373;margin-top:50px;border:none;">
+        🗑️ Delete Account
+    </a>
 
 
     </div>

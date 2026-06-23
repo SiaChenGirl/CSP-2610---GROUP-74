@@ -320,12 +320,7 @@
 }
 
 .nav-btn.active img{
-    filter: brightness(0)
-            saturate(100%)
-            invert(28%)
-            sepia(43%)
-            saturate(742%)
-            hue-rotate(221deg);
+    filter: none;
 }
    
 .article-main-container{
@@ -351,6 +346,11 @@
 <a href="{% url 'logout' %}">
     🚪 Logout
 </a>
+
+   <a href="{% url 'logout' %}"
+       style="color:#e57373;margin-top:50px;border:none;">
+        🗑️ Delete Account
+    </a>
 
 
 
@@ -492,7 +492,7 @@
             <div class="nav-btn" title="Calendar Home" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
             <div class="nav-btn" title="Search & Explore" onclick="location.href='{% url 'search' %}'"><img src="{% static 'icons/search.png' %}"></div>
             <div class="nav-btn" title="Articles" onclick="location.href='{% url 'article' %}'"><img src="{% static 'icons/article.png' %}"></div>
-            <div class="nav-btn active" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/dashboard.png' %}"></div>
+            <div class="nav-btn" title="Statistics Dashboard" onclick="location.href='{% url 'dashboard' %}'"><img src="{% static 'icons/dashboard.png' %}"></div>
             <div class="nav-btn" title="Photo Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
         </div>
     </div>
