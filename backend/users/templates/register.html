@@ -185,6 +185,9 @@ body {
     </footer>
 
     <script>
+        // 加上全局防刷锁，防止瞬间双击产生重复请求
+        let isSubmitting = false;
+
         // Password visibility toggler framework function
         function togglePasswordVisibility(fieldId, toggleEl) {
             const passwordField = document.getElementById(fieldId);
@@ -204,7 +207,7 @@ body {
             // 规则定义
             const hasLength = password.length >= 8;
             const hasCapital = /[A-Z]/.test(password);
-            const hasSymbol = /[`~!@#$%^&*()_+\-=\[\]{};':",./<>?|\\ ]/.test(password);
+            const hasSymbol = /[`~!@#$%^&*()_+\-=\[\] {};':",./<>?|\\ ]/.test(password);
 
             // 更新长度提示样式
             updateRuleUI('req-length', hasLength);
@@ -238,10 +241,18 @@ body {
 
         // 2. 注册逻辑
         async function handleRegister() {
-            const username = document.getElementById('reg-username').value;
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            // 如果已经在提交中，直接拦截，拒绝二次执行
+            if (isSubmitting) return;
+
+            const usernameInput = document.getElementById('reg-username');
+            const emailInput = document.getElementById('reg-email');
+            const passwordInput = document.getElementById('reg-password');
+            const confirmPasswordInput = document.getElementById('reg-confirm-password');
+
+            const username = usernameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
 
             // 基础空值校验
             if(!username || !password || !email) {
@@ -265,16 +276,21 @@ body {
                 return;
             }
 
+            // 🔒 开启锁
+            isSubmitting = true;
+
             // 获取 CSRF Token
             const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
             const csrftoken = tokenElement ? tokenElement.value : '';
 
             try {
-                const response = await fetch('/register/', {
+                // ✨ 核心修正：改请求到专属的纯 API 接口，不请求会返回网页的全局路由
+                const response = await fetch('/api/register/', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': csrftoken
+                        'X-CSRFToken': csrftoken,
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({ 
                         username: username, 
@@ -285,15 +301,31 @@ body {
                 });
 
                 const data = await response.json();
-                if (data.message) {
-                    alert("Success: " + data.message);
-                    window.location.href = '/login/'; // 注册成功跳回登录
+
+                // ✨ 根据后端的精确状态，只执行单一的弹窗路径
+                if (response.ok && data.status === 'success') {
+                    // 🎉 精准且唯一地保留第二句成功提示
+                    alert(data.message);
+                    
+                    // 🧹 清空所有输入框内容（留在原页面）
+                    usernameInput.value = '';
+                    emailInput.value = '';
+                    passwordInput.value = '';
+                    confirmPasswordInput.value = '';
+                    
+                    // 重置密码强度小图标
+                    validatePasswordLive();
                 } else {
-                    alert("Error: " + data.error);
+                    // ❌ 只有真正失败（重名拦截）才会触发此警告，绝对不与成功混淆
+                    const errorMsg = data.message || data.error || "Registration failed.";
+                    alert("⚠️ " + errorMsg);
                 }
             } catch (error) {
                 console.error("Registration error:", error);
-                alert("Connection failed!");
+                alert("Connection failed! Please try again.");
+            } finally {
+                // 🔓 无论结果如何，解开提交锁
+                isSubmitting = false;
             }
         }
     </script>

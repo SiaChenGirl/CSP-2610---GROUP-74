@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+
+{% block extrastyle %}
+<style>
+    /* 核心去蓝化：将所有原来的蓝色替换为 MoodBloom 紫色 */
+    :root {
+        --primary: #b39ddb;
+        --secondary: #7a5fc7;
+    }
+    
+    #header { background: var(--primary) !important; }
+    .button, input[type=submit], .submit-row input { background: var(--primary) !important; }
+    a:link, a:visited { color: var(--secondary) !important; }
+    .nav-sidebar .current-app a, .nav-sidebar .current-model a { background: var(--secondary) !important; }
+    
+    /* 修正表格头部颜色 */
+    #changelist-filter h3, thead th { background: var(--secondary) !important; color: white !important; }
+</style>
+{% endblock %}

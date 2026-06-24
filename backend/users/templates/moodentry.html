@@ -165,10 +165,11 @@
     🚪 Logout
 </a>
 
- <a href="{% url 'logout' %}"
-       style="color:#e57373;margin-top:50px;border:none;">
-        🗑️ Delete Account
-    </a>
+ <a href="javascript:void(0);" onclick="clickDeleteAccount()" style="color:#e57373; margin-top:50px; border:none; cursor:pointer;">
+    🗑️ Delete Account
+</a>
+
+
 
    
 
@@ -308,13 +309,13 @@ Choose the emotion that best describes your mood.
     <footer>© 2026 MoodBloom | Mood your day, Bloom your mind.</footer>
 
     <div class="modal-overlay" id="photoModal" onclick="closePhotoModal(event)">
-        <div class="modal-card">
+        <div class="modal-card" style="width: 340px; max-height: 90vh; overflow-y: auto;">
             <h3 style="margin-top:0; color:#6a4fbf;">ADD PHOTO</h3>
-            <div style="display:flex; justify-content:space-around; margin-top:20px;">
-                <label style="cursor:pointer; display:flex; flex-direction:column; align-items:center;">
+            
+            <div id="modalOptions" style="display:flex; justify-content:space-around; margin-top:20px; margin-bottom: 20px;">
+                <label style="cursor:pointer; display:flex; flex-direction:column; align-items:center;" onclick="startCamera()">
                     <span style="font-size:35px;">📷</span>
                     <span style="font-size:11px; font-weight:bold;">TAKE PHOTO</span>
-                    <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="handleFileSelect(this)">
                 </label>
                 <label style="cursor:pointer; display:flex; flex-direction:column; align-items:center;">
                     <span style="font-size:35px;">📁</span>
@@ -322,7 +323,17 @@ Choose the emotion that best describes your mood.
                     <input type="file" accept="image/*" multiple style="display:none" onchange="handleFileSelect(this)">
                 </label>
             </div>
+
+            <div id="cameraArea" style="display:none; flex-direction:column; align-items:center; gap:15px;">
+                <video id="webcam" autoplay playsinline style="width:100%; max-width:280px; border-radius:15px; background:#000; transform: scaleX(-1);"></video>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" onclick="captureSnapshot()" style="padding:10px 20px; background:#6a4fbf; color:white; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">📸 Click to Capture</button>
+                    <button type="button" onclick="stopCamera()" style="padding:10px 15px; background:#e57373; color:white; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">Cancel</button>
+                </div>
+            </div>
+            <canvas id="captureCanvas" style="display:none;"></canvas>
         </div>
+      </div>
     </div>
 
     <script>
@@ -400,9 +411,11 @@ setIntensity(5);
 
         function handleFileSelect(input) {
             if (input.files && input.files.length > 0) {
-                selectedPhotos = Array.from(input.files);
+                // ✨ 核心改变：用 concat 把新选的照片“追加”到原本的数组后面，而不是直接覆盖
+                selectedPhotos = selectedPhotos.concat(Array.from(input.files));
+                
                 const previewContainer = document.getElementById('previewContainer');
-                previewContainer.innerHTML = ''; 
+                previewContainer.innerHTML = ''; // 每次重新渲染整个数组里的所有图片
 
                 selectedPhotos.forEach(file => {
                     const reader = new FileReader();
@@ -417,62 +430,68 @@ setIntensity(5);
                     };
                     reader.readAsDataURL(file);
                 });
-                alert("Selected " + selectedPhotos.length + " photo(s)! 🌸");
+
+                alert("Total " + selectedPhotos.length + " photo(s) selected! 🌸");
+                
+                // ✨ 关键收尾：把 input 的 value 清空。
+                // 这样就算用户连续两次选择同一张照片，也能正常触发 onchange 事件。
+                input.value = ''; 
+                
                 document.getElementById('photoModal').style.display = 'none';
             }
         }
-
         function saveEntry() {
+    // 获取日记内容
+    const diaryContent = document.getElementById('diaryEntry').value.trim();
 
-            alert("Save button clicked!");
+    // --- 【新增校验逻辑】 ---
+    if (!selectedCategory || !selectedMoodName) {
+        alert("Please select your mood first! 🌸");
+        return;
+    }
+    
+    // 如果内容为空，强制拦截
+    if (diaryContent === "") {
+        alert("Please write down your thoughts before blooming! ✍️");
+        document.getElementById('diaryEntry').focus(); // 自动聚焦到输入框
+        return;
+    }
+    // ----------------------
 
-            if (!selectedCategory || !selectedMoodName) {
-                alert("Please select your mood first! 🌸");
-                return;
-            }
-
-            const formData = new FormData();
-            const selectedOption = document.getElementById('songSelect').selectedOptions[0];
-            // 注意：这里统一使用你的后端视图里期待的字段名
-            formData.append('mood_name', selectedMoodName);
-            formData.append('category', selectedCategory);
-            formData.append('mood', selectedMoodName); 
-            formData.append('intensity', document.getElementById('intensityRange').value);
-            formData.append('content', document.getElementById('diaryEntry').value); // 后端通过 request.POST.get('content') 获取
-            formData.append('music_id', selectedOption.dataset.id);
-            formData.append('entry_date', selectedDate);
-            
-            selectedPhotos.forEach(file => formData.append('photos', file));
-            
-          // 安全且完整的 fetch 请求
-            fetch("{% url 'moodentry' %}", {
-                method: "POST",
-                headers: { 
-                    "X-CSRFToken": "{{ csrf_token }}"
-                },
-                body: formData,
-                credentials: 'include'
-            })
-            .then(res => {
-                console.log("HTTP Status:", res.status);
-                return res.json(); // ✨ 修正：确保将后端的返回转换为标准的 JSON 对象
-            })
-            .then(result => {
-                console.log("Backend Response:", result); // 用于方便你在 Console 调试查看后端传回的数据
-                
-                // ✨ 修正：直接在拥有 JSON 对象的链条里进行逻辑判断
-                if (result.status === "success" || result.success === true) {
-                    alert("Your mood has been bloomed! 🌸");
-                    window.location.href = "{% url 'mainpage' %}";
-                } else {
-                    alert("Failed to save entry: " + (result.message || "Unknown error"));
-                }
-            })
-            .catch(err => {
-                console.error("Fetch Error:", err);
-                alert("An error occurred while saving. Please ensure you are logged in.");
-            });
+    const formData = new FormData();
+    const selectedOption = document.getElementById('songSelect').selectedOptions[0];
+    
+    formData.append('mood_name', selectedMoodName);
+    formData.append('category', selectedCategory);
+    formData.append('mood', selectedMoodName); 
+    formData.append('intensity', document.getElementById('intensityRange').value);
+    formData.append('content', diaryContent); // 使用上面获取的 trimmed 内容
+    formData.append('music_id', selectedOption ? selectedOption.dataset.id : "");
+    formData.append('entry_date', selectedDate);
+    
+    selectedPhotos.forEach(file => formData.append('photos', file));
+    
+    fetch("{% url 'moodentry' %}", {
+        method: "POST",
+        headers: { 
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: formData,
+        credentials: 'include'
+    })
+    .then(res => res.json())
+    .then(result => {
+        if (result.status === "success") {
+            alert("Your mood has been bloomed! 🌸");
+            window.location.href = "{% url 'mainpage' %}?t=" + new Date().getTime();
+        } else {
+            alert("Failed to save entry: " + (result.message || "Unknown error"));
         }
+    })
+    .catch(err => {
+        alert("An error occurred. Please try again.");
+    });
+}
         const audio = document.getElementById("audioPlayer");
 const progressBar = document.getElementById("progressBar");
 
@@ -551,8 +570,122 @@ function filterSongs(category) {
     document.getElementById("songArtist").innerText = "-";
 }
 
+let localStream = null; // 用于存储摄像头媒体流的全局变量
 
+        /* 打开电脑摄像头 */
+        function startCamera() {
+            // 隐藏上传按钮，显示相机预览区域
+            document.getElementById('modalOptions').style.display = 'none';
+            document.getElementById('cameraArea').style.display = 'flex';
 
+            // 请求调用电脑/手机摄像头
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+                .then(stream => {
+                    localStream = stream;
+                    const video = document.getElementById('webcam');
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    console.error("Camera access error:", err);
+                    alert("Unable to access camera. Please check permissions! 🌸");
+                    stopCamera();
+                });
+        }
+
+        /* 关闭摄像头并恢复模态框状态 */
+        function stopCamera() {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop()); // 释放相机硬件
+                localStream = null;
+            }
+            document.getElementById('cameraArea').style.display = 'none';
+            document.getElementById('modalOptions').style.display = 'flex';
+        }
+
+        /* 捕获当前画面并将其变为文件加入 selectedPhotos */
+        function captureSnapshot() {
+            const video = document.getElementById('webcam');
+            const canvas = document.getElementById('captureCanvas');
+            const ctx = canvas.getContext('2d');
+
+            if (localStream) {
+                // 设置画布宽高与视频流一致
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                // 镜像修复（因为自拍一般需要左右反转，如果不需要可以删掉下面这三行）
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+
+                // 将视频画面画到 Canvas 上
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // 将 Canvas 转换为 Blob 数据，再包装成可以上传给 Django 的 File 对象
+                canvas.toBlob((blob) => {
+                    const filename = "camera_" + new Date().getTime() + ".jpg";
+                    const file = new File([blob], filename, { type: "image/jpeg" });
+
+                    // ✨ 核心融合：直接追加到你原本的全局数组中！
+                    selectedPhotos.push(file);
+
+                    // 重新渲染前端屏幕的相册预览区
+                    const previewContainer = document.getElementById('previewContainer');
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file); // 生成临时的本地预览 URL
+                    img.style.width = '80px';
+                    img.style.height = '80px';
+                    img.style.borderRadius = '10px';
+                    img.style.objectFit = 'cover';
+                    previewContainer.appendChild(img);
+
+                    alert("Photo captured successfully! 🌸");
+                    
+                    // 关闭相机，关闭模态框
+                    stopCamera();
+                    document.getElementById('photoModal').style.display = 'none';
+                }, 'image/jpeg', 0.9);
+            }
+        }
+
+        /* 修改原本的关闭模态框函数，确保顺便把摄像头硬件关掉，不占主板 */
+        const originalClosePhotoModal = closePhotoModal;
+        closePhotoModal = function(e) {
+            if(e.target.id === 'photoModal') {
+                stopCamera();
+                e.target.style.display = 'none';
+            }
+        }
+
+        async function clickDeleteAccount() {
+    // 1. Double confirmation to prevent accidental clicks
+    const confirmDelete = confirm("⚠️ WARNING: This action will permanently delete all your mood logs, photos, and personal data. This process is irreversible. Are you sure you want to delete your account?");
+    
+    if (confirmDelete) {
+        try {
+            // 2. Fetch request with proper security headers
+            const response = await fetch("{% url 'delete_account' %}", {
+                method: "POST",
+                headers: { 
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": "{{ csrf_token }}" // Critical for Django security
+                }
+            });
+            
+            const data = await response.json();
+            
+            // 3. Handle response
+            if (data.status === 'success') {
+                alert("🌸 Your account has been successfully deleted. Thank you for using MoodBloom, we hope to see you again!");
+                window.location.href = "{% url 'login' %}"; 
+            } else {
+                alert("❌ Operation failed: " + data.message);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("❌ A network error occurred. Please check your connection and try again.");
+        }
+    }
+}
     </script>
 </body>
 </html>

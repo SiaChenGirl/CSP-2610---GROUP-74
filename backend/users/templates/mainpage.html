@@ -152,7 +152,9 @@
     width:35px;
     height:35px;
     margin-top:5px;
+    object-fit: contain; /* ✨ 新增这一行，防止小表情图片变形 */
 }
+
         .day-cell:hover { background: #6a4fbf; color: white; transform: scale(1.05); }
         .highlight-today { background: #b39ddb !important; color: white; }
 
@@ -207,11 +209,10 @@
        🚪 Logout
     </a>
 
-     <a href="{% url 'logout' %}"
-       style="color:#e57373;margin-top:50px;border:none;">
-        🗑️ Delete Account
-    </a>
-
+   <!-- 把 href 换成调用 JavaScript 函数，并确保它的 id 不会冲突 -->
+<a href="javascript:void(0);" onclick="clickDeleteAccount()" style="color:#e57373; margin-top:50px; border:none; cursor:pointer;">
+    🗑️ Delete Account
+</a>
 
    
 
@@ -274,9 +275,13 @@
         <button class="modal-btn" id="createNewBtn" style="background:#6a4fbf; color:white;" onclick="goEntry()">Create New</button>
     </div>
 
+
+<div class="divider-line" style="height:1px; background:rgba(106, 79, 191, 0.2); margin:0 50px 10px 50px;"></div>
+
     <footer>© 2026 MoodBloom | Mood Your Day, Bloom Your Mind.</footer>
 
     <script>
+        
         function toggleNav() {
             document.getElementById('sideNav').classList.toggle('active');
         }
@@ -284,6 +289,10 @@
         const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         let displayStr = ""; 
         let formattedDateForBackend = ""; 
+
+        // ✨ 新增修改点 1：安全接收并解析从 Django 视图中传过来的用户心情数据字典
+        // 如果后端暂时没有传值，会 fallback 降级到空对象 {}，绝不报错
+        const userMoodData = JSON.parse('{{ mood_data_json|safe|default:"{}" }}');
 
         function startup() {
             const ms = document.getElementById('mSelect');
@@ -324,18 +333,30 @@
                 if(d === now.getDate() && m === now.getMonth() && y === now.getFullYear()) {
                     cell.classList.add('highlight-today');
                 }
+
+                // 生成当前格子的标准 YYYY-MM-DD 字符串作为字典查找的 Key
+                const mm = String(m + 1).padStart(2, '0');
+                const dd = String(d).padStart(2, '0');
+                const dateKey = `${y}-${mm}-${dd}`;
+
+                // ✨ 新增修改点 2：核心检查逻辑
+                // 如果发现用户在这天写过心情，就使用对应的表情包；否则一律降级使用默认的 plus.png 
+                let finalIconUrl = "{% static 'emojis/plus.png' %}"; // 默认图片也要改路径
+                if (userMoodData[dateKey]) {
+                     // 【关键修改】路径改为 static/emojis/
+                     finalIconUrl = "{% static 'emojis/' %}" + userMoodData[dateKey];
+                }
+
                 cell.innerHTML = `
-    <div class="day-number">${d}</div>
-    <img src="{% static 'icons/plus.png' %}" class="day-mood">
-`;
+                    <div class="day-number">${d}</div>
+                    <img src="${finalIconUrl}" class="day-mood">
+                `;
                 
                 cell.onclick = () => {
                     displayStr = `${mNames[m]} ${d}, ${y}`;
                     document.getElementById('dateTitle').innerText = displayStr;
 
-                    const mm = String(m + 1).padStart(2, '0');
-                    const dd = String(d).padStart(2, '0');
-                    formattedDateForBackend = `${y}-${mm}-${dd}`;
+                    formattedDateForBackend = dateKey;
 
                     const clickedDate = new Date(y, m, d).getTime();
                     const diffTime = clickedDate - todayMidnight;
@@ -343,16 +364,31 @@
 
                     const createBtn = document.getElementById('createNewBtn');
 
-                    if (diffDays > 0) {
+                    // ✨ 新增修改点 3：体验优化
+                    // 如果这天已经有了 Mood 记录，把 "Create New" 按钮自动升级为 "Edit" 或者友好提示
+                    if (userMoodData[dateKey]) {
+                        createBtn.innerText = "Create New";
+                        createBtn.style.background = "#9d7cff";
                         createBtn.onclick = function() {
-                            alert("Oops! You can't write for a future diary date. Please come back tomorrow or later!");
-                        };
-                    } else if (diffDays < -3) {
-                        createBtn.onclick = function() {
-                            alert("Oops! It has been more than 72 hours. Memories fade, so you can only write entries up to 3 days ago!");
+                            // 允许跳转去你的修改/查看日记页面 (此处假设你有一个叫 moodentry 或 edit_entry 的 url)
+                            location.href = `{% url 'moodentry' %}?date=${formattedDateForBackend}`;
                         };
                     } else {
-                        createBtn.onclick = goEntry;
+                        // 恢复默认的 Create 按钮状态
+                        createBtn.innerText = "Create New";
+                        createBtn.style.background = "#6a4fbf";
+                        
+                        if (diffDays > 0) {
+                            createBtn.onclick = function() {
+                                alert("Oops! You can't write for a future diary date. Please come back tomorrow or later!");
+                            };
+                        } else if (diffDays < -3) {
+                            createBtn.onclick = function() {
+                                alert("Oops! It has been more than 72 hours. Memories fade, so you can only write entries up to 3 days ago!");
+                            };
+                        } else {
+                            createBtn.onclick = goEntry;
+                        }
                     }
 
                     document.getElementById('modal').style.display = 'block';
@@ -367,7 +403,6 @@
             document.getElementById('overlay').style.display='none';
         }
 
-        // 找到 mainpage.html 里的这块代码并修改：
         function goHistory() { 
              location.href = `{% url 'diaryhistory' %}?date=${formattedDateForBackend}`; 
         }
@@ -376,19 +411,39 @@
             location.href = `{% url 'moodentry' %}?date=${formattedDateForBackend}`; 
         }
 
-        startup();
-        // 检查用户是否保持登录状态的监控
-    setInterval(() => {
-        fetch("{% url 'check_session' %}") // 我们稍后在后端定义这个小接口
-        .then(response => response.json())
-        .then(data => {
-            if (!data.is_authenticated) {
-                // 如果后端发现没有 session，立即跳转
-                window.location.href = "{% url 'login' %}";
+        async function clickDeleteAccount() {
+            const confirmDelete = confirm("⚠️ Are you absolutely sure you want to delete your account? All your mood logs and photos will be permanently wiped out!");
+            if (confirmDelete) {
+                try {
+                    const response = await fetch("{% url 'delete_account' %}", {
+                        method: "POST",
+                        headers: { "X-Requested-With": "XMLHttpRequest" }
+                    });
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        alert("🌸 Your account has been permanently deleted. Goodbye!");
+                        window.location.href = "{% url 'login' %}"; 
+                    } else {
+                        alert("❌ Error: " + data.message);
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("❌ Network error or Server issue. Please try again.");
+                }
             }
-        });
-    }, 5000); // 每 5 秒检查一次
-    
+        }
+        
+        startup();
+
+        setInterval(() => {
+            fetch("{% url 'check_session' %}") 
+            .then(response => response.json())
+            .then(data => {
+                if (!data.is_authenticated) {
+                    window.location.href = "{% url 'login' %}";
+                }
+            });
+        }, 5000);
     </script>
 </body>
 </html>

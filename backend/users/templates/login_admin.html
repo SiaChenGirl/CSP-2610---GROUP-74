@@ -44,30 +44,35 @@
 
     <script>
         async function handleLogin() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const u = document.getElementById('username').value;
+    const p = document.getElementById('password').value;
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            try {
-                const response = await fetch('/admin-login-url/', { // Change to your actual admin login URL
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrftoken 
-                    },
-                    body: JSON.stringify({ username: u, password: p })
-                });
+    try {
+        const response = await fetch('/admin-login-url/', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken 
+            },
+            body: JSON.stringify({ username: u, password: p })
+        });
 
-                if (response.ok) {
-                    // Redirects to admin.html (ensure this URL pattern exists in your Django urls.py)
-                    window.location.href = '/admin-dashboard/'; 
-                } else {
-                    alert('Invalid admin credentials');
-                }
-            } catch (error) {
-                alert('Connection error.');
-            }
+        // 打印状态码看看
+        console.log("Response status:", response.status);
+
+        if (response.ok) {
+            // 确保强制刷新跳转
+            window.location.href = '/admin-portal/'; 
+        } else {
+            const data = await response.json();
+            alert('Login failed: ' + (data.message || 'Invalid credentials'));
         }
+    } catch (error) {
+        console.error("Error:", error);
+        alert('Connection error. Check console.');
+    }
+}
     </script>
 </body>
 </html>

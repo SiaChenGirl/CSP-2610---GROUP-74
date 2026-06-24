@@ -138,3 +138,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # 告诉 Django：当 @login_required 装饰器拦截到未登录用户时，
 # 不要去默认的 /accounts/login/，而是去你定义的名为 'login' 的 URL
 LOGIN_URL = 'login'
+

@@ -55,4 +55,5 @@ urlpatterns = [
 
     # ... 在 api/favorite/ 下方补上：
     path('remove-favorite/<int:article_id>/', views.remove_favorite, name='remove_favorite'),
+    path('delete-account/', views.delete_account_view, name='delete_account'),
 ]

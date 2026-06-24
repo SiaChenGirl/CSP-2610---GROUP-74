@@ -20,6 +20,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from users import views 
+from users.views import admin_login_view, admin_portal_view  # 这一行必须存在
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +30,13 @@ urlpatterns = [
     path('check-session/', views.check_session, name='check_session'),
     
     path('diaryhistory/', views.diary_history_view, name='diaryhistory'), 
+    path('admin/', admin.site.urls),
+    # 修改路径引用方式为 views.函数名
+    path('admin-login/', views.admin_login_page_view, name='admin_login_page'),
+    path('admin-login-url/', views.admin_login_view, name='admin_login_url'),
+    path('admin-portal/', views.admin_portal_view, name='admin_portal'),
+    path('article-admin/', views.article_admin_view, name='article_admin'),
+
 ]
 
 if settings.DEBUG:

@@ -21,7 +21,7 @@ from django.views.decorators.cache import cache_control
 from .models import Profile, MoodEntry, MoodPhoto, Favorite, Article, Feedback, Music
 from calendar import monthrange
 from collections import defaultdict
-
+from django.contrib.auth.decorators import user_passes_test
 # ==========================================
 # 1. 身份验证与账户管理模块 (融合 views2 的邮件验证与 views1 的模板跳转)
 # ==========================================
@@ -35,45 +35,44 @@ def register_view(request):
         email = data.get('email')
         gender = data.get('gender', 'Others')
 
+        # 1. 严格的互斥检查：先查用户名
         if User.objects.filter(username=username).exists():
-            return JsonResponse({'error': '👤Username already exists. Please choose another username.'
+            return JsonResponse({
+                'status': 'error', 
+                'message': '👤Username already exists. Please choose another username.'
             }, status=400)
 
-        if User.objects.filter(email=email).exists():
-            return JsonResponse({'error': '📧Email already exists. Please use another email or log in.'
+        # 2. 再查邮箱
+        elif User.objects.filter(email=email).exists():
+            return JsonResponse({
+                'status': 'error', 
+                'message': '📧Email already exists. Please use another email or log in.'
             }, status=400)
 
-        # 创建用户并同步创建 Profile
-        user = User.objects.create_user(username=username, password=password, email=email)
-        Profile.objects.create(user=user, gender=gender, email_verified=False)
+        # 3. 只有上面都不存在，才走创建逻辑
+        else:
+            user = User.objects.create_user(username=username, password=password, email=email)
+            Profile.objects.create(user=user, gender=gender, email_verified=False)
 
-        # views2 强大的邮件验证系统
-        verify_link = f"http://127.0.0.1:8000/verify-email/{username}/"
-        try:
-            send_mail(
-                'Verify your MoodBloom account',
-                f'''
-Welcome to MoodBloom 🌸
-Thank you for registering!
+            # 邮件发送系统
+            verify_link = f"http://127.0.0.1:8000/verify-email/{username}/"
+            try:
+                send_mail(
+                    'Verify your MoodBloom account',
+                    f'Welcome to MoodBloom 🌸\n\nPlease verify your email: {verify_link}',
+                    'adminmoodbloom@gmail.com',
+                    [email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                print(f"Email sending failed: {e}")
 
-Please verify your email address by clicking the link below:
+            # ✅ 成功返回：确保这里只返回这一句
+            return JsonResponse({
+                'status': 'success',
+                'message': '🎉 Account created successfully! 📩 Please check your email and verify your account before logging in.'
+            }, status=200)
 
-{verify_link}
-
-⚠️ You must verify your email before logging in.
-
-Thank you for joining MoodBloom!
-                ''',
-                'adminmoodbloom@gmail.com',
-                [email],
-                fail_silently=False,
-            )
-
-        except Exception as e:
-            print(f"Email sending failed: {e}")
-
-        return JsonResponse({'message': '🎉 Account created successfully! 📩 Please check your email and verify your account before logging in.', 
-                             'status': 'OK'})
     return render(request, 'register.html')
 
 
@@ -132,7 +131,7 @@ def verify_email(request, username):
     profile.save()
     return render(request,'email_verified.html')
 
-
+@login_required
 @csrf_exempt
 @login_required
 def change_password(request):
@@ -230,19 +229,36 @@ def profile_view(request):
 # 2. 心情记录与相册模块 (融合 views1 与 views2 的多字段录入)
 # ==========================================
 
+@login_required 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required
 def mainpage_view(request):
-    # 1. 🌟 新增：获取当前登录用户的 Profile 扩展信息（用于主页左上角头像）
     profile, _ = Profile.objects.get_or_create(user=request.user)
+    entries = MoodEntry.objects.filter(user=request.user).order_by('-entry_date', '-created_at')
     
-    # 2. 📝 保留（你原本的代码）：获取当前用户的日记记录
-    entries = MoodEntry.objects.filter(user=request.user).order_by('-created_at')
+    latest_entry = entries.first()
+    latest_photo_url = None
     
-    # 3. 🚀 融合返回：把 profile 和 entries 一起打包丢给前端
+    if latest_entry:
+        # 使用你在 models.py 中定义的 related_name='photos'
+        latest_photo = latest_entry.photos.order_by('-id').first()
+        if latest_photo and latest_photo.image:
+            latest_photo_url = latest_photo.image.url
+            
+    # --- 【修正点】在这里定义 mood_data_json ---
+    # 如果你没有特殊的图片命名规则，建议使用 entry.mood + ".png" 
+    # 或者根据你的实际需求修改此处的逻辑
+    mood_data_json = json.dumps({
+        entry.entry_date.strftime('%Y-%m-%d'): entry.mood + ".png" 
+        for entry in entries
+    })
+    # ------------------------------------------
+
     return render(request, 'mainpage.html', {
         'profile': profile,
-        'entries': entries
+        'entries': entries,
+        'latest_photo_url': latest_photo_url,
+        'latest_entry': latest_entry,
+        'mood_data_json': mood_data_json # 现在这个变量已定义，不会报错了
     })
 
 @csrf_exempt
@@ -476,18 +492,29 @@ def check_session(request):
 @login_required
 def dashboard_view(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
-        moods = MoodEntry.objects.filter(user=request.user)
-
+        # 1. 基础查询：当前用户的所有心情
+        all_user_moods = MoodEntry.objects.filter(user=request.user)
+        
+        # 2. 月份过滤（只针对图表和百分比数据）
         selected_month = request.GET.get("month")
         if selected_month:
             year, month = selected_month.split("-")
             year = int(year)
             month = int(month)
-            last_day = monthrange(year, month)[1]
-            moods = moods.filter(entry_date__year=year,entry_date__month=month)
+        else:
+            today = date.today()
+            year = today.year
+            month = today.month
 
+        last_day = monthrange(year, month)[1]
+        # 统一使用 entry_date 进行过滤
+        moods = all_user_moods.filter(entry_date__year=year, entry_date__month=month)
+
+        # 3. 基础统计
         mood_counts = moods.values('category').annotate(total=Count('id'))
         total_entries = moods.count()
+        
+        # 4. 每周分布统计
         weekly_entries = []
         for start_day in [1, 8, 15, 22, 29]:
             if start_day > last_day:
@@ -496,23 +523,34 @@ def dashboard_view(request):
             count = moods.filter(entry_date__day__gte=start_day, entry_date__day__lte=end_day).count()
             weekly_entries.append({"label": f"{start_day}-{end_day}", "total": count })
 
-        monthly_distribution = moods.annotate(month=TruncMonth('created_at')).values('month', 'mood').annotate(total=Count('id')).order_by('month')
+        # 🔥【修复 1】解决 monthly_distribution 中包含 date 对象无法转 JSON 的问题
+        monthly_distribution_query = moods.annotate(month=TruncMonth('entry_date')).values('month', 'mood').annotate(total=Count('id')).order_by('month')
+        monthly_distribution = []
+        for item in monthly_distribution_query:
+            monthly_distribution.append({
+                'month': item['month'].strftime('%Y-%m') if item['month'] else '',
+                'mood': item['mood'],
+                'total': item['total']
+            })
+        
         frequent_mood = moods.values('category').annotate(total=Count('id')).order_by('-total').first()
         if not frequent_mood:
             frequent_mood = {'category': 'No Data', 'total': 0}
 
         percentage_data = []
         for item in mood_counts:
+            category_name = item['category'] or 'Unknown'
             percentage = (item['total'] / total_entries) * 100 if total_entries > 0 else 0
-            percentage_data.append({'category': item['category'], 'percentage': round(percentage, 2)})
+            percentage_data.append({'category': category_name, 'percentage': round(percentage, 2)})
 
+        # 5. 情绪建议逻辑
         recommendation = (
             "No mood records were found for this period. "
             "Start tracking your moods to learn more about your emotional patterns."
         )
         
         sorted_data = sorted(percentage_data, key=lambda x: x['percentage'], reverse=True)
-        if sorted_data:
+        if sorted_data and total_entries > 0:
             top_mood = sorted_data[0]['category'].lower()
             top_percentage = sorted_data[0]['percentage']
 
@@ -520,42 +558,34 @@ def dashboard_view(request):
                 recommendation = (
                     f"Happiness accounted for {top_percentage}% of your mood entries this month. "
                     "Your records suggest that positive emotions have been a significant part of your recent experiences. "
-                    "Take time to appreciate the people, activities, and moments that contributed to these feelings. "
-                    "Recognizing these patterns can help you continue building a healthy and fulfilling lifestyle."
+                    "Take time to appreciate the people, activities, and moments that contributed to these feelings."
                 )
-
             elif top_mood == "sad":
                 recommendation = (
                     f"Sadness accounted for {top_percentage}% of your mood entries this month. "
-                    "Your mood records indicate that you may have been facing challenges or emotional pressures recently. "
-                    "Remember that difficult emotions are a normal part of life. Consider giving yourself time to rest, "
-                    "reflect, connect with supportive people, or engage in activities that help you feel calm and cared for."
+                    "Your mood records indicate that you may have been facing challenges recently. "
+                    "Remember that difficult emotions are a normal part of life. Consider giving yourself time to rest."
                 )
-
             elif top_mood == "angry":
                 recommendation = (
                     f"Anger accounted for {top_percentage}% of your mood entries this month. "
-                    "Strong emotions can often signal stress, frustration, or situations that deserve attention. "
-                    "Try taking short breaks, practicing deep breathing, exercising, or writing down your thoughts. "
-                    "Healthy emotional expression can help transform tension into positive action."
+                    "Strong emotions can often signal stress. Try taking short breaks, practicing deep breathing, or exercising."
                 )
-
             elif top_mood == "neutral":
                 recommendation = (
                     f"Neutral moods accounted for {top_percentage}% of your mood entries this month. "
-                    "Periods of emotional stability can be valuable opportunities for reflection and personal growth. "
-                    "Consider exploring a new hobby, learning a new skill, or setting small goals to create meaningful experiences."
+                    "Periods of emotional stability can be valuable opportunities for reflection and personal growth."
                 )
 
-        trend_data = defaultdict(
-            lambda: {"happy": 0, "sad": 0, "angry": 0, "neutral": 0 })
-            
+        # 6. 折线图数据处理
+        trend_data = defaultdict(lambda: {"happy": 0, "sad": 0, "angry": 0, "neutral": 0 })
         for mood in moods:
             day = mood.entry_date
             category = (mood.category or "").lower()
             if category in trend_data[day]:
                 trend_data[day][category] += 1
 
+        # 🔥【修复 2】这里的 day 原本是 date 对象，必须转为 str(day) 避免底层格式序列化失败
         formatted_trend = []
         for day in sorted(trend_data.keys()):
             formatted_trend.append({
@@ -566,16 +596,23 @@ def dashboard_view(request):
                 "neutral": trend_data[day]["neutral"],
             })
         
-        dates = moods.order_by('-created_at').values_list('created_at__date', flat=True).distinct()
+        # 7. Streak 算法
+        dates = all_user_moods.order_by('-entry_date').values_list('entry_date', flat=True).distinct()
 
         current_streak = 0
         if dates:
-            today = date.today()
+            check_date = date.today()
+            if dates[0] != check_date and dates[0] == check_date - timedelta(days=1):
+                check_date = check_date - timedelta(days=1)
+                
             for entry_date in dates:
-                if entry_date == today:
+                if entry_date == check_date:
                     current_streak += 1
-                    today = today - timedelta(days=1)
-                else: break
+                    check_date = check_date - timedelta(days=1)
+                elif entry_date > check_date:
+                    continue  
+                else: 
+                    break
 
         longest_streak = 0
         temp_streak = 1
@@ -585,16 +622,16 @@ def dashboard_view(request):
             for i in range(1, len(date_list)):
                 if (date_list[i] - date_list[i - 1]).days == 1:
                     temp_streak += 1
-                else:
+                elif (date_list[i] - date_list[i - 1]).days > 1:
                     longest_streak = max(longest_streak, temp_streak)
                     temp_streak = 1
-                    
             longest_streak = max(longest_streak, temp_streak)
 
+        # 返回安全的 JSON
         return JsonResponse({
             'total_moods': list(mood_counts),
             'percentage_distribution': percentage_data,
-            'monthly_distribution': list(monthly_distribution),
+            'monthly_distribution': monthly_distribution, # 使用处理后的纯列表
             'trend_over_time': formatted_trend,
             'most_frequent_mood': frequent_mood,
             'current_streak': current_streak,
@@ -603,12 +640,13 @@ def dashboard_view(request):
             'weekly_entries': list(weekly_entries),
         })
 
+    # --- GET 页面加载逻辑 ---
     user_moods = MoodEntry.objects.filter(user=request.user)
     distribution = list(user_moods.values('mood').annotate(count=Count('id')))
-    trends_query = user_moods.annotate(date_only=Cast('created_at', DateField())).values('date_only').annotate(avg_intensity=Avg('intensity')).order_by('date_only')
+    trends_query = user_moods.annotate(date_only=Cast('entry_date', DateField())).values('date_only').annotate(avg_intensity=Avg('intensity')).order_by('date_only')
     trends_list = [{'created_at__date': str(i['date_only']), 'avg_intensity': float(i['avg_intensity'])} for i in trends_query]
     
-    today = datetime.today()
+    today = date.today()
     months = []
     for i in range(11, -1, -1):
         year = today.year
@@ -618,17 +656,18 @@ def dashboard_view(request):
             year -= 1
             
         last_day = monthrange(year, month)[1]
-        months.append({"value": f"{year}-{month:02d}","label": f"01 {datetime(year, month, 1).strftime('%b %Y')} - {last_day} {datetime(year, month, 1).strftime('%b %Y')}"
-                       })
+        months.append({
+            "value": f"{year}-{month:02d}",
+            "label": f"01 {datetime(year, month, 1).strftime('%b %Y')} - {last_day} {datetime(year, month, 1).strftime('%b %Y')}"
+        })
 
     return render(request, 'dashboard.html', {
-        'moods': user_moods.order_by('-created_at'), 
+        'moods': user_moods.order_by('-entry_date'), 
         'mood_distribution_json': json.dumps(distribution), 
         'mood_trends_json': json.dumps(trends_list),
         'months': months,
         'current_month': today.strftime("%Y-%m")
     })
-
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required
@@ -800,3 +839,67 @@ def editentry_view(request):
     }
 
     return render(request, 'editentry.html', context)
+
+@csrf_exempt
+@login_required
+def delete_account_view(request):
+    if request.method == 'POST':
+        try:
+            user = request.user
+            # 先注销用户的当前登录 session
+            logout(request)
+            # 从数据库中完全抹除用户记录
+            user.delete()
+            return JsonResponse({'status': 'success', 'message': 'Account deleted successfully.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+            
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed.'}, status=405)
+
+# 1. 渲染登录页
+def admin_login_page_view(request):
+    return render(request, 'login_admin.html')
+
+# 2. 处理真实的登录逻辑
+def admin_login_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        
+        # 使用 Django 自带的验证函数
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            if user.is_staff: # 只有 staff 才能进后台
+                login(request, user)
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Not an admin'}, status=403)
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Invalid credentials'}, status=401)
+    return JsonResponse({'status': 'error'}, status=400)
+
+# 3. 后台主页面
+def is_admin(user):
+    return user.is_staff
+
+@user_passes_test(is_admin, login_url='/admin-login/')
+def admin_portal_view(request):
+    # 这里可以添加数据查询
+    return render(request, 'admin.html')
+
+# users/views.py
+
+def article_admin_view(request):
+    # 1. 从数据库查询所有文章
+    articles = Article.objects.all()
+    
+    # 2. 将数据放在 context 字典中传给模板
+    context = {
+        'articles': articles
+    }
+    
+    # 3. render 函数会自动处理这个 context
+    return render(request, 'article_admin.html', context)
+

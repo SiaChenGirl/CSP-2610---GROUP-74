@@ -1,0 +1,14 @@
+{% extends "admin/base.html" %}
+
+{% block branding %}
+<h1 id="site-name">🌸 MoodBloom Admin</h1>
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+    /* 这里只写颜色和字体，千万不要在这里写 <div class="stats"> 等结构代码 */
+    :root { --purple-main: #b19ce5; }
+    #header { background-color: var(--purple-main) !important; }
+    /* ... 其余颜色样式 ... */
+</style>
+{% endblock %}

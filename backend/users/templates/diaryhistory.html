@@ -20,85 +20,74 @@
             flex-direction: column;
         }
         .profile-card{
-    display:flex;
-    align-items:center;
-    gap:15px;
-
-    background:rgba(255,255,255,.9);
-    padding:12px 20px;
-    border-radius:25px;
-
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
-
-    text-decoration:none;
-    color:#4a3494;
-}
-.profile-avatar{
-    width:55px;
-    height:55px;
-    border-radius:50%;
-
-    background:#ffe7a6;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:28px;
-}
-
-.profile-name{
-    font-weight:600;
-    font-size:16px;
-}
-
-.profile-text{
-    font-size:13px;
-    color:#7a5fc7;
-}
-.menu-icon{
-    font-size:32px;
-    cursor:pointer;
-    color:#6a4fbf;
-    width:180px;
-    text-align:right;
-}
-.side-nav{
-    position:fixed;
-    top:0;
-    right:-300px;
-    width:280px;
-    height:100%;
-    background:#fff;
-    box-shadow:-10px 0 30px rgba(0,0,0,.05);
-    border-left:1px solid #eee;
-    z-index:1000;
-    transition:.4s;
-    padding:50px 30px;
-    box-sizing:border-box;
-}
-
-.side-nav.active{
-    right:0;
-}
-
-.side-nav a{
-    display:block;
-    padding:18px 0;
-    color:#4a3494;
-    text-decoration:none;
-    font-weight:bold;
-    font-size:18px;
-}
-
-.close-nav{
-    font-size:40px;
-    cursor:pointer;
-    position:absolute;
-    top:15px;
-    right:25px;
-    color:#6a4fbf;
-}
+            display:flex;
+            align-items:center;
+            gap:15px;
+            background:rgba(255,255,255,.9);
+            padding:12px 20px;
+            border-radius:25px;
+            box-shadow:0 5px 15px rgba(0,0,0,.08);
+            text-decoration:none;
+            color:#4a3494;
+        }
+        .profile-avatar{
+            width:55px;
+            height:55px;
+            border-radius:50%;
+            background:#ffe7a6;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:28px;
+        }
+        .profile-name{
+            font-weight:600;
+            font-size:16px;
+        }
+        .profile-text{
+            font-size:13px;
+            color:#7a5fc7;
+        }
+        .menu-icon{
+            font-size:32px;
+            cursor:pointer;
+            color:#6a4fbf;
+            width:180px;
+            text-align:right;
+        }
+        .side-nav{
+            position:fixed;
+            top:0;
+            right:-300px;
+            width:280px;
+            height:100%;
+            background:#fff;
+            box-shadow:-10px 0 30px rgba(0,0,0,.05);
+            border-left:1px solid #eee;
+            z-index:1000;
+            transition:.4s;
+            padding:50px 30px;
+            box-sizing:border-box;
+        }
+        .side-nav.active{
+            right:0;
+        }
+        .side-nav a{
+            display:block;
+            padding:18px 0;
+            color:#4a3494;
+            text-decoration:none;
+            font-weight:bold;
+            font-size:18px;
+        }
+        .close-nav{
+            font-size:40px;
+            cursor:pointer;
+            position:absolute;
+            top:15px;
+            right:25px;
+            color:#6a4fbf;
+        }
 
         .header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; }
         .logo img { width: 180px; cursor: pointer; }
@@ -192,22 +181,26 @@
             white-space: pre-line;
         }
 
-        /* Embedded Photo Box */
+        /* ✨ 升级版多照片网格容器：放多少张照片都能整齐平铺自动排版 */
         .diary-photo-container {
             width: 100%;
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            max-height: 260px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            padding: 8px;
+            box-sizing: border-box;
             background: rgba(255, 255, 255, 0.4);
+            max-height: 400px;
+            overflow-y: auto;
         }
         .diary-photo {
             width: 100%;
-            height: 100%;
+            height: 140px;
             object-fit: cover;
+            border-radius: 12px;
         }
 
         /* Music Player Widget */
@@ -285,55 +278,26 @@
     {% csrf_token %}
 
    <div class="header-wrapper">
-
-    <a href="{% url 'profile' %}" class="profile-card">
-
-        <div class="profile-avatar">
-            😊
-        </div>
-
-        <div>
-            <div class="profile-name">
-                Hi, {{ user.username }}!
+        <a href="{% url 'profile' %}" class="profile-card">
+            <div class="profile-avatar">😊</div>
+            <div>
+                <div class="profile-name">Hi, {{ user.username }}!</div>
+                <div class="profile-text">Let's have a great day!</div>
             </div>
-
-            <div class="profile-text">
-                Let's have a great day!
-            </div>
-        </div>
-
-    </a>
-
-    <div class="title-area">
-        <img src="{% static 'moodbloom.png' %}">
+        </a>
+        <div class="title-area"><img src="{% static 'moodbloom.png' %}"></div>
+        <div class="menu-icon" onclick="toggleNav()">☰</div>
     </div>
 
-    <div class="menu-icon" onclick="toggleNav()">☰</div>
-
-</div>
-<div class="side-nav" id="sideNav">
-    <span class="close-nav" onclick="toggleNav()">&times;</span>
-
-    <div style="margin-top:40px;">
-
-    <a href="{% url 'feedback' %}">
-        💬 Feedback
-    </a>
-
-<a href="{% url 'logout' %}">
-    🚪 Logout
-</a>
-
- <a href="{% url 'logout' %}"
-       style="color:#e57373;margin-top:50px;border:none;">
-        🗑️ Delete Account
-    </a>
-  
-
-</div>
-</div>
+    <div class="side-nav" id="sideNav">
+        <span class="close-nav" onclick="toggleNav()">&times;</span>
+        <div style="margin-top:40px;">
+            <a href="{% url 'feedback' %}">💬 Feedback</a>
+            <a href="{% url 'logout' %}">🚪 Logout</a>
+            <a href="javascript:void(0);" onclick="clickDeleteAccount()" style="color:#e57373; margin-top:50px; border:none; cursor:pointer;">🗑️ Delete Account</a>
+        </div>
+    </div>
     
-
     <div class="divider-line" style="height:1px; background:rgba(106, 79, 191, 0.2); margin:0 50px;"></div>
 
     <div class="content">
@@ -348,17 +312,13 @@
             </div>
 
             <div class="mood-section">
-                <img  id="mood-emoji"  class="mood-emoji"  src=""  alt="Mood" >
+                <img id="mood-emoji" class="mood-emoji" src="" alt="Mood">
                 <span class="mood-text" id="mood-text">Happy</span>
             </div>
 
-            <div class="diary-text" id="diary-text-content">
-                Loading your memory entry...
-            </div>
+            <div class="diary-text" id="diary-text-content">Loading your memory entry...</div>
 
-            <div class="diary-photo-container" id="photo-box">
-                <img src="{% static 'default_diary.jpg' %}" class="diary-photo" id="diary-photo-img" alt="Diary attachment">
-            </div>
+            <div class="diary-photo-container" id="photo-box"></div>
 
             <div class="music-player">
                 <div class="music-info">
@@ -371,7 +331,6 @@
                 <audio id="historyAudio" controls style="width:100%; margin-top:10px;"></audio>
             </div>
             
-
             <div class="action-block">
                 <button type="button" class="btn-edit" onclick="navigateToEditPage()">
                     ✏️ Edit Memory
@@ -381,12 +340,10 @@
         </div>
     </div>
 
-    <footer>
-        © 2026 MoodBloom | Mood Your Day, Bloom Your Mind.
-    </footer>
+    <footer>© 2026 MoodBloom | Mood Your Day, Bloom Your Mind.</footer>
 
     <script>
-        // 核心改动：完美的将 Django 数据库里的内容无缝注入到你原本的数据数组里
+        // ✨ 核心修复：完美拉取该条日记绑定的所有关联照片，转化为前端安全通用的纯数组形式
         const singleDayEntries = JSON.parse(`[
 {% if entries %}
     {% for entry in entries %}
@@ -396,7 +353,11 @@
         "emoji": "{{ entry.emoji|default:'😊' }}",
         "mood": "{{ entry.mood|default:'Happy' }}",
         "text": "{{ entry.diary_text|escapejs }}",
-        "photo": "{% if entry.photos.first %}{{ entry.photos.first.image.url }}{% else %}{% static 'default_diary.jpg' %}{% endif %}",
+        "photos": [
+            {% for p in entry.photos.all %}
+                "{{ p.image.url }}"{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
         "track": "{% if entry.selected_music %}{{ entry.selected_music.title }}{% else %}No Song{% endif %}",
         "track_url": "{% if entry.selected_music %}{{ entry.selected_music.audio_file.url }}{% endif %}"
     }{% if not forloop.last %},{% endif %}
@@ -408,40 +369,19 @@
         "emoji": "🌸",
         "mood": "No Entry",
         "text": "No blossoming memories found for this day. Click Edit to create one!",
-        "photo": "{% static 'default_diary.jpg' %}",
+        "photos": [],
         "track": "Silence"
     }
 {% endif %}
 ]`);
 
         const moodImageMap = {
-            "Happy": "happy.png",
-            "Kiss": "kiss.png",
-            "Yeah": "happy.png",
-            "Fighting": "motivated.png",
-            "Good": "good.png",
-            "Lovely": "lovely.png",
-            "Admire": "admire.png",
-            "Warm": "warm.png",
-            "Energetic": "energetic.png",
-            "Motivated": "motivated.png",
-
-            "Sad": "sad.png",
-            "Sick": "sick.png",
-            "Cringe": "awkward.png",
-            "Tired": "sleepy.png",
-            "Exhausted": "exhausted.png",
-            "Guilty": "guilty.png",
-            "Afraid": "afraid.png",
-
-            "Neutral": "neutral.png",
-            "Shy": "shy.png",
-            "Sleepy": "sleepy.png",
-            "Curious": "curious.png",
-
-            "Angry": "angry.png",
-            "Shock": "shock.png",
-            "Trick": "mischievous.png",
+            "Happy": "happy.png", "Kiss": "kiss.png", "Yeah": "happy.png", "Fighting": "motivated.png",
+            "Good": "good.png", "Lovely": "lovely.png", "Admire": "admire.png", "Warm": "warm.png",
+            "Energetic": "energetic.png", "Motivated": "motivated.png", "Sad": "sad.png", "Sick": "sick.png",
+            "Cringe": "awkward.png", "Tired": "sleepy.png", "Exhausted": "exhausted.png", "Guilty": "guilty.png",
+            "Afraid": "afraid.png", "Neutral": "neutral.png", "Shy": "shy.png", "Sleepy": "sleepy.png",
+            "Curious": "curious.png", "Angry": "angry.png", "Shock": "shock.png", "Trick": "mischievous.png",
             "Awkward": "awkward.png"
         };
 
@@ -456,20 +396,27 @@
             document.getElementById('mood-text').innerText = currentEntry.mood;
 
             const moodImageFile = moodImageMap[currentEntry.mood];
-            if (moodImageFile) {document.getElementById('mood-emoji').src = `/static/emojis/${moodImageFile}`;}
+            if (moodImageFile) {
+                document.getElementById('mood-emoji').src = `/static/emojis/${moodImageFile}`;
+            }
 
             document.getElementById('diary-text-content').innerText = currentEntry.text;
 
+            // ✨ ✨ ✨ 核心修改：动态循环把每张属于本条 MoodEntry 的照片平铺输出 ✨ ✨ ✨
             const photoBox = document.getElementById('photo-box');
-            const photoImg = document.getElementById('diary-photo-img');
-            if (
-                currentEntry.photo && 
-                !currentEntry.photo.includes('default_diary.jpg')
-            ) {
-                photoBox.style.display = 'flex';
-                photoImg.src = currentEntry.photo;
+            photoBox.innerHTML = ''; // 每次翻页清空上一张的多图缓存
+
+            if (currentEntry.photos && currentEntry.photos.length > 0) {
+                photoBox.style.display = 'grid'; // 启动 Grid 排版
+                currentEntry.photos.forEach(photoUrl => {
+                    const img = document.createElement('img');
+                    img.src = photoUrl;
+                    img.className = 'diary-photo';
+                    img.alt = 'Diary attachment';
+                    photoBox.appendChild(img);
+                });
             } else {
-                photoBox.style.display = 'none';
+                photoBox.style.display = 'none'; // 没照片就自动收起
             }
 
             document.getElementById('track-title').innerText = currentEntry.track;
@@ -477,7 +424,6 @@
             const historyAudio = document.getElementById('historyAudio');
             historyAudio.src = currentEntry.track_url || "";
 
-            // 如果只有一条数据（或者是空提示），禁用翻页按钮
             if (singleDayEntries.length <= 1 || currentEntry.id === 0) {
                 document.getElementById('prev-btn').disabled = true;
                 document.getElementById('next-btn').disabled = true;
@@ -492,15 +438,11 @@
             updateCardUI();
         }
 
-        // 路由处理器：安全地跳往你的修改页面
         function navigateToEditPage() {
             const currentEntry = singleDayEntries[currentEntryIndex];
-            
             if (currentEntry.id === 0) {
-                // 如果是空数据，带上当前日期跳去创建或编辑页
                 window.location.href = `/moodentry/?date=${encodeURIComponent(currentEntry.date)}`;
             } else {
-                // 正常数据带上数据库真实 ID 进行修改
                 window.location.href = `/edit-entry/?id=${currentEntry.id}&date=${encodeURIComponent(currentEntry.date)}`;
             }
         }
@@ -508,9 +450,40 @@
         window.onload = function() {
             updateCardUI();
         };
-     function toggleNav(){
-    console.log("clicked");
-    document.getElementById("sideNav").classList.toggle("active");
+
+        function toggleNav(){
+            document.getElementById("sideNav").classList.toggle("active");
+        }
+
+        async function clickDeleteAccount() {
+    // 1. Double confirmation to prevent accidental clicks
+    const confirmDelete = confirm("⚠️ WARNING: This action will permanently delete all your mood logs, photos, and personal data. This process is irreversible. Are you sure you want to delete your account?");
+    
+    if (confirmDelete) {
+        try {
+            // 2. Fetch request with proper security headers
+            const response = await fetch("{% url 'delete_account' %}", {
+                method: "POST",
+                headers: { 
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": "{{ csrf_token }}" // Critical for Django security
+                }
+            });
+            
+            const data = await response.json();
+            
+            // 3. Handle response
+            if (data.status === 'success') {
+                alert("🌸 Your account has been successfully deleted. Thank you for using MoodBloom, we hope to see you again!");
+                window.location.href = "{% url 'login' %}"; 
+            } else {
+                alert("❌ Operation failed: " + data.message);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("❌ A network error occurred. Please check your connection and try again.");
+        }
+    }
 }
     </script>
 </body>

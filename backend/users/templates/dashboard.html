@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoodBloom | Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght=600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     
     <style>
         html, body {
@@ -347,10 +347,10 @@
     🚪 Logout
 </a>
 
-   <a href="{% url 'logout' %}"
-       style="color:#e57373;margin-top:50px;border:none;">
-        🗑️ Delete Account
-    </a>
+   <a href="javascript:void(0);" onclick="clickDeleteAccount()" style="color:#e57373; margin-top:50px; border:none; cursor:pointer;">
+    🗑️ Delete Account
+</a>
+
 
 
 
@@ -777,14 +777,38 @@
                 pointRadius: 4
             }];
             flowChart.update();
-
-
-
-
-
         }
 
-
+async function clickDeleteAccount() {
+    // 1. Double confirmation to prevent accidental clicks
+    const confirmDelete = confirm("⚠️ WARNING: This action will permanently delete all your mood logs, photos, and personal data. This process is irreversible. Are you sure you want to delete your account?");
+    
+    if (confirmDelete) {
+        try {
+            // 2. Fetch request with proper security headers
+            const response = await fetch("{% url 'delete_account' %}", {
+                method: "POST",
+                headers: { 
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": "{{ csrf_token }}" // Critical for Django security
+                }
+            });
+            
+            const data = await response.json();
+            
+            // 3. Handle response
+            if (data.status === 'success') {
+                alert("🌸 Your account has been successfully deleted. Thank you for using MoodBloom, we hope to see you again!");
+                window.location.href = "{% url 'login' %}"; 
+            } else {
+                alert("❌ Operation failed: " + data.message);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("❌ A network error occurred. Please check your connection and try again.");
+        }
+    }
+}
 
     </script>
 </body>
