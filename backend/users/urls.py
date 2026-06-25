@@ -40,7 +40,7 @@ urlpatterns = [
     path('api/dashboard-status/', views.dashboard_view),
     path('api/music-library/', views.get_music_library),
     path('api/articles/favorite/<int:article_id>/', views.toggle_favorite, name='toggle_favorite'),
-   path('search/', views.search_view, name='search'),
+    path('search/', views.search_view, name='search'),
     # ==========================================
     # 3. 密码重置专用路由 (核心修复区)
     # ==========================================

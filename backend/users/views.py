@@ -824,6 +824,35 @@ def diary_history_view(request):
 
 @login_required
 def editentry_view(request):
+
+    if request.method == "POST":
+        action = request.POST.get('action')
+        if action == 'delete':
+            entry_id = request.POST.get('id')
+            entry = MoodEntry.objects.filter(id=entry_id, user=request.user).first()
+            if not entry:
+                return JsonResponse({"status": "error", "message": "Entry not found."})
+            entry.delete()
+            return JsonResponse({"status": "success"})
+                
+        entry_id = request.POST.get('id')
+        entry = MoodEntry.objects.filter(id=entry_id, user=request.user).first()
+        if not entry:
+            return JsonResponse({"status": "error", "message": "Entry not found."})
+        entry.category = request.POST.get('category')
+        entry.mood = request.POST.get('mood_name')
+        entry.diary_text = request.POST.get('content')
+        music_id = request.POST.get('music_id')
+        
+        if music_id:
+            entry.selected_music = Music.objects.filter(id=music_id).first()
+        deleted_photo_ids = json.loads(request.POST.get('deleted_photo_ids', '[]'))
+        MoodPhoto.objects.filter(id__in=deleted_photo_ids, mood_entry=entry).delete()
+        for photo in request.FILES.getlist('new_photos'):
+            MoodPhoto.objects.create(mood_entry=entry, image=photo)
+        entry.save()
+        return JsonResponse({"status": "success"})
+        
     entry_id = request.GET.get('id')
 
     entry = MoodEntry.objects.filter(
@@ -835,7 +864,9 @@ def editentry_view(request):
         return redirect('diaryhistory')
 
     context = {
-        'entry': entry
+        'entry': entry,
+        'songs': Music.objects.all(),
+        'entry_date': entry.entry_date.strftime('%Y-%m-%d')
     }
 
     return render(request, 'editentry.html', context)

@@ -263,20 +263,15 @@ Choose the emotion that best describes your mood.
             -
         </div>
 
-        <audio id="audioPlayer"></audio>
-
-        <div style="display:flex; align-items:center; gap:10px;">
-            <button onclick="togglePlay()" style="padding:8px 12px; border:none; border-radius:10px; background:#6a4fbf; color:white; cursor:pointer;">
-                ▶ / ⏸
-            </button>
-
-            <input type="range" id="progressBar" value="0" style="flex:1;">
-        </div>
-
-        <div style="display:flex; justify-content:space-between; font-size:12px; color:#7a5fc7; margin-top:5px;">
-            <span id="currentTime">0:00</span>
-            <span id="duration">0:00</span>
-        </div>
+        <audio
+            id="audioPlayer"
+            controls
+            style="
+                width:100%;
+                margin-top:10px;
+                border-radius:12px;
+            "
+            ></audio>
 
         <select id="songSelect" onchange="loadSong()" style="width:100%; padding:10px; border-radius:10px; margin-top:10px;">
             <option value="">Select Song</option>
@@ -502,47 +497,14 @@ function loadSong() {
 
     const [file, title] = value.split("|");
 
+    audio.pause();
     audio.src = file;
+    audio.load();
 
     document.getElementById("songTitle").innerText = title;
     document.getElementById("songArtist").innerText = "MoodBloom Music";
 
     audio.play();
-}
-
-/* PLAY / PAUSE */
-function togglePlay() {
-    if (audio.paused) {
-        audio.play();
-    } else {
-        audio.pause();
-    }
-}
-
-/* UPDATE PROGRESS BAR */
-audio.addEventListener("timeupdate", () => {
-    if (!audio.duration) return;
-
-    progressBar.max = audio.duration;
-    progressBar.value = audio.currentTime;
-
-    document.getElementById("currentTime").innerText = formatTime(audio.currentTime);
-    document.getElementById("duration").innerText = formatTime(audio.duration);
-});
-
-/* SEEK */
-progressBar.addEventListener("input", () => {
-    audio.currentTime = progressBar.value;
-});
-
-/* FORMAT TIME */
-function formatTime(sec) {
-    if (!sec || isNaN(sec)) return "0:00";
-
-    const m = Math.floor(sec / 60);
-    const s = Math.floor(sec % 60);
-
-    return m + ":" + (s < 10 ? "0" + s : s);
 }
 
 

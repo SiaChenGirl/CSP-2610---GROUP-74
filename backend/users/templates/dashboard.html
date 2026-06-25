@@ -218,7 +218,7 @@
 
         /* --- GRIDS --- */
         .grid-row-two { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; flex: 0.95; min-height: 0; }
-        .grid-row-three { display: grid; grid-template-columns: 0.8fr 1fr 1.3fr; gap: 14px; flex: 0.45; min-height: 0; margin-bottom: 0; }
+        .grid-row-three { display: grid; grid-template-columns: 0.8fr 1fr 1.3fr; gap: 14px; flex: 1; min-height: 0; margin-bottom: 0; }
         
         .chart-box {
             background: white;
@@ -259,14 +259,9 @@
 .chart-header h4{
     font-size:12px;
 }
-#weeklyAreaChart{
-    max-height:120px !important;
-}
-#frequencyBarChart{
-    max-height:120px !important;
-}
+
         /* --- PIE CHART --- */
-        .pie-chart-wrapper { position: relative; max-width: 100px; margin: 0 auto; flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; }
+        .pie-chart-wrapper { position: relative; max-width: 180px; margin: 0 auto; flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; }
         .pie-center-label { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%; }
         .pie-center-label h2 { margin: 0; font-size: 16px; color: #4a3494; font-weight: bold; line-height: 1; }
         .pie-center-label p { margin: 2px 0 0 0; font-size: 9px; color: #8e80bc; font-weight: bold; text-transform: uppercase; }
@@ -276,14 +271,46 @@
         .legend-desc-item span { color: #4a3494; }
 
         /* --- RECOMMENDATION CARD --- */
-        .recommendation-box { background: white; border-radius: 20px; padding: 10px 14px; box-shadow: 0 4px 15px rgba(106, 79, 191, 0.03); display: flex; flex-direction: column; min-height: 0; }
+        .recommendation-box { background: white; border-radius: 20px; padding: 12px 16px; box-shadow: 0 4px 15px rgba(106, 79, 191, 0.03); display: flex; flex-direction: column; justify-content:flex-start; overflow-y:hidden; min-height: 0; }
         .rec-title-row { font-size: 14px; font-weight: bold; color: #4a3494; margin-bottom: 8px; border-bottom: 1px solid #f5f2ff; padding-bottom: 6px; }
-        .rec-body-content { flex: 1; overflow: hidden; padding-right: 0; }
-        .rec-mood-header { font-size: 14px; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .rec-body-content { flex: none; overflow: hidden; padding-right: 0; }
+        .rec-mood-header { font-size: 14px; font-weight: bold; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
         .rec-text { font-size: 11px; line-height: 1.3; color: #5c5099; margin: 0; text-align: justify; }
         .rec-body-content::-webkit-scrollbar { width: 4px; }
         .rec-body-content::-webkit-scrollbar-thumb { background: #ded4ff; border-radius: 10px; }
 
+.insight-intro{
+    margin-bottom:10px;
+    line-height:1.4;
+    font-size:12px;
+    min-height:auto;
+    border:none;
+}
+
+.insight-title{
+    font-weight:700;
+    color:#6a4fbf;
+    margin-top:8px;
+    margin-bottom:4px;
+}
+
+.insight-list{
+    margin-bottom:4px;
+    line-height:1.3;
+    font-size:12px;
+}
+
+.insight-list li{
+    margin-bottom:8px;
+    line-height:1.5;
+    color:#5c5099;
+}
+
+.challenge-text{
+    line-height:1.3;
+    font-size:12px;
+    color:#5c5099;
+}
         /* --- CIRCLE ACTIONS --- */
          .circle-nav{
     display:flex;
@@ -479,14 +506,18 @@
                 </div>
 
                 <div class="recommendation-box">
-                    <div class="rec-title-row">Recommendation for Emotion</div>
+                    <div class="rec-title-row"> 🌸 Mood Insight </div>
                     <div class="rec-body-content">
-                        <div class="rec-mood-header" id="recMoodHeader">😊 Happy</div>
-                        <p class="rec-text" id="recommendationText">Loading ...</p>
-                    </div>
+                        <div class="rec-mood-header" id="recMoodHeader">😊 Happy </div>
+                        <p class="insight-intro" id="insightIntro"> Loading ... </p></div>
+                    <div class="insight-title"> 💜 Try This </div>
+                    <ul id="tryThisList" class="insight-list"></ul>
+                    <div class="insight-title"> ✨ Small Challenge </div>
+                    <div id="challengeText" class="challenge-text"> Loading... </div>
                 </div>
             </div>
         </div>
+
 
          <div class="circle-nav">
             <div class="nav-btn" title="Calendar Home" onclick="location.href='{% url 'mainpage' %}'"><img src="{% static 'icons/calendar.png' %}"></div>
@@ -502,11 +533,27 @@
 
         const moodColors = { happy: '#ffcc00', sad: '#007aff', angry: '#ff3b30', neutral: '#34c759' };
 
-        const emotionalTips = {
-            happy: { title: "😊 Happy", desc: "When you are feeling happy, it is a great opportunity to appreciate the positive moments in your life. Consider expressing gratitude, sharing your joy with others, setting new goals, or capturing memorable experiences to maintain your positive mindset and emotional well-being." },
-            sad: { title: "😢 Sad", desc: "When you are feeling sad, it is important to acknowledge your emotions and practice self-care. Listening to calming music, writing about your feelings, talking to someone you trust, or spending time outdoors can help improve your mood and provide emotional support." },
-            angry: { title: "😠 Angry", desc: "When you are feeling angry, taking time to calm down before reacting can help you manage your emotions effectively. Deep breathing, engaging in physical activities, taking a short break, or expressing your thoughts through creative activities can reduce stress and promote emotional balance." },
-            neutral: { title: "😐 Neutral", desc: "When you are feeling neutral, it can be a good time to explore new interests and focus on personal growth. Trying a new hobby, reading an interesting article, reflecting on your day, or setting small achievable goals can help maintain motivation and create meaningful experiences." }
+        const moodRecommendations = {
+            happy:{
+                intro:"You've been experiencing more positive emotions recently.",
+                tips:["Celebrate small wins", "Share happiness with friends" ],
+                challenge:"Write down 3 things you're grateful for today."
+            },
+            sad:{
+                intro:"You've experienced more low moods recently.",
+                tips:[ "Listen to calming music", "Talk to someone you trust" ],
+                challenge:"Spend 10 minutes outdoors today."
+            },
+            angry:{
+                intro:"Stress and frustration have appeared more frequently.",
+                tips:[ "Take deep breaths", "Listen to relaxing music" ],
+                challenge:"Pause for 30 seconds before reacting today."
+            },
+            neutral:{
+                intro:"Your emotions have been relatively balanced recently.",
+                tips:[ "Read an interesting article", "Explore a new hobby" ],
+                challenge:"Do one thing outside your routine today."
+            }
         };
 
         const chartOptionsBase = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
@@ -551,86 +598,6 @@
             });
         }
 
-        function changeTimeScale() {
-            const val = document.getElementById('timeScaleSelector').value;
-            let trendLabels, trendDatasets, freqData, pieData, flowLabels, flowData, totalCount, maxYVal;
-
-            if(val === 'day') {
-                trendLabels = ['12 AM', '4 AM', '8 AM', '12 PM', '4 PM', '8 PM'];
-                trendDatasets = [
-                    { label: 'Happy', data: [1, 0, 2, 3, 2, 1], borderColor: moodColors.happy, tension: 0.4, pointRadius: 2, fill: false },
-                    { label: 'Neutral', data: [0, 1, 1, 1, 1, 0], borderColor: moodColors.neutral, tension: 0.4, pointRadius: 2, fill: false },
-                    { label: 'Sad', data: [0, 0, 0, 0, 1, 0], borderColor: moodColors.sad, tension: 0.4, pointRadius: 2, fill: false }
-                ];
-                freqData = [9, 1, 0, 4]; pieData = [9, 1, 0, 4];
-                flowLabels = ['12AM', '4AM', '8AM', '12PM', '4PM', '8PM'];
-                flowData = [1, 1, 3, 4, 4, 1]; totalCount = 14; maxYVal = 10;
-            } else if (val === 'week') {
-                trendLabels = ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4'];
-                trendDatasets = [
-                    { label: 'Happy', data: [6, 5, 5, 5], borderColor: moodColors.happy, tension: 0.4, pointRadius: 2, fill: false },
-                    { label: 'Sad', data: [3, 4, 3, 4], borderColor: moodColors.sad, tension: 0.4, pointRadius: 2, fill: false },
-                    { label: 'Angry', data: [2, 3, 2, 2], borderColor: moodColors.angry, tension: 0.4, pointRadius: 2, fill: false },
-                    { label: 'Neutral', data: [1, 2, 1, 2], borderColor: moodColors.neutral, tension: 0.4, pointRadius: 2, fill: false }
-                ];
-                freqData = [21, 14, 9, 6]; pieData = [21, 14, 9, 6];
-                flowLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-                flowData = [12, 14, 11, 13]; totalCount = 50; maxYVal = 25;
-            } else {
-                trendLabels = ['Apr', 'May', 'Jun', 'Jul'];
-                trendDatasets = [
-                    { label: 'Happy', data: [25, 21, 28, 30], borderColor: moodColors.happy, tension: 0.4, pointRadius: 2, fill: false },
-                    { label: 'Sad', data: [15, 14, 12, 10], borderColor: moodColors.sad, tension: 0.4, pointRadius: 2, fill: false },
-                    { label: 'Angry', data: [8, 9, 5, 4], borderColor: moodColors.angry, tension: 0.4, pointRadius: 2, fill: false }
-                ];
-                freqData = [104, 51, 26, 18]; pieData = [104, 51, 26, 18];
-                flowLabels = ['April', 'May', 'June', 'July'];
-                flowData = [48, 50, 45, 44]; totalCount = 199; maxYVal = 120;
-            }
-
-            document.getElementById('totalEntriesVal').innerText = totalCount;
-            document.getElementById('pieTotalLabel').innerText = totalCount;
-
-            const pHappy = totalCount > 0 ? Math.round((pieData[0] / totalCount) * 100) : 0;
-            const pSad = totalCount > 0 ? Math.round((pieData[1] / totalCount) * 100) : 0;
-            const pAngry = totalCount > 0 ? Math.round((pieData[2] / totalCount) * 100) : 0;
-            const pNeutral = totalCount > 0 ? Math.round((pieData[3] / totalCount) * 100) : 0;
-
-            document.getElementById('pct-happy').innerText = `Happy ${pHappy}%`;
-            document.getElementById('pct-sad').innerText = `Sad ${pSad}%`;
-            document.getElementById('pct-angry').innerText = `Angry ${pAngry}%`;
-            document.getElementById('pct-neutral').innerText = `Neutral ${pNeutral}%`;
-
-            const counts = [
-                { type: 'happy', value: pieData[0] }, { type: 'sad', value: pieData[1] },
-                { type: 'angry', value: pieData[2] }, { type: 'neutral', value: pieData[3] }
-            ];
-            counts.sort((a, b) => b.value - a.value);
-            const topMood = counts[0].type;
-
-            document.getElementById('recMoodHeader').innerText = emotionalTips[topMood].title;
-            document.getElementById('recMoodText').innerText = emotionalTips[topMood].desc;
-
-            let moodCapString = topMood.charAt(0).toUpperCase() + topMood.slice(1);
-            let topPctValue = Math.round((counts[0].value / totalCount) * 100);
-            document.getElementById('mostFrequentMoodTitle').innerText = `${moodCapString} ↑`;
-            document.getElementById('mostFrequentMoodSub').innerText = `${topPctValue}% of total`;
-
-            trendChart.data.labels = trendLabels;
-            trendChart.data.datasets = trendDatasets;
-            trendChart.update();
-            distributionChart.data.datasets[0].data = pieData;
-            distributionChart.update();
-            frequencyChart.data.datasets[0].data = freqData;
-            frequencyChart.options.scales.y.max = maxYVal;
-            frequencyChart.update();
-            flowChart.data.labels = flowLabels;
-            flowChart.data.datasets = [{
-                label: 'Volume', data: flowData, borderColor: '#9370DB',
-                backgroundColor: 'rgba(147, 112, 219, 0.08)', fill: true, tension: 0.3, pointRadius: 3
-            }];
-            flowChart.update();
-        }
 
         function updateMonthRange() {
             console.log("Dropdown Changed");
@@ -665,6 +632,24 @@
             document.getElementById("mostFrequentMoodTitle").innerText =
                 data.most_frequent_mood.category;
             const topMood = (data.most_frequent_mood.category || "").toLowerCase();
+
+            if(moodRecommendations[topMood]){
+                document.getElementById("insightIntro").innerText =
+                    moodRecommendations[topMood].intro;
+                document.getElementById("challengeText").innerText =
+                    moodRecommendations[topMood].challenge;
+                document.getElementById("tryThisList").innerHTML =
+                    moodRecommendations[topMood].tips
+                        .map(tip => `<li>${tip}</li>`)
+                        .join("");
+            }
+            else{
+                document.getElementById("insightIntro").innerText =
+                "No recommendation available.";
+                document.getElementById("tryThisList").innerHTML = "";
+                document.getElementById("challengeText").innerText = "";
+            }
+
             const moodInfo = {
                 happy: { emoji: "😊", title: "Happy"},
                 sad: { emoji: "😢", title: "Sad"},
@@ -709,10 +694,7 @@
             document.getElementById("pieTotalLabel").innerText =
                 totalEntries;
 
-            document.getElementById("recommendationText").innerText =
-            data.recommendation;
-
-
+                
             const moodMap = {};
             data.percentage_distribution.forEach(item => {
                 moodMap[item.category.toLowerCase()] =

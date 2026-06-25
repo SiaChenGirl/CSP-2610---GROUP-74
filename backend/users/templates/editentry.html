@@ -416,6 +416,7 @@
 
     <div class="main-container">
         <form class="entry-card" id="editForm" onsubmit="event.preventDefault();">
+            {% csrf_token %}
             <div class="date-row">
                 <div class="date-display" id="entryDate">June 10, 2026</div>
             </div>
@@ -459,10 +460,21 @@
 
             <div class="section-title">🎵 Mood Song</div>
             <div class="song-card">
-                <img src="{% static 'album.png' %}" class="album-cover">
+                <audio controls id="audioPlayer">
+                    {% if entry.selected_music %}
+                        <source src="{{ entry.selected_music.audio_file.url }}" 
+                    {% endif %}>
+                    </audio>
+
                 <div class="song-info">
-                    <div id="songTitle">Silence</div>
-                    <div id="songArtist">MoodBloom Radio</div>
+                    <div id="songTitle">
+                        {% if entry.selected_music %}
+                            {{ entry.selected_music.title }}
+                        {% else %}
+                            No Song
+                        {% endif %}
+                    </div>
+                    <div id="songArtist">MoodBloom Music</div>
                 </div>
             </div>
             <button type="button" id="changeSongBtn" class="change-btn">🎵 Change Song</button>
@@ -475,10 +487,10 @@
     <div id="songModal" class="modal">
         <div class="modal-content">
             <span class="close-song">&times;</span>
-            <h2 style="color: #6a4fbf; margin-top:0;">Select Mood Radio</h2>
+            <h2 style="color: #6a4fbf; margin-top:0;">Select Mood Music</h2>
             <div id="songList">
                 {% for song in songs %}
-                <div class="song-option" onclick="selectMusic({{ song.id }}, '{{ song.title }}')">🎵 {{ song.title }}</div>
+                <div class="song-option" onclick="selectMusic({{ song.id }}, '{{ song.title }}', '{{ song.audio_file.url }}')">🎵 {{ song.title }}</div>
                 {% endfor %}
             </div>
         </div>
@@ -578,9 +590,12 @@
         document.getElementById("changeSongBtn").onclick = () => songModal.style.display = "block";
         document.querySelector(".close-song").onclick = () => songModal.style.display = "none";
 
-        function selectMusic(id, title) {
+        function selectMusic(id, title, audioUrl) {
             selectedMusicId = id;
             document.getElementById("songTitle").innerText = title;
+            const player = document.getElementById("audioPlayer");
+            player.src = audioUrl;
+            player.load();
             songModal.style.display = "none";
         }
 
@@ -657,7 +672,7 @@
             .then(result => {
                 if(result.status === "success") {
                     alert("🌸 Blossom memory changes saved successfully!");
-                    window.location.href = "{% url 'diaryhistory' %}?date=" + encodeURIComponent(document.getElementById('entryDate').innerText);
+                    window.location.href = "{% url 'diaryhistory' %}?date={{ entry.entry_date|date:'Y-m-d' }}";
                 } else {
                     alert("❌ Update failed: " + result.message);
                 }
