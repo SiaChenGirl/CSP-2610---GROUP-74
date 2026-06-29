@@ -1,14 +1,106 @@
 {% extends "admin/base.html" %}
+{% load static %}
 
 {% block branding %}
-<h1 id="site-name">🌸 MoodBloom Admin</h1>
+<h1 id="site-name" style="font-family: 'Dancing Script', cursive; font-size: 32px; letter-spacing: 2px;">
+    🌸 MoodBloom Admin
+</h1>
 {% endblock %}
 
 {% block extrastyle %}
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
 <style>
-    /* 这里只写颜色和字体，千万不要在这里写 <div class="stats"> 等结构代码 */
-    :root { --purple-main: #b19ce5; }
-    #header { background-color: var(--purple-main) !important; }
-    /* ... 其余颜色样式 ... */
+    /* 核心配色：柔和紫色系 */
+    :root {
+        --primary-purple: #8e7cc3;
+        --dark-purple: #6a4fbf;
+        --bg-color: #f8f6ff;
+    }
+
+    /* 整体背景 */
+    body { background-color: var(--bg-color) !important; color: #6a4fbf !important; }
+
+    /* 顶部导航栏样式 */
+    #header {
+        background: linear-gradient(135deg, #b39ddb, #9575cd) !important;
+        color: white !important;
+        border-bottom: none !important;
+        padding: 20px 40px !important;
+    }
+    #user-tools, #site-name a { color: white !important; }
+
+    /* 模块容器卡片化 */
+    .module {
+        background: white !important;
+        border: 1px solid #efe8ff !important;
+        border-radius: 25px !important;
+        box-shadow: 0 10px 30px rgba(106, 79, 191, 0.08) !important;
+        margin-bottom: 25px !important;
+        overflow: hidden;
+    }
+
+    /* 修复后的模块标题栏 (包含侧边栏分类标题) */
+    .module h2, .module caption {
+        background-color: var(--primary-purple) !important; /* 深紫色背景 */
+        color: white !important;                          /* 白色文字 */
+        font-family: 'Sogeo UI', cursive !important;
+        font-size: 18px !important;
+        padding: 15px 20px !important;
+        margin: 0 !important;
+        text-transform: capitalize !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    /* 按钮美化 */
+    .button, input[type="submit"] {
+        background: var(--primary-purple) !important;
+        border-radius: 50px !important;
+        padding: 8px 25px !important;
+        text-shadow: none !important;
+        border: none !important;
+        color: white !important;
+        transition: 0.3s !important;
+    }
+    .button:hover { background: var(--dark-purple) !important; transform: scale(1.05); }
+
+    /* 表格区域美化 */
+    #content-main table { border: none !important; background: white !important; }
+    #content-main td, #content-main th { border-top: 1px solid #f9f9f9 !important; }
+
+    /* 让“最近动作”看起来更干净 */
+    #content-related {
+        background: rgba(255, 255, 255, 0.5) !important;
+        border-radius: 20px !important;
+        padding: 20px !important;
+    }
+
+    /* 修正列表项的间距 */
+    .app-list table {
+        border-collapse: separate !important;
+        border-spacing: 0 5px !important;
+    }
+
+    /* --- 彻底清除那块淡黄色背景 --- */
+
+/* 强制覆盖 Admin 侧边栏所有菜单项的背景，包括鼠标悬停时的状态 */
+.app-list tr:hover, 
+.app-list td:hover,
+.app-list tr,
+.app-auth, 
+.app-users {
+    background-color: white !important;
+}
+
+/* 如果还有残留的背景色，用这个选择器强力清除 */
+.nav-selected, 
+.app-list .model-users,
+.app-list .model-groups {
+    background: white !important;
+}
+
+/* 同时把那一行的边框颜色也调得更柔和，或者直接透明 */
+.app-list tr {
+    border-bottom: 1px solid #f0f0f0 !important;
+}
 </style>
 {% endblock %}

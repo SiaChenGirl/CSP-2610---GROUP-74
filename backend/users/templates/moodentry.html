@@ -405,36 +405,56 @@ setIntensity(5);
         function closePhotoModal(e) { if(e.target.id === 'photoModal') e.target.style.display = 'none'; }
 
         function handleFileSelect(input) {
-            if (input.files && input.files.length > 0) {
-                // ✨ 核心改变：用 concat 把新选的照片“追加”到原本的数组后面，而不是直接覆盖
-                selectedPhotos = selectedPhotos.concat(Array.from(input.files));
-                
-                const previewContainer = document.getElementById('previewContainer');
-                previewContainer.innerHTML = ''; // 每次重新渲染整个数组里的所有图片
+    if (input.files && input.files.length > 0) {
+        const newFiles = Array.from(input.files);
+        selectedPhotos = selectedPhotos.concat(newFiles);
+        renderPreview(); // 提取成单独函数，方便删除时调用
+        input.value = '';
+        document.getElementById('photoModal').style.display = 'none';
+    }
+}
 
-                selectedPhotos.forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.width = '80px';
-                        img.style.height = '80px';
-                        img.style.borderRadius = '10px';
-                        img.style.objectFit = 'cover';
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
+// ✨ 新增：负责渲染预览区域的函数
+function renderPreview() {
+    const previewContainer = document.getElementById('previewContainer');
+    previewContainer.innerHTML = ''; 
 
-                alert("Total " + selectedPhotos.length + " photo(s) selected! 🌸");
-                
-                // ✨ 关键收尾：把 input 的 value 清空。
-                // 这样就算用户连续两次选择同一张照片，也能正常触发 onchange 事件。
-                input.value = ''; 
-                
-                document.getElementById('photoModal').style.display = 'none';
-            }
-        }
+    selectedPhotos.forEach((file, index) => {
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-block';
+
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.style.width = '80px';
+        img.style.height = '80px';
+        img.style.borderRadius = '10px';
+        img.style.objectFit = 'cover';
+
+        // 创建删除按钮
+        const delBtn = document.createElement('button');
+        delBtn.innerHTML = '×';
+        delBtn.style.position = 'absolute';
+        delBtn.style.top = '-5px';
+        delBtn.style.right = '-5px';
+        delBtn.style.background = '#e57373';
+        delBtn.style.color = 'white';
+        delBtn.style.border = 'none';
+        delBtn.style.borderRadius = '50%';
+        delBtn.style.width = '20px';
+        delBtn.style.cursor = 'pointer';
+        
+        // 点击删除按钮时，从数组移除并重新渲染
+        delBtn.onclick = function() {
+            selectedPhotos.splice(index, 1);
+            renderPreview();
+        };
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(delBtn);
+        previewContainer.appendChild(wrapper);
+    });
+}
         function saveEntry() {
     // 获取日记内容
     const diaryContent = document.getElementById('diaryEntry').value.trim();
@@ -564,51 +584,50 @@ let localStream = null; // 用于存储摄像头媒体流的全局变量
             document.getElementById('modalOptions').style.display = 'flex';
         }
 
-        /* 捕获当前画面并将其变为文件加入 selectedPhotos */
-        function captureSnapshot() {
+        /* 捕获当前画面 */
+         function captureSnapshot() {
             const video = document.getElementById('webcam');
             const canvas = document.getElementById('captureCanvas');
             const ctx = canvas.getContext('2d');
 
-            if (localStream) {
-                // 设置画布宽高与视频流一致
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                
-                // 镜像修复（因为自拍一般需要左右反转，如果不需要可以删掉下面这三行）
-                ctx.translate(canvas.width, 0);
-                ctx.scale(-1, 1);
+         if (!localStream) {
+           alert("摄像头未正常开启，请重试！");
+            return;
+         }
+             // 设置画布与视频流尺寸一致
+             canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+    
+            // 镜像修复
+             ctx.save(); // 保存当前状态
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            ctx.restore(); // 恢复状态
 
-                // 将视频画面画到 Canvas 上
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                // 将 Canvas 转换为 Blob 数据，再包装成可以上传给 Django 的 File 对象
-                canvas.toBlob((blob) => {
-                    const filename = "camera_" + new Date().getTime() + ".jpg";
-                    const file = new File([blob], filename, { type: "image/jpeg" });
-
-                    // ✨ 核心融合：直接追加到你原本的全局数组中！
-                    selectedPhotos.push(file);
-
-                    // 重新渲染前端屏幕的相册预览区
-                    const previewContainer = document.getElementById('previewContainer');
-                    const img = document.createElement('img');
-                    img.src = URL.createObjectURL(file); // 生成临时的本地预览 URL
-                    img.style.width = '80px';
-                    img.style.height = '80px';
-                    img.style.borderRadius = '10px';
-                    img.style.objectFit = 'cover';
-                    previewContainer.appendChild(img);
-
-                    alert("Photo captured successfully! 🌸");
-                    
-                    // 关闭相机，关闭模态框
-                    stopCamera();
-                    document.getElementById('photoModal').style.display = 'none';
-                }, 'image/jpeg', 0.9);
-            }
+             // 将 Canvas 转换为 Blob
+            canvas.toBlob((blob) => {
+            if (!blob) {
+            alert("拍照失败，请重试！");
+            return;
         }
+        
+        const filename = "camera_" + new Date().getTime() + ".jpg";
+        const file = new File([blob], filename, { type: "image/jpeg" });
 
+        // 1. 追加到全局数组
+        selectedPhotos.push(file);
+
+        // 2. 刷新预览
+        renderPreview();
+
+        alert("Photo captured successfully!🌸");
+        
+        // 3. 关闭相机并重置 UI
+        stopCamera();
+        document.getElementById('photoModal').style.display = 'none';
+          }, 'image/jpeg', 0.9);
+      }
         /* 修改原本的关闭模态框函数，确保顺便把摄像头硬件关掉，不占主板 */
         const originalClosePhotoModal = closePhotoModal;
         closePhotoModal = function(e) {

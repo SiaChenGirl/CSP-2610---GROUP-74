@@ -136,6 +136,7 @@
         .main-mood {
             width: 60px;
             height: 60px;
+            object-fit: contain;
         }
 
         .mood-header {
@@ -160,7 +161,7 @@
             border-radius: 18px;
             padding: 15px;
             font-size: 20px;
-            font-family: 'Dancing Script', cursive; 
+            font-family: 'Segoe UI', cursive; 
             color: #4a3494;
             outline: none;
             resize: none;
@@ -328,13 +329,32 @@
             justify-items: center;
         }
 
+        /* 1. 控制 .hub-item 容器的大小 */
         .hub-item {
             cursor: pointer;
             padding: 5px;
             border-radius: 50%;
             transition: 0.2s;
+            width: 50px;      /* 设定容器固定宽度 */
+            height: 50px;     /* 设定容器固定高度 */
+            display: flex;    /* 使用 flex 居中图片 */
+            align-items: center;
+            justify-content: center;
+            background: transparent;
         }
-        .hub-item:hover, .hub-item.active { background: #efe9ff; transform: scale(1.1); }
+
+         /* 2. 强制控制容器内的图片大小 */
+          .hub-item img {
+                width: 60px !important;  /* 缩小图片至 35px */
+                height: 60px !important;
+                 object-fit: contain;     /* 保证比例不拉伸 */
+        }
+ 
+         /* 3. 保持你的 Hover 效果 */
+        .hub-item:hover, .hub-item.active { 
+            background: #efe9ff; 
+            transform: scale(1.1);}
+
 
         /* Modal Settings */
         .modal {
@@ -479,7 +499,7 @@
             </div>
             <button type="button" id="changeSongBtn" class="change-btn">🎵 Change Song</button>
 
-            <button type="button" class="edit-btn" id="saveButton" onclick="submitUpdate()">💾 Save Changes</button>
+            <button type="button" class="edit-btn" id="saveButton" onclick="submitUpdate()">Save Changes</button>
             <button type="button" class="delete-btn" onclick="deleteCurrentEntry()">🗑 Delete Memory</button>
         </form>
     </div>
