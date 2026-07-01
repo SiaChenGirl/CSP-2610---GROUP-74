@@ -414,12 +414,12 @@ setIntensity(5);
     }
 }
 
-// ✨ 新增：负责渲染预览区域的函数
 function renderPreview() {
     const previewContainer = document.getElementById('previewContainer');
-    previewContainer.innerHTML = ''; 
+    previewContainer.innerHTML = '';
 
-    selectedPhotos.forEach((file, index) => {
+    selectedPhotos.forEach((file) => {
+
         const wrapper = document.createElement('div');
         wrapper.style.position = 'relative';
         wrapper.style.display = 'inline-block';
@@ -431,9 +431,8 @@ function renderPreview() {
         img.style.borderRadius = '10px';
         img.style.objectFit = 'cover';
 
-        // 创建删除按钮
         const delBtn = document.createElement('button');
-        delBtn.innerHTML = '×';
+        delBtn.innerHTML = 'x';
         delBtn.style.position = 'absolute';
         delBtn.style.top = '-5px';
         delBtn.style.right = '-5px';
@@ -443,10 +442,10 @@ function renderPreview() {
         delBtn.style.borderRadius = '50%';
         delBtn.style.width = '20px';
         delBtn.style.cursor = 'pointer';
-        
-        // 点击删除按钮时，从数组移除并重新渲染
-        delBtn.onclick = function() {
-            selectedPhotos.splice(index, 1);
+
+        // ✅ SAFE DELETE (no index bug)
+        delBtn.onclick = function () {
+            selectedPhotos = selectedPhotos.filter(f => f !== file);
             renderPreview();
         };
 

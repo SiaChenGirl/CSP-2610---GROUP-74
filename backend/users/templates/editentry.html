@@ -342,6 +342,11 @@
             justify-content: center;
             background: transparent;
         }
+        .sub-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
 
          /* 2. 强制控制容器内的图片大小 */
           .hub-item img {
@@ -642,7 +647,7 @@
 
                     const deleteBtn = document.createElement("button");
                     deleteBtn.className = "delete-photo";
-                    deleteBtn.innerHTML = "⨂";
+                    deleteBtn.innerHTML = "x";
                     
                     // 新追加图片点叉直接从临时数组拔除
                     deleteBtn.onclick = function(){
