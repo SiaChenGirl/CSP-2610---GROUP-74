@@ -54,15 +54,34 @@ def register_view(request):
             user = User.objects.create_user(username=username, password=password, email=email)
             Profile.objects.create(user=user, gender=gender, email_verified=False)
 
-            # 邮件发送系统
-            verify_link = request.build_absolute_uri(reverse('verify_email', kwargs={'username': username}))
-            # send_mail(
-              #  'Verify your MoodBloom account',
-               # f'Welcome to MoodBloom 🌸\n\nPlease verify your email:\n{verify_link}',
-               # 'adminmoodbloom@gmail.com',
-              #  [email],
-               # fail_silently=False,
-             # )
+
+        try:
+            verify_link = request.build_absolute_uri(
+                reverse('verify_email', kwargs={'username': username})
+            )
+
+            print("EMAIL:", email)
+            print("VERIFY LINK:", verify_link)
+
+            sent = send_mail(
+                'Verify your MoodBloom account',
+                f'Welcome to MoodBloom 🌸\n\nPlease verify your email:\n{verify_link}',
+                'adminmoodbloom@gmail.com',
+                [email],
+                fail_silently=False,
+            )
+
+            print("SEND RESULT:", sent)
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+
+            return JsonResponse({
+                "status": "error",
+                "message": str(e)
+            }, status=500)
+
 
             # ✅ 成功返回：确保这里只返回这一句
             return JsonResponse({
