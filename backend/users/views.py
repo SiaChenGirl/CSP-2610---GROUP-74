@@ -27,7 +27,7 @@ from django.contrib.auth.decorators import user_passes_test
 # ==========================================
 
 @csrf_exempt
-def register_view(request): 
+def register_view(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         username = data.get('username')
@@ -35,35 +35,36 @@ def register_view(request):
         email = data.get('email')
         gender = data.get('gender', 'Others')
 
-        # 1. 严格的互斥检查：先查用户名
         if User.objects.filter(username=username).exists():
             return JsonResponse({
-                'status': 'error', 
+                'status': 'error',
                 'message': '👤Username already exists. Please choose another username.'
             }, status=400)
 
-        # 2. 再查邮箱
         elif User.objects.filter(email=email).exists():
             return JsonResponse({
-                'status': 'error', 
+                'status': 'error',
                 'message': '📧Email already exists. Please use another email or log in.'
             }, status=400)
 
-        # 3. 只有上面都不存在，才走创建逻辑
         else:
-            user = User.objects.create_user(username=username, password=password, email=email)
-            Profile.objects.create(user=user, gender=gender, email_verified=False)
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                email=email
+            )
 
+            Profile.objects.create(
+                user=user,
+                gender=gender,
+                email_verified=False
+            )
 
-        try:
             verify_link = request.build_absolute_uri(
                 reverse('verify_email', kwargs={'username': username})
             )
 
-            print("EMAIL:", email)
-            print("VERIFY LINK:", verify_link)
-
-            sent = send_mail(
+            send_mail(
                 'Verify your MoodBloom account',
                 f'Welcome to MoodBloom 🌸\n\nPlease verify your email:\n{verify_link}',
                 'adminmoodbloom@gmail.com',
@@ -71,19 +72,6 @@ def register_view(request):
                 fail_silently=False,
             )
 
-            print("SEND RESULT:", sent)
-
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-
-            return JsonResponse({
-                "status": "error",
-                "message": str(e)
-            }, status=500)
-
-
-            # ✅ 成功返回：确保这里只返回这一句
             return JsonResponse({
                 'status': 'success',
                 'message': '🎉 Account created successfully! 📩 Please check your email and verify your account before logging in.'
