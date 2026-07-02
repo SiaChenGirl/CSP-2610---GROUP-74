@@ -55,7 +55,7 @@ def register_view(request):
             Profile.objects.create(user=user, gender=gender, email_verified=False)
 
             # 邮件发送系统
-            verify_link = f"http://127.0.0.1:8000/verify-email/{username}/"
+            verify_link = f"{request.scheme}://{request.get_host()}/verify-email/{username}/"
             try:
                 send_mail(
                     'Verify your MoodBloom account',
