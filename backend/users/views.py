@@ -65,12 +65,12 @@ def register_view(request):
             )
 
             send_mail(
-                'Verify your MoodBloom account',
-                f'Welcome to MoodBloom 🌸\n\nPlease verify your email:\n{verify_link}',
-                'adminmoodbloom@gmail.com',
-                [email],
-                fail_silently=True,
-            )
+    'Verify your MoodBloom account',
+    f'Welcome to MoodBloom 🌸\n\nPlease verify your email:\n{verify_link}',
+    settings.DEFAULT_FROM_EMAIL,  # 使用配置好的默认值
+    [email],
+    fail_silently=False, 
+)
 
             return JsonResponse({
                 'status': 'success',
@@ -727,13 +727,13 @@ def forgot_password_action(request):
             reset_url = request.build_absolute_uri(
                 reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
             )
-            send_mail(
-                'Reset your MoodBloom password',
-                f'Click this link to reset your password: {reset_url}',
-                'adminmoodbloom@gmail.com',
-                [email],
-                fail_silently=False,
-            )
+    send_mail(
+    'Reset your MoodBloom password',
+    f'Click this link to reset your password: {reset_url}',
+    settings.DEFAULT_FROM_EMAIL,  # 使用配置好的默认值
+    [email],
+    fail_silently=False,
+)
             # 修改这里：不再返回 JSON，而是告诉页面“成功了”
             return render(request, 'forgot.html', {'message': 'Check your email for the reset link!'})
         except User.DoesNotExist:
