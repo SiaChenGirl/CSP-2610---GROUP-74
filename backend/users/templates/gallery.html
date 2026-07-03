@@ -203,6 +203,53 @@ body {
     background:#6a4fbf;
     color:white;
 }
+
+/* ---------- Image Popup ---------- */
+
+.image-modal{
+    display:none;
+    position:fixed;
+    z-index:2000;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.85);
+
+    justify-content:center;
+    align-items:center;
+}
+
+.modal-content{
+    max-width:85%;
+    max-height:85%;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
+
+    animation:zoom .25s ease;
+}
+
+.close-image{
+    position:absolute;
+    top:25px;
+    right:40px;
+    color:white;
+    font-size:45px;
+    cursor:pointer;
+}
+
+@keyframes zoom{
+    from{
+        transform:scale(.7);
+        opacity:0;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
         footer { text-align: center; padding: 40px 0; color: #6a4fbf; font-weight: bold; }
     </style>
 </head>
@@ -270,8 +317,12 @@ body {
     {% for entry in moods %} 
     {% for photo in entry.photos.all %} 
         <div class="photo-item">
-            <div class="photo-placeholder" style="background-image: url('{{ photo.image.url }}'); background-size: cover; background-position: center;">
-            </div>
+            <div class="photo-placeholder"
+     style="background-image:url('{{ photo.image.url }}');
+            background-size:cover;
+            background-position:center;"
+     onclick="openImage('{{ photo.image.url }}')">
+</div>
             <span class="photo-date">{{ entry.entry_date|date:"Y-m-d" }}</span>
         </div>
     {% endfor %}
@@ -289,6 +340,11 @@ body {
             <div class="nav-btn active" title="Photo Gallery" onclick="location.href='{% url 'gallery' %}'"><img src="{% static 'icons/camera.png' %}"></div>
         </div>
     </div>
+    <!-- Image Popup -->
+<div id="imageModal" class="image-modal" onclick="closeImage()">
+    <span class="close-image">&times;</span>
+    <img id="modalImg" class="modal-content">
+</div>
 
     <footer>© 2026 MoodBloom | Mood your day, Bloom your mind.</footer>
 
@@ -325,6 +381,19 @@ body {
             alert("❌ A network error occurred. Please check your connection and try again.");
         }
     }
+}
+function openImage(src){
+
+    const modal = document.getElementById("imageModal");
+    const img = document.getElementById("modalImg");
+
+    img.src = src;
+    modal.style.display = "flex";
+}
+
+function closeImage(){
+
+    document.getElementById("imageModal").style.display = "none";
 }
     </script>
 </body>

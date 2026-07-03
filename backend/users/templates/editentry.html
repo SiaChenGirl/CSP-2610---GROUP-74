@@ -457,11 +457,26 @@
 
                 <div class="emotion-drawer" id="moodDrawer" style="display:none; margin-top:15px;">
                     <div class="emotion-hubs">
-                        <div class="hub-item" onclick="openDrawer('happy', this)"><img src="{% static 'emojis/happy.png' %}"></div>
-                        <div class="hub-item" onclick="openDrawer('neutral', this)"><img src="{% static 'emojis/neutral.png' %}"></div>
-                        <div class="hub-item" onclick="openDrawer('sad', this)"><img src="{% static 'emojis/sad.png' %}"></div>
-                        <div class="hub-item" onclick="openDrawer('angry', this)"><img src="{% static 'emojis/angry.png' %}"></div>
-                    </div>
+    <div class="hub-item" onclick="openDrawer('happy', this)">
+        <img src="{% static 'emojis/happy.png' %}">
+        <span>Happy</span>
+    </div>
+
+    <div class="hub-item" onclick="openDrawer('neutral', this)">
+        <img src="{% static 'emojis/neutral.png' %}">
+        <span>Neutral</span>
+    </div>
+
+    <div class="hub-item" onclick="openDrawer('sad', this)">
+        <img src="{% static 'emojis/sad.png' %}">
+        <span>Sad</span>
+    </div>
+
+    <div class="hub-item" onclick="openDrawer('angry', this)">
+        <img src="{% static 'emojis/angry.png' %}">
+        <span>Angry</span>
+    </div>
+</div>
                     <div id="drawerContent" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:15px;"></div>
                 </div>
             </div>

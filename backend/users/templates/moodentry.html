@@ -102,6 +102,19 @@
     margin:15px 0;
 }
 
+.intensity-scale{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:6px;
+    margin-bottom:12px;
+    padding:0 4px;
+    font-size:12px;
+    font-weight:600;
+    color:#8b75c7;
+    letter-spacing:0.3px;
+}
+
 .heart{
     font-size:28px;
     cursor:pointer;
@@ -238,6 +251,12 @@ Choose the emotion that best describes your mood.
     <span class="heart" onclick="setIntensity(10)">💜</span>
 
 </div>
+
+<div class="intensity-scale">
+    <span>Very Mild</span>
+    <span>Very Intense</span>
+</div>
+
 <div id="intensityLabel"
      style="text-align:center;
             color:#6a4fbf;
