@@ -69,7 +69,7 @@ def register_view(request):
                 f'Welcome to MoodBloom 🌸\n\nPlease verify your email:\n{verify_link}',
                 'adminmoodbloom@gmail.com',
                 [email],
-                fail_silently=False,
+                fail_silently=True,
             )
 
             return JsonResponse({
