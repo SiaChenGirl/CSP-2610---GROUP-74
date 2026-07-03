@@ -67,7 +67,7 @@ def register_view(request):
             send_mail(
                 'Verify your MoodBloom account',
                 f'Welcome to MoodBloom 🌸\n\nPlease verify your email:\n{verify_link}',
-                settings.DEFAULT_FROM_EMAIL,
+                'adminmoodbloom@gmail.com',
                 [email],
                 fail_silently=False,
             )
@@ -730,7 +730,7 @@ def forgot_password_action(request):
             send_mail(
                 'Reset your MoodBloom password',
                 f'Click this link to reset your password: {reset_url}',
-                settings.DEFAULT_FROM_EMAIL,
+                'adminmoodbloom@gmail.com',
                 [email],
                 fail_silently=False,
             )
