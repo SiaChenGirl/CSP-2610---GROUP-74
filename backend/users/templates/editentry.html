@@ -428,13 +428,21 @@
     </div>
 
     <div class="header-wrapper">
-        <a href="{% url 'profile' %}" class="profile-card">
-            <div class="profile-avatar">😊</div>
-            <div>
-                <div class="profile-name">Hi, {{ user.username }}!</div>
-                <div class="profile-text">Let's have a great day!</div>
-            </div>
-        </a>
+       <a href="{% url 'mainpage' %}" class="profile-card">
+    <div class="profile-avatar">
+        🏠
+    </div>
+
+    <div>
+        <div class="profile-name">
+            Main Page
+        </div>
+
+        <div class="profile-text">
+            Back to Calendar
+        </div>
+    </div>
+</a>
         <div class="title-img"><img src="{% static 'moodbloom.png' %}"></div>
         <div class="menu-icon" onclick="toggleNav()">☰</div>
     </div>
