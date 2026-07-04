@@ -527,18 +527,23 @@ const progressBar = document.getElementById("progressBar");
 
 /* LOAD SONG */
 function loadSong() {
-    const value = document.getElementById("songSelect").value;
+    const select = document.getElementById("songSelect");
+    const value = select.value;
     if (!value) return;
 
     const [file, title] = value.split("|");
 
+    // --- 关键修改：如果已经是这首歌，不要调用 load()，直接改变 currentTime 即可 ---
+    if (audio.src === file) {
+        return; 
+    }
+    // --------------------------------------------------------------------------
+
     audio.pause();
     audio.src = file;
-    audio.load();
-
+    // 移除 audio.load()，因为设置 src 后浏览器会自动加载元数据
     document.getElementById("songTitle").innerText = title;
     document.getElementById("songArtist").innerText = "MoodBloom Music";
-
     audio.play();
 }
 
