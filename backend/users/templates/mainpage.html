@@ -344,7 +344,7 @@
                 let finalIconUrl = "{% static 'emojis/plus.png' %}"; // 默认图片也要改路径
                 if (userMoodData[dateKey]) {
                      // 【关键修改】路径改为 static/emojis/
-                     finalIconUrl = "/static/emojis/" + userMoodData[dateKey];
+                    finalIconUrl = "/static/emojis/" + userMoodData[dateKey].toLowerCase();
                 }
 
                 cell.innerHTML = `
