@@ -410,6 +410,7 @@
         function goEntry() { 
             location.href = `{% url 'moodentry' %}?date=${formattedDateForBackend}`; 
         }
+        
 
         async function clickDeleteAccount() {
             const confirmDelete = confirm("⚠️ Are you absolutely sure you want to delete your account? All your mood logs and photos will be permanently wiped out!");
@@ -443,7 +444,7 @@
                     window.location.href = "{% url 'login' %}";
                 }
             });
-        }, 5000);
+        }, 5000); 
     </script>
 </body>
 </html>
