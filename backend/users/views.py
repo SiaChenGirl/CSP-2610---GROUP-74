@@ -741,20 +741,42 @@ def forgot_password_action(request):
             reset_url = request.build_absolute_uri(
                 reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
             )
-            send_mail(
-                'Reset your MoodBloom password',
-                f'Click this link to reset your password: {reset_url}',
-                'adminmoodbloom@gmail.com',
-                [email],
-                fail_silently=False,
-            )
-            # 修改这里：不再返回 JSON，而是告诉页面“成功了”
-            return render(request, 'forgot.html', {'message': 'Check your email for the reset link!'})
+
+            # --- 修改部分：调用我们定义的 API 发信函数 ---
+            # 同样使用 send_verification_email_via_api，但内容改为重置密码
+            subject = 'Reset your MoodBloom password'
+            html_content = f"<html><body><p>Hello,</p><p>Click this link to reset your password: <a href='{reset_url}'>Reset Now</a></p></body></html>"
+            
+            # 由于原来的 API 函数固定了 subject，这里建议稍微调整一下函数，
+            # 或者像下面这样直接调用（如果想省事，可以直接复用，或者将 subject 作为参数传入）
+            # 为了简洁，我建议直接在这里调用 requests，或简单修改函数支持 subject
+            
+            # 这里我们使用一个稍微通用的逻辑：
+            api_url = "https://api.brevo.com/v3/smtp/email"
+            payload = {
+                "sender": {"email": "adminmoodbloom@gmail.com", "name": "MoodBloom"},
+                "to": [{"email": email}],
+                "subject": subject,
+                "htmlContent": html_content
+            }
+            headers = {
+                "accept": "application/json",
+                "content-type": "application/json",
+                "api-key": os.environ.get('BREVO_API_KEY') 
+            }
+            
+            response = requests.post(api_url, json=payload, headers=headers, timeout=10)
+            
+            if response.status_code == 201:
+                return render(request, 'forgot.html', {'message': 'Check your email for the reset link!'})
+            else:
+                return render(request, 'forgot.html', {'error': 'Failed to send email. Please try again.'})
+
         except User.DoesNotExist:
-            # 也可以在这里传一个错误信息
             return render(request, 'forgot.html', {'error': 'Email not found'})
             
     return render(request, 'forgot.html')
+
 # 2. 处理 reset.html 的提交（保存密码并跳回登录）
 @csrf_exempt
 def handle_password_save(request):
