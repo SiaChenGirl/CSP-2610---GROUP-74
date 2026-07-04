@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,18 +80,13 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# 如果你在 Render 使用 Postgres，请删除下面的 SQLite 部分
 DATABASES = {
     "default": dj_database_url.config(
         conn_max_age=600,
         ssl_require=True,
-    ),
-    
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    )
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -146,7 +144,6 @@ EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL') == 'True'
 
 DEFAULT_FROM_EMAIL = 'adminmoodbloom@gmail.com'
 
-import os  # 如果文件顶部没有 import os，请在顶部加上，或者直接用下面这行
 
 # ✨ 开启 Media 媒体文件支持
 MEDIA_URL = '/media/'
