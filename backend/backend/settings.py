@@ -125,9 +125,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] # 告诉 Django 去哪里找你的 static 文件夹
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # 告诉 Django 把所有图片“打包”到哪里
 STATICFILES_STORAGE = (
     "whitenoise.storage.CompressedManifestStaticFilesStorage"
 )
