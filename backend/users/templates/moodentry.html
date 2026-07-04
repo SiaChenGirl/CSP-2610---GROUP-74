@@ -657,6 +657,19 @@ let localStream = null; // 用于存储摄像头媒体流的全局变量
             }
         }
 
+        <script>
+    // ... 原有的所有函数 (setIntensity, loadSong, saveEntry 等) ...
+
+    // --- 在这里粘贴我给你的那段代码 ---
+    audio.addEventListener('seeking', function() {
+        console.log("Seeking to: " + audio.currentTime);
+    });
+
+    audio.addEventListener('loadedmetadata', function() {
+        console.log("Metadata loaded, duration: " + audio.duration);
+    });
+    // --------------------------------
+</script> 
         async function clickDeleteAccount() {
     // 1. Double confirmation to prevent accidental clicks
     const confirmDelete = confirm("⚠️ WARNING: This action will permanently delete all your mood logs, photos, and personal data. This process is irreversible. Are you sure you want to delete your account?");
@@ -687,6 +700,7 @@ let localStream = null; // 用于存储摄像头媒体流的全局变量
         }
     }
 }
+
     </script>
 </body>
 </html>
