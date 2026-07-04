@@ -700,7 +700,20 @@ let localStream = null; // 用于存储摄像头媒体流的全局变量
         }
     }
 }
+// 强制手动处理 seek 事件，修复部分服务器不支持 Range 请求的问题
+audio.addEventListener('seeking', function() {
+    console.log("手动拦截跳转，当前时间: " + audio.currentTime);
+});
 
+// 核心修复逻辑：如果不让跳转，我们就强制触发重连
+audio.onseeking = function() {
+    const currentTime = audio.currentTime;
+    // 简单重连技巧：清除后再短暂延迟重新加载
+    audio.pause();
+    setTimeout(() => {
+        audio.play();
+    }, 100);
+};
     </script>
 </body>
 </html>
