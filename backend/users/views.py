@@ -1,4 +1,5 @@
 import json
+import os
 import calendar
 import requests
 from datetime import timedelta, date
@@ -42,35 +43,41 @@ def send_verification_email_via_api(user_email, verify_link):
         "content-type": "application/json",
         "api-key": os.environ.get('BREVO_API_KEY') 
     }
-
     try:
-        # 增加 timeout=10，确保请求在 10 秒内没响应就自动中断，防止网页假死
         response = requests.post(url, json=payload, headers=headers, timeout=10)
-        
-        # 即使不是 201，也可以打印一下错误内容，方便调试
-        if response.status_code != 201:
-            print(f"Brevo API 报错: {response.status_code}, 内容: {response.text}")
-            
         return response.status_code == 201
     except Exception as e:
         print(f"API 发送邮件失败: {e}")
         return False
 
-# --- 修改 register_view 中的调用部分 ---
+# 2. 完整的 register_view
 @csrf_exempt
 def register_view(request):
     if request.method == 'POST':
-        # ... (前面的用户创建代码保持不变) ...
-        
-        # 记得保留这几行创建用户的代码
+        # 必须先读取 JSON 数据
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+            email = data.get('email')
+            gender = data.get('gender', 'Others')
+        except Exception:
+            return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+        # 校验逻辑
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({'status': 'error', 'message': '👤Username already exists.'}, status=400)
+        elif User.objects.filter(email=email).exists():
+            return JsonResponse({'status': 'error', 'message': '📧Email already exists.'}, status=400)
+
+        # 创建用户
         user = User.objects.create_user(username=username, password=password, email=email)
         Profile.objects.create(user=user, gender=gender, email_verified=False)
 
+        # 发送邮件
         verify_link = request.build_absolute_uri(
             reverse('verify_email', kwargs={'username': username})
         )
-
-        # 【核心修改点】：调用新的 API 函数
         success = send_verification_email_via_api(email, verify_link)
 
         if success:
@@ -81,7 +88,7 @@ def register_view(request):
         else:
             return JsonResponse({
                 'status': 'warning',
-                'message': 'Account created, but verification email failed to send. Please contact support.'
+                'message': 'Account created, but verification email failed to send.'
             }, status=200)
 
     return render(request, 'register.html')
