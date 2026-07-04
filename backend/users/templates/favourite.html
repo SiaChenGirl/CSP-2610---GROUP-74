@@ -134,13 +134,49 @@ body {
         }
 
         /* --- CARD STYLE DESIGNS --- */
-        .bookmarked-card { background: white; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); padding: 15px; display: flex; flex-direction: column; gap: 8px; position: relative; transition: transform 0.2s, opacity 0.3s; }
+        .bookmarked-card{
+    background:white;
+    border-radius:18px;
+    padding:15px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    height:100%;
+    box-sizing:border-box;
+}
         .bookmarked-card:hover { transform: translateY(-3px); }
         
-        .bookmark-cover { width: 100%; height: 90px; background: #f6f3ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .bookmark-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .bookmark-cover {
+    width: 100%;
+    height: 160px;
+    background: #f6f3ff;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
 
-        .bookmark-text-info h3 { margin: 0; font-size: 13.5px; color: #4a3494; padding-right: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bookmark-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+        .bookmark-text-info h3 {
+    margin: 0;
+    font-size: 13.5px;
+    color: #4a3494;
+    padding-right: 20px;
+    line-height: 1.4;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    min-height: 38px;
+}
         .bookmark-text-info p { margin: 4px 0 6px 0; font-size: 11.5px; color: #7f71a7; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
         .bookmark-action-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 5px; }
@@ -266,7 +302,20 @@ body {
                 <div class="bookmarked-card">
                     <button class="cancel-bookmark-star" onclick="removeFavorite(this, {{ fav.article.id }})">★</button>
                     <div class="bookmark-cover">
-                        <img src="{% static 'images/default_article.jpg' %}" alt="{{ fav.article.title }}">
+
+                        {% if fav.article.category == 'basics' %}
+                            <img src="{% static 'articles/mental_health.jpg' %}" alt="{{ fav.article.title }}">
+                        {% elif fav.article.category == 'motivation' %}
+                            <img src="{% static 'articles/motivation.jpg' %}" alt="{{ fav.article.title }}">
+                        {% elif fav.article.category == 'relationships' %}
+                            <img src="{% static 'articles/relationships.jpg' %}" alt="{{ fav.article.title }}">
+                        {% elif fav.article.category == 'stress' %}
+                            <img src="{% static 'articles/stress.jpg' %}" alt="{{ fav.article.title }}">
+                        {% elif fav.article.category == 'selfcare' %}
+                            <img src="{% static 'articles/self_care.jpg' %}" alt="{{ fav.article.title }}">
+                        {% else %}
+                            <img src="{% static 'images/default_article.jpg' %}" alt="{{ fav.article.title }}">
+                        {% endif %}
                     </div>
                     <div class="bookmark-text-info">
                         <h3>{{ fav.article.title }}</h3>
