@@ -1,5 +1,6 @@
 import json
 import calendar
+import requests
 from datetime import timedelta, date
 from datetime import datetime
 from django.contrib import messages
@@ -22,59 +23,65 @@ from .models import Profile, MoodEntry, MoodPhoto, Favorite, Article, Feedback, 
 from calendar import monthrange
 from collections import defaultdict
 from django.contrib.auth.decorators import user_passes_test
+from django.conf import settings
+
 # ==========================================
 # 1. 身份验证与账户管理模块 (融合 views2 的邮件验证与 views1 的模板跳转)
 # ==========================================
 
+def send_verification_email_via_api(user_email, verify_link):
+    url = "https://api.brevo.com/v3/smtp/email"
+    payload = {
+        "sender": {"email": "adminmoodbloom@gmail.com", "name": "MoodBloom"},
+        "to": [{"email": user_email}],
+        "subject": "Verify your MoodBloom account",
+        "htmlContent": f"<html><body><p>Welcome to MoodBloom 🌸</p><p>Please verify your email: <a href='{verify_link}'>Verify Now</a></p></body></html>"
+    }
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "api-key": os.environ.get('BREVO_API_KEY') 
+    }
+
+    try:
+        # 增加 timeout=10，确保请求在 10 秒内没响应就自动中断，防止网页假死
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        
+        # 即使不是 201，也可以打印一下错误内容，方便调试
+        if response.status_code != 201:
+            print(f"Brevo API 报错: {response.status_code}, 内容: {response.text}")
+            
+        return response.status_code == 201
+    except Exception as e:
+        print(f"API 发送邮件失败: {e}")
+        return False
+
+# --- 修改 register_view 中的调用部分 ---
 @csrf_exempt
 def register_view(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        username = data.get('username')
-        password = data.get('password')
-        email = data.get('email')
-        gender = data.get('gender', 'Others')
+        # ... (前面的用户创建代码保持不变) ...
+        
+        # 记得保留这几行创建用户的代码
+        user = User.objects.create_user(username=username, password=password, email=email)
+        Profile.objects.create(user=user, gender=gender, email_verified=False)
 
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({
-                'status': 'error',
-                'message': '👤Username already exists. Please choose another username.'
-            }, status=400)
+        verify_link = request.build_absolute_uri(
+            reverse('verify_email', kwargs={'username': username})
+        )
 
-        elif User.objects.filter(email=email).exists():
-            return JsonResponse({
-                'status': 'error',
-                'message': '📧Email already exists. Please use another email or log in.'
-            }, status=400)
+        # 【核心修改点】：调用新的 API 函数
+        success = send_verification_email_via_api(email, verify_link)
 
-        else:
-            user = User.objects.create_user(
-                username=username,
-                password=password,
-                email=email
-            )
-
-            Profile.objects.create(
-                user=user,
-                gender=gender,
-                email_verified=False
-            )
-
-            verify_link = request.build_absolute_uri(
-                reverse('verify_email', kwargs={'username': username})
-            )
-
-            send_mail(
-                'Verify your MoodBloom account',
-                f'Welcome to MoodBloom 🌸\n\nPlease verify your email:\n{verify_link}',
-                'adminmoodbloom@gmail.com',
-                [email],
-                fail_silently=False,
-            )
-
+        if success:
             return JsonResponse({
                 'status': 'success',
-                'message': '🎉 Account created successfully! 📩 Please check your email and verify your account before logging in.'
+                'message': '🎉 Account created! 📩 Please check your email to verify.'
+            }, status=200)
+        else:
+            return JsonResponse({
+                'status': 'warning',
+                'message': 'Account created, but verification email failed to send. Please contact support.'
             }, status=200)
 
     return render(request, 'register.html')
