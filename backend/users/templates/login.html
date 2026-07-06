@@ -170,6 +170,33 @@
     margin-top:10px;
 }
 
+/* Password container */
+.password-container{
+    position:relative;
+    width:100%;
+}
+
+/* Leave space for the eye */
+.password-container input{
+    padding-right:45px;
+}
+
+/* Eye icon */
+.eye-toggle{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    font-size:16px;
+    user-select:none;
+    color:#8c7dbd;
+    transition:0.2s;
+}
+
+.eye-toggle:hover{
+    color:#6a4fbf;
+}
 /* RIGHT SIDE */
 
 .right-section{
@@ -210,9 +237,15 @@
             <input type="text"
                    id="username"
                    placeholder="Username">
-            <input type="password"
-                   id="password"
-                   placeholder="Password">
+           <div class="password-container">
+    <input type="password"
+           id="password"
+           placeholder="Password">
+    <span class="eye-toggle"
+          onclick="togglePasswordVisibility('password', this)">
+        🙉
+    </span>
+</div>
             <div class="remember-row">
 
                 <label>
@@ -265,6 +298,19 @@
             return cookieValue;
         }
 
+        // Password visibility toggle
+function togglePasswordVisibility(fieldId, toggleEl) {
+
+    const passwordField = document.getElementById(fieldId);
+
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleEl.innerText = "🙈";
+    } else {
+        passwordField.type = "password";
+        toggleEl.innerText = "🙉";
+    }
+}
         async function handleLogin() {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
